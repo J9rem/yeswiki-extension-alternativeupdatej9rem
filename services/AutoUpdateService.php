@@ -1,0 +1,330 @@
+<?php
+
+/*
+ * This file is part of the YesWiki Extension alternativeupdatej9rem.
+ *
+ * Authors : see README.md file that was distributed with this source code.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace YesWiki\Alternativeupdatej9rem\Service;
+
+use AutoUpdate\Configuration;
+use AutoUpdate\Files;
+use AutoUpdate\Release;
+use AutoUpdate\Repository as CoreRepository;
+use Exception;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use YesWiki\Alternativeupdatej9rem\Entity\Repository;
+use YesWiki\Plugins;
+use YesWiki\Wiki;
+
+include_once 'tools/autoupdate/vendor/autoload.php';
+
+class AutoUpdateService
+{
+    public const DEFAULT_REPO = 'https://repository.yeswiki.net/';
+    public const DEFAULT_VERS = 'Cercopitheque'; // For old revisions
+
+    public const IGNORED_TOOLS = [
+        '.',
+        '..',
+        'autoupdate',
+        'aceditor',
+        'attach',
+        'bazar',
+        'contact',
+        'helloworld',
+        'lang',
+        'login',
+        'progressBar',
+        'rss',
+        'security',
+        'syndication',
+        'tableau',
+        'tags',
+        'templates',
+        'toc'
+    ];
+
+    protected $activated;
+    protected $filesService ;
+    protected $params ;
+    protected $pluginService;
+    protected $wiki ;
+
+    private $cacheRepo ;
+
+    public function __construct(
+        ParameterBagInterface $params,
+        Wiki $wiki
+    ) {
+        $this->params = $params;
+        $this->wiki = $wiki;
+        $version = $this->params->get("yeswiki_version");
+        $release = $this->params->get("yeswiki_release");
+        $this->activated = true || ($version === "doryphore") && preg_match("/^4\.2\.[2-9]$|^4\.(?:[3-9]|[1-9][0-9])\.\d\d?\d?$|^[5-9]\.\d\d?\.\d\d?\d?$/",$release);
+        $this->filesService = new Files();
+        $this->pluginService = null;
+        $this->cacheRepo = [];
+    }
+
+    public function isActivated(): bool
+    {
+        return $this->activated;
+    }
+
+    /**
+     * Parameter $requestedVersion contains the name of the YesWiki version
+     * requested by version parameter of {{update}} action
+     * if empty, no specifc version is requested
+     * @param string $requestedVersion
+     * @return null|Repository
+     * @throws Exception if trouble to load a repository
+     */	
+    public function initRepository(string $requestedVersion=''): ?Repository
+    {
+        $address = $this->repositoryAddress($requestedVersion);
+        if (empty(filter_var($address, FILTER_VALIDATE_URL))){
+            throw new Exception("'yeswiki_repository' param is bad formatted ; got '$address'!");
+        }
+        $alternativeAddresses = $this->alternativeRepositoryAddresses($requestedVersion);
+        foreach ($alternativeAddresses as $key => $addr) {
+            if (empty(filter_var($addr, FILTER_VALIDATE_URL))){
+                throw new Exception("'alternative_yeswiki_repository' param is bad formatted for key $key ; got '$addr' !");
+            }
+        }
+        $localKey = $address.implode("",$alternativeAddresses);
+        if (!isset($this->cacheRepo[$localKey])){
+            $repository = new Repository(
+                $address,
+                $alternativeAddresses
+            );
+    
+            $this->loadRepository($repository);
+
+            $this->cacheRepo[$localKey] = $repository;
+        }
+
+        return $this->cacheRepo[$localKey];
+    }
+
+    public function isAdmin()
+    {
+        return $this->wiki->UserIsAdmin();
+    }
+
+    public function getWikiConfiguration()
+    {
+        $configuration = new Configuration(
+            $this->getWikiDir() . '/wakka.config.php'
+        );
+        $configuration->load();
+        return $configuration;
+    }
+
+    public function baseUrl()
+    {
+        return $this->params->get('base_url') . $this->wiki->tag;
+    }
+
+    private function getWikiDir()
+    {
+        $curExtDirName = basename(dirname(dirname(__FILE__)));
+        $curDir = "tools/$curExtDirName";
+        return dirname(dirname($curDir));
+    }
+
+    /*	Parameter $requestedVersion contains the name of the YesWiki version
+        requested by version parameter of {{update}} action
+        if empty, no specifc version is requested
+    */
+    private function repositoryAddress($requestedVersion='')
+    {
+        $repositoryAddress = $this::DEFAULT_REPO;
+
+        if ($this->params->has('yeswiki_repository')) {
+            $repositoryAddress = $this->params->get('yeswiki_repository');
+        }
+
+        if (substr($repositoryAddress, -1, 1) !== '/') {
+            $repositoryAddress .= '/';
+        }
+
+        if ($requestedVersion != '') {
+            $repositoryAddress .= strtolower($requestedVersion);
+        } else {
+            $repositoryAddress .= $this->getYesWikiVersion();
+        }
+        return "$repositoryAddress/";
+    }
+
+    private function getYesWikiVersion()
+    {
+        $version = $this::DEFAULT_VERS;
+        if ($this->params->has('yeswiki_version') && !empty($this->params->get('yeswiki_version'))) {
+            $version = $this->params->get('yeswiki_version');
+        }
+        return strtolower($version);
+    }
+
+    /**
+     * get alternativeRepository
+     * @param string $requestedVersion
+     * @return array
+     */
+    private function alternativeRepositoryAddresses(string $requestedVersion=''): array
+    {
+        if ($this->params->has('alternative_yeswiki_repository')){
+            $param = $this->params->get('alternative_yeswiki_repository');
+            if (is_string($param)){
+                $param = [$param];
+            }
+            if (is_array($param)){
+                return array_map(
+                    function ($addr) use ($requestedVersion){
+                        if (substr($addr, -1, 1) !== '/') {
+                            $addr .= '/';
+                        }
+                        if ($requestedVersion != '') {
+                            $addr .= strtolower($requestedVersion);
+                        } else {
+                            $addr .= $this->getYesWikiVersion();
+                        }
+                        return "$addr/";
+                    },
+                    array_filter($param,function($addr){
+                        return filter_var($addr,FILTER_VALIDATE_URL);
+                    })
+                );
+            }
+        }
+        return [];
+    }
+
+    /**
+     * load Repository
+     * @param Repository $repository
+     * @throws Exception
+     */
+    private function loadRepository(Repository $repository)
+    {
+        $repository->initLists();
+        
+        $this->loadARepo($repository,$repository->getAddress(),false);
+        foreach ($repository->getAlternativeAddresses() as $key => $addr) {
+            $this->loadARepo($repository,$addr,true,$key);
+        }
+        $this->loadLocalTools($repository);
+    }
+
+    /**
+     * load a repo in repository
+     * @param Repository $repository
+     * @param string $address
+     * @param bool $isAlternative
+     * @param mixed $key
+     * @throws Exception
+     */
+    private function loadARepo(Repository $repository,string $address,bool $isAlternative, $key = "")
+    {
+        $repoInfosFile = $address . CoreRepository::INDEX_FILENAME;
+        $file = $this->filesService->download($repoInfosFile);
+        $data = json_decode(file_get_contents($file), true);
+        // release tmp file
+        unlink($file);
+
+        if (is_null($data)) {
+            return false;
+        }
+
+        foreach ($data as $packageInfos) {
+            if (!isset($packageInfos['description'])) {
+                $packageInfos['description'] = _t('AU_NO_DESCRIPTION');
+            }
+            $release = new Release($packageInfos['version']);
+            if ($isAlternative){
+                $repository->addAlternative(
+                    $key,
+                    $release,
+                    $address,
+                    $packageInfos['file'],
+                    $packageInfos['description'],
+                    $packageInfos['documentation'],
+                    $packageInfos['minimal_php_version'] ?? null
+                );
+            } else {
+                $repository->add(
+                    $release,
+                    $address,
+                    $packageInfos['file'],
+                    $packageInfos['description'],
+                    $packageInfos['documentation'],
+                    $packageInfos['minimal_php_version'] ?? null
+                );
+            }
+        }
+    }
+
+    /**
+     * create fake package for local tools
+     * @param Repository $repository
+     */
+    private function loadLocalTools(Repository $repository)
+    {
+        $packagesNames = $this->getAffectedToolsNames($repository);
+        foreach (scandir('tools/') as $dirName) {
+            if (is_dir("tools/$dirName") && !in_array($dirName,self::IGNORED_TOOLS) && !in_array(strtolower($dirName),$packagesNames)){
+                $info = $this->getInfoFromDesc($dirName);
+                $repository->addPackageToolLocal(
+                    empty($info['active']) ? false : in_array($info['active'],[1,"1",true,"true"]),
+                    $dirName,
+                    empty($info['desc']) ? "" : $info['desc']
+                );
+            }
+        }
+    }
+
+    /**
+     * get tools names already affected to a repo
+     * @param Repository $repository
+     * @return array
+     */
+    protected function getAffectedToolsNames(Repository $repository): array
+    {
+        $corePackages = $repository->getToolsPackages();
+        $packagesNames = [];
+        foreach($corePackages as $package){
+            $packagesNames[] = strtolower($package->name);
+        }
+        $alternativePackages = $repository->getAlternativeToolsPackages();
+        foreach ($alternativePackages as $key => $packages) {
+            foreach ($packages as $package) {
+                if (!in_array(strtolower($package->name),$packagesNames)){
+                    $packagesNames[] = strtolower($package->name);
+                }
+            }
+        }
+
+        return $packagesNames;
+    }
+
+    /**
+     * retrieve info from desc file for tools
+     * @param string $dirName
+     * @return array
+     */
+    protected function getInfoFromDesc(string $dirName)
+    {
+        if (is_null($this->pluginService)){
+            include_once 'includes/YesWikiPlugins.php';
+            $this->pluginService = new Plugins('tools/');
+        }
+        if (is_file("tools/$dirName/desc.xml")){
+            return $this->pluginService->getPluginInfo("tools/$dirName/desc.xml");
+        }
+        return [];
+    }
+}

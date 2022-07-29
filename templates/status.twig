@@ -1,0 +1,93 @@
+{# # This file is part of the YesWiki Extension alternativeupdatej9rem.
+# Authors : see README.md file that was distributed with this source code.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code. #}
+
+{% for key,repo in repos %}
+    {% set keyId = key|lower|e('html_attr')|replace({" ":"","\n":"","\r":"","\t":""}) %}
+    <!-- start of accordion -->
+    <div class="panel-group" role="tablist" aria-multiselectable="true" id="accordion_update" >
+    {% if showThemes and repo.themes is not empty %}
+        {% set nbMaj = 0 %}
+        {% set exts = repo.themes %}
+        {% for ext in exts %}
+            {% if ext.updateAvailable and ext.installed %}
+                {% set nbMaj = nbMaj + 1 %}
+            {% endif %}
+        {% endfor %}
+        <!-- start of panel -->
+        {% if nbMaj > 0 %}
+            <div class="panel panel-warning"  >
+        {% else %}
+            <div class="panel panel-default"  >
+        {% endif %}
+            <div class="panel-heading collapsed" role="tab" id="headingThemes{{ keyId }}" role="button" data-toggle="collapse" data-parent="#accordion_update" href="#collapseThemes{{ keyId }}" aria-expanded="false" aria-controls="collapseThemes{{ keyId }}">
+                <h2 class="panel-title">Thèmes non officiels ({{ key}})
+                    {% if nbMaj > 0 %}
+                        {% set alerte = '' %}
+                        {% if nbMaj > 1 %}
+                            {% set alerte = _t('AU_SEVERAL_THEMES_UPDATE')|replace({'{nbMaj}':nbMaj}) %}
+                        {% else %}
+                            {% set alerte = _t('AU_ONE_THEME_UPDATE') %}
+                        {% endif %}
+                        <span class="alert-msg" style="float: right;">{{alerte}}</span>
+                    {% endif %}
+                </h2>
+            </div>
+            <div id="collapseThemes{{ keyId }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThemes{{ keyId }}">
+                {% set exts = repo.themes %}
+                {% include '@autoupdate/exts.twig' %}
+            </div>
+        </div> <!-- end of panel -->
+    {% endif %}
+
+    {% if showTools and repo.tools is not empty  %}
+        {% set nbMaj = 0 %}
+        {% set exts = repo.tools %}
+        {% for ext in exts %}
+            {% if ext.updateAvailable and ext.installed %}
+                {% set nbMaj = nbMaj + 1 %}
+            {% endif %}
+        {% endfor %}
+        <!-- start of panel -->
+        {% if nbMaj > 0 %}
+            <div class="panel panel-warning"  >
+        {% else %}
+            <div class="panel panel-default"  >
+        {% endif %}
+            <div class="panel-heading collapsed" role="tab" id="headingTools{{ keyId }}" role="button" data-toggle="collapse" data-parent="#accordion_update" href="#collapseTools{{ keyId }}" aria-expanded="false" aria-controls="collapseTools{{ keyId }}">
+                <h2 class="panel-title">Tools (extensions) non officielles ({{key}})
+                    {% if nbMaj > 0 %}
+                        {% set alerte = '' %}
+                        {% if nbMaj > 1 %}
+                            {% set alerte = _t('AU_SEVERAL_TOOLS_UPDATE')|replace({'{nbMaj}':nbMaj}) %}
+                        {% else %}
+                            {% set alerte = _t('AU_ONE_TOOL_UPDATE') %}
+                        {% endif %}
+                        <span style="float: right;">{{alerte}}</span>
+                    {% endif %}
+                </h2>
+            </div>
+            <div id="collapseTools{{ keyId }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTools{{ keyId }}">
+                {% set exts = repo.tools %}
+                {% include '@autoupdate/exts.twig' %}
+            </div>
+        </div> <!-- end of panel -->
+    {% endif %}
+    {% if showTools and localTools is not empty  %}
+        {% set keyId = "__local" %}
+        {% set nbMaj = 0 %}
+        {% set exts = localTools %}
+        <!-- start of panel -->
+        <div class="panel panel-default"  >
+            <div class="panel-heading collapsed" role="tab" id="headingTools{{ keyId }}" role="button" data-toggle="collapse" data-parent="#accordion_update" href="#collapseTools{{ keyId }}" aria-expanded="false" aria-controls="collapseTools{{ keyId }}">
+                <h2 class="panel-title">Tools (extensions) locales
+                </h2>
+            </div>
+            <div id="collapseTools{{ keyId }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTools{{ keyId }}">
+                {% include '@alternativeupdatej9rem/exts.twig' %}
+            </div>
+        </div> <!-- end of panel -->
+    {% endif %}
+    </div><!-- end of accordion -->
+{% endfor %}

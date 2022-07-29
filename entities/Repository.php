@@ -1,0 +1,149 @@
+<?php
+
+/*
+ * This file is part of the YesWiki Extension alternativeupdatej9rem.
+ *
+ * Authors : see README.md file that was distributed with this source code.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace YesWiki\Alternativeupdatej9rem\Entity;
+
+use AutoUpdate\PackageCollection;
+use Exception;
+use YesWiki\Alternativeupdatej9rem\Entity\PackageToolLocal;
+
+include_once 'tools/autoupdate/vendor/autoload.php';
+
+class Repository extends PackageCollection
+{
+    private $address;
+    private $alternativeAddresses;
+
+    private $alernativeList ;
+    private $localList ;
+
+    public function __construct(string $address, array $alternativeAddresses)
+    {
+        $this->address = $address;
+        $this->alternativeAddresses = $alternativeAddresses;
+        $this->list = [];
+        $this->alernativeList = [];
+        $this->localList = [];
+    }
+
+    public function getAddress(): string
+    {
+        return $this->address;
+    }
+
+    public function getAlternativeAddresses(): array
+    {
+        return $this->alternativeAddresses;
+    }
+
+    public function initLists()
+    {
+        $this->list = [];
+        $this->alernativeList = [];
+        $this->localList = [];
+    }
+
+    public function addAlternative($key,$release, $address, $file, $description, $documentation, $minimalPhpVersion = null)
+    {
+        $className = $this->getPackageType($file);
+        $package = new $className(
+            $release,
+            $address . $file,
+            $description,
+            $documentation,
+            $minimalPhpVersion
+        );
+        if (!isset($this->alernativeList[$key]) || !is_array($this->alernativeList[$key])){
+            $this->alernativeList[$key] = [];
+        }
+        $this->alernativeList[$key][$package->name] = $package;
+    }
+
+    public function addPackageToolLocal($active,$dirname,$description)
+    {
+        $package = new PackageToolLocal(
+            $active,
+            $dirname,
+            $description,
+            "",
+            null
+        );
+        $this->localList[$package->name] = $package;
+    }
+
+    public function getAlternativePackage($packageName)
+    {
+        foreach ($this->alernativeList as $key => $list) {
+            if (isset($list[$packageName])) {
+                return ['key' => $key,'package' => $list[$packageName]];
+            }
+        }
+        return ['key' => null,'package' => null];
+    }
+
+    public function getLocalPackage($packageName)
+    {
+        return !empty($this->localList[$packageName]) ? $this->localList[$packageName] : null;
+    }
+
+    public function getAlternativeThemesPackages()
+    {
+        return $this->filterAlternativePackages(parent::THEME_CLASS);
+    }
+
+    public function getAlternativeToolsPackages()
+    {
+        return $this->filterAlternativePackages(parent::TOOL_CLASS);
+    }
+
+    public function getLocalToolsPackages()
+    {
+        return $this->localList;
+    }
+
+    private function filterAlternativePackages($class): array
+    {
+        $filteredPackages = [];
+        foreach ($this->alernativeList as $key => $list) {
+            if (!isset($filteredPackages[$key])){
+                $filteredPackages[$key] = new PackageCollection();
+            }
+            foreach ($list as $package) {
+                if (get_class($package) === $class) {
+                    $filteredPackages[$key][] = $package;
+                }
+            }
+        }
+        return $filteredPackages;
+    }
+
+    private function getPackageType($filename)
+    {
+        $type = explode('-', $filename)[0];
+        switch ($type) {
+            case 'yeswiki':
+                return PackageCollection::CORE_CLASS;
+                break;
+
+            case 'extension':
+                return PackageCollection::TOOL_CLASS;
+                break;
+
+            case 'theme':
+                return PackageCollection::THEME_CLASS;
+                break;
+
+            default:
+                throw new Exception(_t('AU_UNKWON_PACKAGE_TYPE'));
+                break;
+        }
+    }
+}
