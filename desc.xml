@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<plugin name="alternativeupdatej9rem" version="0.1" active="1">
+  <author>Jeremy Dufraisse (https://github.com/J9rem)</author>
+  <label>alternativeupdatej9rem</label>
+  <desc>Alternative to core update action</desc>
+</plugin>
