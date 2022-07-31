@@ -11,4 +11,5 @@
 return [
   'ALTERNATIVEUPDATE_ACTIVATE_EXT' => 'Activer',
   'ALTERNATIVEUPDATE_DEACTIVATE_EXT' => 'Désactiver',
+  'ALTERNATIVEUPDATE_REINSTALL' => 'Réinstaller',
 ];
