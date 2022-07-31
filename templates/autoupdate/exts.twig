@@ -37,16 +37,17 @@
             <td>
                 {% if isAdmin and ext.installed %}
                     {% set text = ext.updateAvailable ? _t('AU_UPDATE') : _t('ALTERNATIVEUPDATE_REINSTALL') %}
+                    {% set class = ext.updateAvailable ? 'btn-primary' : 'btn-info' %}
                     {% if not isHibernated %}
                         <a  href="{{ url({params:{upgrade:ext.updateLink}}) }}"
-                            class="btn btn-xs btn-primary"
+                            class="btn btn-xs {{ class }}"
                             title="{{ text }}"
                         >
                             {{ text }}
                         </a>
                     {% else %}
                         <button disabled
-                            class="btn btn-xs btn-primary"
+                            class="btn btn-xs {{ class }}"
                             title="{{ _t('WIKI_IN_HIBERNATION') }}"
                             data-toggle="tooltip"
                             data-placement="bottom"
