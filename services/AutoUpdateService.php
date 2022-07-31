@@ -65,7 +65,7 @@ class AutoUpdateService
         $this->wiki = $wiki;
         $version = $this->params->get("yeswiki_version");
         $release = $this->params->get("yeswiki_release");
-        $this->activated = true || ($version === "doryphore") && preg_match("/^4\.2\.[2-9]$|^4\.(?:[3-9]|[1-9][0-9])\.\d\d?\d?$|^[5-9]\.\d\d?\.\d\d?\d?$/",$release);
+        $this->activated = true || ($version === "doryphore") && preg_match("/^4\.2\.[2-9]$|^4\.(?:[3-9]|[1-9][0-9])\.\d\d?\d?$|^[5-9]\.\d\d?\.\d\d?\d?$/", $release);
         $this->filesService = new Files();
         $this->pluginService = null;
         $this->cacheRepo = [];
@@ -83,21 +83,21 @@ class AutoUpdateService
      * @param string $requestedVersion
      * @return null|Repository
      * @throws Exception if trouble to load a repository
-     */	
+     */
     public function initRepository(string $requestedVersion=''): ?Repository
     {
         $address = $this->repositoryAddress($requestedVersion);
-        if (empty(filter_var($address, FILTER_VALIDATE_URL))){
+        if (empty(filter_var($address, FILTER_VALIDATE_URL))) {
             throw new Exception("'yeswiki_repository' param is bad formatted ; got '$address'!");
         }
         $alternativeAddresses = $this->alternativeRepositoryAddresses($requestedVersion);
         foreach ($alternativeAddresses as $key => $addr) {
-            if (empty(filter_var($addr, FILTER_VALIDATE_URL))){
+            if (empty(filter_var($addr, FILTER_VALIDATE_URL))) {
                 throw new Exception("'alternative_yeswiki_repository' param is bad formatted for key $key ; got '$addr' !");
             }
         }
-        $localKey = $address.implode("",$alternativeAddresses);
-        if (!isset($this->cacheRepo[$localKey])){
+        $localKey = $address.implode("", $alternativeAddresses);
+        if (!isset($this->cacheRepo[$localKey])) {
             $repository = new Repository(
                 $address,
                 $alternativeAddresses
@@ -177,14 +177,14 @@ class AutoUpdateService
      */
     private function alternativeRepositoryAddresses(string $requestedVersion=''): array
     {
-        if ($this->params->has('alternative_yeswiki_repository')){
+        if ($this->params->has('alternative_yeswiki_repository')) {
             $param = $this->params->get('alternative_yeswiki_repository');
-            if (is_string($param)){
+            if (is_string($param)) {
                 $param = [$param];
             }
-            if (is_array($param)){
+            if (is_array($param)) {
                 return array_map(
-                    function ($addr) use ($requestedVersion){
+                    function ($addr) use ($requestedVersion) {
                         if (substr($addr, -1, 1) !== '/') {
                             $addr .= '/';
                         }
@@ -195,8 +195,8 @@ class AutoUpdateService
                         }
                         return "$addr/";
                     },
-                    array_filter($param,function($addr){
-                        return filter_var($addr,FILTER_VALIDATE_URL);
+                    array_filter($param, function ($addr) {
+                        return filter_var($addr, FILTER_VALIDATE_URL);
                     })
                 );
             }
@@ -213,11 +213,12 @@ class AutoUpdateService
     {
         $repository->initLists();
         
-        $this->loadARepo($repository,$repository->getAddress(),false);
+        $this->loadARepo($repository, $repository->getAddress(), false);
         foreach ($repository->getAlternativeAddresses() as $key => $addr) {
-            $this->loadARepo($repository,$addr,true,$key);
+            $this->loadARepo($repository, $addr, true, $key);
         }
         $this->loadLocalTools($repository);
+        $this->loadLocalThemes($repository);
     }
 
     /**
@@ -228,7 +229,7 @@ class AutoUpdateService
      * @param mixed $key
      * @throws Exception
      */
-    private function loadARepo(Repository $repository,string $address,bool $isAlternative, $key = "")
+    private function loadARepo(Repository $repository, string $address, bool $isAlternative, $key = "")
     {
         $repoInfosFile = $address . CoreRepository::INDEX_FILENAME;
         $file = $this->filesService->download($repoInfosFile);
@@ -245,7 +246,7 @@ class AutoUpdateService
                 $packageInfos['description'] = _t('AU_NO_DESCRIPTION');
             }
             $release = new Release($packageInfos['version']);
-            if ($isAlternative){
+            if ($isAlternative) {
                 $repository->addAlternative(
                     $key,
                     $release,
@@ -276,12 +277,28 @@ class AutoUpdateService
     {
         $packagesNames = $this->getAffectedToolsNames($repository);
         foreach (scandir('tools/') as $dirName) {
-            if (is_dir("tools/$dirName") && !in_array($dirName,self::IGNORED_TOOLS) && !in_array(strtolower($dirName),$packagesNames)){
+            if (is_dir("tools/$dirName") && !in_array($dirName, self::IGNORED_TOOLS) && !in_array(strtolower($dirName), $packagesNames)) {
                 $info = $this->getInfoFromDesc($dirName);
                 $repository->addPackageToolLocal(
-                    empty($info['active']) ? false : in_array($info['active'],[1,"1",true,"true"]),
+                    empty($info['active']) ? false : in_array($info['active'], [1,"1",true,"true"]),
                     $dirName,
                     empty($info['desc']) ? "" : $info['desc']
+                );
+            }
+        }
+    }
+
+    /**
+     * create fake package for local themes
+     * @param Repository $repository
+     */
+    private function loadLocalThemes(Repository $repository)
+    {
+        $packagesNames = $this->getAffectedThemesNames($repository);
+        foreach (scandir('themes/') as $dirName) {
+            if (is_dir("themes/$dirName") && !in_array($dirName, ['tools','.','..']) && !in_array(strtolower($dirName), $packagesNames)) {
+                $repository->addPackageThemeLocal(
+                    $dirName
                 );
             }
         }
@@ -296,13 +313,37 @@ class AutoUpdateService
     {
         $corePackages = $repository->getToolsPackages();
         $packagesNames = [];
-        foreach($corePackages as $package){
+        foreach ($corePackages as $package) {
             $packagesNames[] = strtolower($package->name);
         }
         $alternativePackages = $repository->getAlternativeToolsPackages();
         foreach ($alternativePackages as $key => $packages) {
             foreach ($packages as $package) {
-                if (!in_array(strtolower($package->name),$packagesNames)){
+                if (!in_array(strtolower($package->name), $packagesNames)) {
+                    $packagesNames[] = strtolower($package->name);
+                }
+            }
+        }
+
+        return $packagesNames;
+    }
+
+    /**
+     * get themes names already affected to a repo
+     * @param Repository $repository
+     * @return array
+     */
+    protected function getAffectedThemesNames(Repository $repository): array
+    {
+        $corePackages = $repository->getThemesPackages();
+        $packagesNames = [];
+        foreach ($corePackages as $package) {
+            $packagesNames[] = strtolower($package->name);
+        }
+        $alternativePackages = $repository->getAlternativeThemesPackages();
+        foreach ($alternativePackages as $key => $packages) {
+            foreach ($packages as $package) {
+                if (!in_array(strtolower($package->name), $packagesNames)) {
                     $packagesNames[] = strtolower($package->name);
                 }
             }
@@ -318,11 +359,11 @@ class AutoUpdateService
      */
     protected function getInfoFromDesc(string $dirName)
     {
-        if (is_null($this->pluginService)){
+        if (is_null($this->pluginService)) {
             include_once 'includes/YesWikiPlugins.php';
             $this->pluginService = new Plugins('tools/');
         }
-        if (is_file("tools/$dirName/desc.xml")){
+        if (is_file("tools/$dirName/desc.xml")) {
             return $this->pluginService->getPluginInfo("tools/$dirName/desc.xml");
         }
         return [];

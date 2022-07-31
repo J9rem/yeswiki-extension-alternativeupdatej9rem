@@ -42,7 +42,7 @@ class AlternativeUpdateJ9remAction extends YesWikiAction
         $this->securityController = $this->getService(SecurityController::class);
 
         // check if activated
-        if (!$this->autoUpdateService->isActivated()){
+        if (!$this->autoUpdateService->isActivated()) {
             return "";
         }
 
@@ -54,20 +54,19 @@ class AlternativeUpdateJ9remAction extends YesWikiAction
             'themes' => ['function' => 'getThemesPackages','altFunction' => 'getAlternativeThemesPackages'],
             'tools' => ['function' => 'getToolsPackages','altFunction' => 'getAlternativeToolsPackages'],
             ] as $type => $info) {
-            
             $corePackages = $repository->{$info['function']}();
             $packagesNames = [];
-            foreach($corePackages as $package){
+            foreach ($corePackages as $package) {
                 $packagesNames[] = $package->name;
             }
             $alternativePackages = $repository->{$info['altFunction']}();
             foreach ($alternativePackages as $key => $packages) {
                 foreach ($packages as $package) {
-                    if (!in_array($package->name,$packagesNames)){
-                        if (!isset($repos[$key])){
+                    if (!in_array($package->name, $packagesNames)) {
+                        if (!isset($repos[$key])) {
                             $repos[$key] = [];
                         }
-                        if (!isset($repos[$key][$type])){
+                        if (!isset($repos[$key][$type])) {
                             $repos[$key][$type] = [];
                         }
                         $repos[$key][$type][$package->name] = $package;
@@ -78,6 +77,7 @@ class AlternativeUpdateJ9remAction extends YesWikiAction
         }
 
         $localTools = $repository->getLocalToolsPackages();
+        $localThemes = $repository->getLocalThemesPackages();
 
         return $this->wiki->render("@alternativeupdatej9rem/status.twig", [
             'baseUrl' => $this->autoUpdateService->baseUrl(),
@@ -85,6 +85,7 @@ class AlternativeUpdateJ9remAction extends YesWikiAction
             'isHibernated' => $this->securityController->isWikiHibernated(),
             'repos' => $repos,
             'localTools' => $localTools,
+            'localThemes' => $localThemes,
             'showThemes' => true,
             'showTools' => true,
         ]);

@@ -74,6 +74,21 @@
             </div>
         </div> <!-- end of panel -->
     {% endif %}
+    {% if showThemes and localThemes is not empty  %}
+        {% set keyId = "__local" %}
+        {% set nbMaj = 0 %}
+        {% set exts = localThemes %}
+        <!-- start of panel -->
+        <div class="panel panel-default"  >
+            <div class="panel-heading collapsed" role="tab" id="headingThemes{{ keyId }}" role="button" data-toggle="collapse" data-parent="#accordion_update" href="#collapseThemes{{ keyId }}" aria-expanded="false" aria-controls="collapseThemes{{ keyId }}">
+                <h2 class="panel-title">Thèmes locaux
+                </h2>
+            </div>
+            <div id="collapseThemes{{ keyId }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThemes{{ keyId }}">
+                {% include '@alternativeupdatej9rem/exts.twig' %}
+            </div>
+        </div> <!-- end of panel -->
+    {% endif %}
     {% if showTools and localTools is not empty  %}
         {% set keyId = "__local" %}
         {% set nbMaj = 0 %}

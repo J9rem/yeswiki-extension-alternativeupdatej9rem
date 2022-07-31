@@ -32,7 +32,7 @@
                 {{ ext.release }}
             </td>
             <td>
-                {% if isAdmin and ext.installed %}
+                {% if isAdmin and ext.installed and not (ext.isTheme) %}
                     {% if not ext.active %}
                         {% if not isHibernated %}
                             <a  href="{{ url({params:{activate:ext.name}}) }}"

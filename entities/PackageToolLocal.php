@@ -27,12 +27,11 @@ class PackageToolLocal extends PackageTool
     {
         parent::__construct(new Release(Release::UNKNOW_RELEASE), $address, $desc, $doc, $minimalPhpVersion);
         $this->active = ($active == true);
-        $this->infoFromDesc = null;
         $infos = $this->getInfos();
-        if (!empty($infos['release']) && is_string($infos['release'])){
+        if (!empty($infos['release']) && is_string($infos['release'])) {
             $this->localRelease = new Release($infos['release']);
         }
-    } 
+    }
     protected function name()
     {
         return $this->address;
@@ -43,19 +42,24 @@ class PackageToolLocal extends PackageTool
         return $this->active;
     }
 
+    public function isTheme(): bool
+    {
+        return false;
+    }
+
     protected function localPath()
     {
-        return preg_replace('/^\//','',parent::TOOL_PATH."{$this->name}/");
+        return preg_replace('/^\//', '', parent::TOOL_PATH."{$this->name}/");
     }
 
     public function activate(bool $status = true): bool
     {
         $xmlPath = $this->localPath . "desc.xml";
-        if (is_file($xmlPath)){
+        if (is_file($xmlPath)) {
             $xml = file_get_contents($xmlPath);
-            $newXml = preg_replace("/(active=)\"([^\"]+)\"/","$1\"".($status ? "1" : "0")."\"",$xml);
-            if (!empty($newXml) && $newXml != $xml){
-                file_put_contents($xmlPath,$newXml);
+            $newXml = preg_replace("/(active=)\"([^\"]+)\"/", "$1\"".($status ? "1" : "0")."\"", $xml);
+            if (!empty($newXml) && $newXml != $xml) {
+                file_put_contents($xmlPath, $newXml);
                 return true;
             }
         }

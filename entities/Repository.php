@@ -13,6 +13,7 @@ namespace YesWiki\Alternativeupdatej9rem\Entity;
 
 use AutoUpdate\PackageCollection;
 use Exception;
+use YesWiki\Alternativeupdatej9rem\Entity\PackageThemeLocal;
 use YesWiki\Alternativeupdatej9rem\Entity\PackageToolLocal;
 
 include_once 'tools/autoupdate/vendor/autoload.php';
@@ -23,7 +24,8 @@ class Repository extends PackageCollection
     private $alternativeAddresses;
 
     private $alernativeList ;
-    private $localList ;
+    private $localToolsList ;
+    private $localThemesList ;
 
     public function __construct(string $address, array $alternativeAddresses)
     {
@@ -31,7 +33,8 @@ class Repository extends PackageCollection
         $this->alternativeAddresses = $alternativeAddresses;
         $this->list = [];
         $this->alernativeList = [];
-        $this->localList = [];
+        $this->localToolsList = [];
+        $this->localThemesList = [];
     }
 
     public function getAddress(): string
@@ -48,10 +51,11 @@ class Repository extends PackageCollection
     {
         $this->list = [];
         $this->alernativeList = [];
-        $this->localList = [];
+        $this->localToolsList = [];
+        $this->localThemesList = [];
     }
 
-    public function addAlternative($key,$release, $address, $file, $description, $documentation, $minimalPhpVersion = null)
+    public function addAlternative($key, $release, $address, $file, $description, $documentation, $minimalPhpVersion = null)
     {
         $className = $this->getPackageType($file);
         $package = new $className(
@@ -61,13 +65,13 @@ class Repository extends PackageCollection
             $documentation,
             $minimalPhpVersion
         );
-        if (!isset($this->alernativeList[$key]) || !is_array($this->alernativeList[$key])){
+        if (!isset($this->alernativeList[$key]) || !is_array($this->alernativeList[$key])) {
             $this->alernativeList[$key] = [];
         }
         $this->alernativeList[$key][$package->name] = $package;
     }
 
-    public function addPackageToolLocal($active,$dirname,$description)
+    public function addPackageToolLocal($active, $dirname, $description)
     {
         $package = new PackageToolLocal(
             $active,
@@ -76,7 +80,19 @@ class Repository extends PackageCollection
             "",
             null
         );
-        $this->localList[$package->name] = $package;
+        $this->localToolsList[$package->name] = $package;
+    }
+
+    public function addPackageThemeLocal($dirname)
+    {
+        $package = new PackageThemeLocal(
+            "",
+            $dirname,
+            "",
+            "",
+            null
+        );
+        $this->localThemesList[$package->name] = $package;
     }
 
     public function getAlternativePackage($packageName)
@@ -91,7 +107,13 @@ class Repository extends PackageCollection
 
     public function getLocalPackage($packageName)
     {
-        return !empty($this->localList[$packageName]) ? $this->localList[$packageName] : null;
+        return !empty($this->localToolsList[$packageName])
+            ? $this->localToolsList[$packageName]
+            : (
+                !empty($this->localThemesList[$packageName])
+                ? $this->localThemesList[$packageName]
+                : null
+            );
     }
 
     public function getAlternativeThemesPackages()
@@ -106,14 +128,19 @@ class Repository extends PackageCollection
 
     public function getLocalToolsPackages()
     {
-        return $this->localList;
+        return $this->localToolsList;
+    }
+
+    public function getLocalThemesPackages()
+    {
+        return $this->localThemesList;
     }
 
     private function filterAlternativePackages($class): array
     {
         $filteredPackages = [];
         foreach ($this->alernativeList as $key => $list) {
-            if (!isset($filteredPackages[$key])){
+            if (!isset($filteredPackages[$key])) {
                 $filteredPackages[$key] = new PackageCollection();
             }
             foreach ($list as $package) {
