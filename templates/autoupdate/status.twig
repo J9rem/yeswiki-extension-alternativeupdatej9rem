@@ -4,6 +4,6 @@
 # file that was distributed with this source code. #}
 
 {% if request.alternativeupdatej9rem != "1" %}
-    {% include 'tools/autoupdate/templates/status.twig' %}
+    {{ include('tools/autoupdate/templates/status.twig')|raw|replace({"data-parent=\"#accordion_update\"":"data-parent=\"#accordion_update,#accordion_update_j9rem\""})|raw }}
 	{{ format("{{alternativeupdatej9rem version=\"#{core.requestedVersion}\"}}")|raw }}
 {% endif %}

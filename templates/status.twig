@@ -3,7 +3,7 @@
 # For the full copyright and license information, please view the LICENSE
 # file that was distributed with this source code. #}
 
-<div class="panel-group" role="tablist" aria-multiselectable="true" id="accordion_update" >
+<div class="panel-group" role="tablist" aria-multiselectable="true" id="accordion_update_j9rem" >
   {% for key,repo in repos %}
     {% set keyId = key|lower|e('html_attr')|replace({" ":"","\n":"","\r":"","\t":""}) %}
     <!-- start of accordion -->
@@ -21,7 +21,7 @@
         {% else %}
             <div class="panel panel-default"  >
         {% endif %}
-            <div class="panel-heading collapsed" role="tab" id="headingThemes{{ keyId }}" role="button" data-toggle="collapse" data-parent="#accordion_update" href="#collapseThemes{{ keyId }}" aria-expanded="false" aria-controls="collapseThemes{{ keyId }}">
+            <div class="panel-heading collapsed" role="tab" id="headingThemes{{ keyId }}" role="button" data-toggle="collapse" data-parent="#accordion_update,#accordion_update_j9rem" href="#collapseThemes{{ keyId }}" aria-expanded="false" aria-controls="collapseThemes{{ keyId }}">
                 <h2 class="panel-title">Thèmes non officiels ({{ key}})
                     {% if nbMaj > 0 %}
                         {% set alerte = '' %}
@@ -55,7 +55,7 @@
         {% else %}
             <div class="panel panel-default"  >
         {% endif %}
-            <div class="panel-heading collapsed" role="tab" id="headingTools{{ keyId }}" role="button" data-toggle="collapse" data-parent="#accordion_update" href="#collapseTools{{ keyId }}" aria-expanded="false" aria-controls="collapseTools{{ keyId }}">
+            <div class="panel-heading collapsed" role="tab" id="headingTools{{ keyId }}" role="button" data-toggle="collapse" data-parent="#accordion_update,#accordion_update_j9rem" href="#collapseTools{{ keyId }}" aria-expanded="false" aria-controls="collapseTools{{ keyId }}">
                 <h2 class="panel-title">Tools (extensions) non officielles ({{key}})
                     {% if nbMaj > 0 %}
                         {% set alerte = '' %}
@@ -81,7 +81,7 @@
         {% set exts = localThemes %}
         <!-- start of panel -->
         <div class="panel panel-default"  >
-            <div class="panel-heading collapsed" role="tab" id="headingThemes{{ keyId }}" role="button" data-toggle="collapse" data-parent="#accordion_update" href="#collapseThemes{{ keyId }}" aria-expanded="false" aria-controls="collapseThemes{{ keyId }}">
+            <div class="panel-heading collapsed" role="tab" id="headingThemes{{ keyId }}" role="button" data-toggle="collapse" data-parent="#accordion_update,#accordion_update_j9rem" href="#collapseThemes{{ keyId }}" aria-expanded="false" aria-controls="collapseThemes{{ keyId }}">
                 <h2 class="panel-title">Thèmes locaux
                 </h2>
             </div>
@@ -96,7 +96,7 @@
         {% set exts = localTools %}
         <!-- start of panel -->
         <div class="panel panel-default"  >
-            <div class="panel-heading collapsed" role="tab" id="headingTools{{ keyId }}" role="button" data-toggle="collapse" data-parent="#accordion_update" href="#collapseTools{{ keyId }}" aria-expanded="false" aria-controls="collapseTools{{ keyId }}">
+            <div class="panel-heading collapsed" role="tab" id="headingTools{{ keyId }}" role="button" data-toggle="collapse" data-parent="#accordion_update,#accordion_update_j9rem" href="#collapseTools{{ keyId }}" aria-expanded="false" aria-controls="collapseTools{{ keyId }}">
                 <h2 class="panel-title">Tools (extensions) locales
                 </h2>
             </div>
