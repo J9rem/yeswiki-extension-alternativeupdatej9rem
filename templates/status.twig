@@ -3,10 +3,10 @@
 # For the full copyright and license information, please view the LICENSE
 # file that was distributed with this source code. #}
 
-{% for key,repo in repos %}
+<div class="panel-group" role="tablist" aria-multiselectable="true" id="accordion_update" >
+  {% for key,repo in repos %}
     {% set keyId = key|lower|e('html_attr')|replace({" ":"","\n":"","\r":"","\t":""}) %}
     <!-- start of accordion -->
-    <div class="panel-group" role="tablist" aria-multiselectable="true" id="accordion_update" >
     {% if showThemes and repo.themes is not empty %}
         {% set nbMaj = 0 %}
         {% set exts = repo.themes %}
@@ -74,6 +74,7 @@
             </div>
         </div> <!-- end of panel -->
     {% endif %}
+  {% endfor %}
     {% if showThemes and localThemes is not empty  %}
         {% set keyId = "__local" %}
         {% set nbMaj = 0 %}
@@ -104,5 +105,4 @@
             </div>
         </div> <!-- end of panel -->
     {% endif %}
-    </div><!-- end of accordion -->
-{% endfor %}
+</div><!-- end of accordion -->
