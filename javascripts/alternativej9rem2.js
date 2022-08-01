@@ -21,6 +21,7 @@ let appParams = {
             token: null,
             loading: false,
             loadingPackages: false,
+            loadedVersion: 0,
             message: "",
             messageClass: {
                 alert: true,
@@ -98,6 +99,7 @@ let appParams = {
                                 data.forEach((url)=>{
                                     app.packagesPaths.push(url);
                                 });
+                                app.loadedVersion = app.loadedVersion +1;
                                 app.loadPackages();
                             }
                         },
@@ -125,7 +127,7 @@ let appParams = {
                             app.loadingPackages = false;
                             if (Object.keys(app.packages).length != app.packagesPaths.length){
                                 app.loadPackages();
-                            } else {
+                            } else if(app.loadedVersion == app.versions.length){
                                 app.updatePackagesInfo();
                             }
                         },

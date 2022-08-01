@@ -64,10 +64,26 @@ class ApiController extends YesWikiController
                         );
                     }
                 } else {
-                    return new ApiResponse(
-                        ['error' => "no AuthCOntroller"],
-                        Response::HTTP_INTERNAL_SERVER_ERROR
-                    );
+                    $user = $userManager->getLoggedUser();
+                    if (!empty($user)) {
+                        $user = $userManager->getOneByName($user['name']);
+                    }
+                    if (empty($user)) {
+                        return new ApiResponse(
+                            ['error' => "no user","wrongPassword"=>false],
+                            Response::HTTP_BAD_REQUEST
+                        );
+                    } elseif ($user['password'] === md5($password)) {
+                        return new ApiResponse(
+                            ['token' => $this->wiki->services->get(CsrfTokenManager::class)->refreshToken(self::TOKEN_ID)->getValue()],
+                            Response::HTTP_OK
+                        );
+                    } else {
+                        return new ApiResponse(
+                            ['error' => "wrong password","wrongPassword"=>true],
+                            Response::HTTP_BAD_REQUEST
+                        );
+                    }
                 }
                 // no break
             case 'getPackagesPaths':
@@ -154,6 +170,9 @@ class ApiController extends YesWikiController
                                 $data[$key][$version] = [];
                                 foreach ($repository->{$functionName}() as $packageName => $package) {
                                     $data[$key][$version][$package->name] = json_decode(json_encode($this->toArray($package)), true);
+                                    if (empty($data[$key][$version][$package->name])) {
+                                        unset($data[$key][$version][$package->name]);
+                                    }
                                 }
                             }
                         }
