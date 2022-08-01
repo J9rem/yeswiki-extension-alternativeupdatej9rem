@@ -13,3 +13,5 @@ services:
 
   YesWiki\Alternativeupdatej9rem\Service\:
     resource: 'services/*'
+  YesWiki\Alternativeupdatej9rem\Controller\:
+    resource: 'controllers/*'

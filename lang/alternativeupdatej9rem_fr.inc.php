@@ -12,4 +12,6 @@ return [
   'ALTERNATIVEUPDATE_ACTIVATE_EXT' => 'Activer',
   'ALTERNATIVEUPDATE_DEACTIVATE_EXT' => 'Désactiver',
   'ALTERNATIVEUPDATE_REINSTALL' => 'Réinstaller',
+  'ALTERNATIVEUPDATE_YOUR_PASSWORD' => 'Votre mot de passe :',
+  'ALTERNATIVEUPDATE_CONFIRM_PASSWORD' => 'Confirmer votre mot de passe',
 ];

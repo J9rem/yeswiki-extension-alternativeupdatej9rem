@@ -81,10 +81,11 @@ class AutoUpdateService
      * requested by version parameter of {{update}} action
      * if empty, no specifc version is requested
      * @param string $requestedVersion
+     * @param array $packagesData
      * @return null|Repository
      * @throws Exception if trouble to load a repository
      */
-    public function initRepository(string $requestedVersion=''): ?Repository
+    public function initRepository(string $requestedVersion='', array $packagesData = []): ?Repository
     {
         $address = $this->repositoryAddress($requestedVersion);
         if (empty(filter_var($address, FILTER_VALIDATE_URL))) {
@@ -103,7 +104,7 @@ class AutoUpdateService
                 $alternativeAddresses
             );
     
-            $this->loadRepository($repository);
+            $this->loadRepository($repository, $packagesData);
 
             $this->cacheRepo[$localKey] = $repository;
         }
@@ -207,9 +208,10 @@ class AutoUpdateService
     /**
      * load Repository
      * @param Repository $repository
+     * @param array $packagesData
      * @throws Exception
      */
-    private function loadRepository(Repository $repository)
+    private function loadRepository(Repository $repository, array $packagesData = [])
     {
         $repository->initLists();
         
@@ -227,15 +229,20 @@ class AutoUpdateService
      * @param string $address
      * @param bool $isAlternative
      * @param mixed $key
+     * @param array $packagesData
      * @throws Exception
      */
-    private function loadARepo(Repository $repository, string $address, bool $isAlternative, $key = "")
+    private function loadARepo(Repository $repository, string $address, bool $isAlternative, $key = "", array $packagesData = [])
     {
         $repoInfosFile = $address . CoreRepository::INDEX_FILENAME;
-        $file = $this->filesService->download($repoInfosFile);
-        $data = json_decode(file_get_contents($file), true);
-        // release tmp file
-        unlink($file);
+        if (!empty($packagesData[$repoInfosFile])) {
+            $data = $packagesData[$repoInfosFile];
+        } else {
+            $file = $this->filesService->download($repoInfosFile);
+            $data = json_decode(file_get_contents($file), true);
+            // release tmp file
+            unlink($file);
+        }
 
         if (is_null($data)) {
             return false;

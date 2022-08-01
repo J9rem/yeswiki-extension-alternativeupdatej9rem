@@ -1,0 +1,42 @@
+{# # This file is part of the YesWiki Extension alternativeupdatej9rem.
+# Authors : see README.md file that was distributed with this source code.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code. #}
+
+{{ include_javascript('javascripts/vendor/vue/vue.js') }}
+{{ include_javascript('tools/alternativeupdatej9rem/javascripts/alternativej9rem2.js',false,true) }}
+
+<div class="alternativej9rem2-container" data-uid="{{uid}}" data-versions="{{versions}}">
+    <div v-if="!token" class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text">
+                {{ _t('ALTERNATIVEUPDATE_YOUR_PASSWORD') }}&nbsp;
+            </span>
+        </div>
+        <input 
+            ref="password" 
+            type="password" 
+            :disabled="loading"
+            @keyup.enter="getToken()"
+            />
+        <div class="input-group-append">
+        <div class="btn btn-primary" href="#" title="{{ _t('ALTERNATIVEUPDATE_CONFIRM_PASSWORD') }}" @click="getToken()" 
+            :disabled="loading">
+          {{ _t('ALTERNATIVEUPDATE_CONFIRM_PASSWORD') }}
+        </div>
+        </div>
+        <spinner-loader v-if="loading" class="overlay"></spinner-loader>
+    </div>
+    <div v-if="message.length > 0" v-html="message" :class="messageClass"></div>
+    <div v-if="ready" class="panel-group" role="tablist" aria-multiselectable="true" id="accordion_update_j9rem" >
+        <template v-for="(versiondata,version) in data.versions">
+            <h2>Version <i v-html="version"></i></h2>
+            <template v-for="(repo,key) in versiondata.repos">
+                <exts-panel v-if="repo.themes && Object.keys(repo.themes).length > 0" :key-name="key" :repo="repo" :type="'themes'" :is-hibernated="data.isHibernated" :version="version"></exts-panel>
+                <exts-panel v-if="repo.tools && Object.keys(repo.tools).length > 0" :key-name="key" :repo="repo" :type="'tools'":is-hibernated="data.isHibernated" :version="version"></exts-panel>
+            </template>
+        </template>
+        <exts-panel v-if="data.localThemes && Object.keys(data.localThemes).length > 0" :key-name="'__local'" :repo="{themes:data.localThemes}" :type="'themes'" :is-hibernated="data.isHibernated" :version="version"></exts-panel>
+        <exts-panel v-if="data.localTools && Object.keys(data.localTools).length > 0" :key-name="'__local'" :repo="{tools:data.localTools}" :type="'tools'" :is-hibernated="data.isHibernated" :version="version"></exts-panel>
+    </div>
+</div>
