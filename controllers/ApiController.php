@@ -200,6 +200,77 @@ class ApiController extends YesWikiController
                         Response::HTTP_OK
                     );
                 });
+            case 'install':
+                return $this->executeInSecureContext(function ($autoUpdateService) use ($action) {
+                    foreach (['version','packageName','md5'] as $name) {
+                        $var = filter_input(INPUT_POST, $name, FILTER_UNSAFE_RAW);
+                        $var = in_array($var, [false,null], true) ? "" : htmlspecialchars(strip_tags($var));
+                        if (empty($var)) {
+                            return new ApiResponse(
+                                ['error' => "empty '$var' in POST for action '$action'"],
+                                Response::HTTP_BAD_REQUEST
+                            );
+                        }
+                        extract([$name=>$var]);
+                        unset($var);
+                    }
+                    foreach (['file'] as $name) {
+                        $var = filter_input(INPUT_POST, $name, FILTER_UNSAFE_RAW);
+                        $var = in_array($var, [false,null], true) ? "" : $var;
+                        if (empty($var)) {
+                            return new ApiResponse(
+                                ['error' => "empty '$var' in POST for action '$action'"],
+                                Response::HTTP_BAD_REQUEST
+                            );
+                        }
+                        extract([$name=>$var]);
+                        unset($var);
+                    }
+                    $file = htmlspecialchars_decode(base64_decode(str_replace(' ', '+', $file)));
+                    foreach (['packages'] as $name) {
+                        if (empty($_POST[$name])) {
+                            return new ApiResponse(
+                                ['error' => "empty '$name' in POST for action '$action'"],
+                                Response::HTTP_BAD_REQUEST
+                            );
+                        }
+                        if (!is_array($_POST[$name])) {
+                            return new ApiResponse(
+                                ['error' => "'$name' is not an array in POST for action '$action'"],
+                                Response::HTTP_BAD_REQUEST
+                            );
+                        }
+                    }
+                    if ($this->wiki->services->get(SecurityController::class)->isWikiHibernated()) {
+                        return new ApiResponse(
+                            ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate'=> true],
+                            Response::HTTP_INTERNAL_SERVER_ERROR
+                        );
+                    }
+
+                    $destPath = tempnam('cache', 'tmp_to_delete_zip_');
+                    file_put_contents($destPath, $file);
+                    $destPathMD5 = tempnam('cache', 'tmp_to_delete_md5_');
+                    file_put_contents($destPathMD5, $md5);
+                    $repository = $autoUpdateService->initRepository($version, $_POST['packages']);
+
+                    $messages = $autoUpdateService->upgradeAlternativeIfNeeded($repository, $packageName, $destPath, $destPathMD5);
+
+                    if (is_null($messages)) {
+                        return new ApiResponse(
+                            ['error' => "'$packageName' has not been installed in POST for action '$action'",'installed'=>false],
+                            Response::HTTP_BAD_REQUEST
+                        );
+                    } else {
+                        return new ApiResponse(
+                            ['messages'=>$this->render("@autoupdate/update.twig", [
+                                'messages' => $messages,
+                                'baseUrl' => $autoUpdateService->baseUrl(),
+                            ])],
+                            Response::HTTP_OK
+                        );
+                    }
+                });
             default:
                 return new ApiResponse(
                     ['error' => "Not supported action : $action"],

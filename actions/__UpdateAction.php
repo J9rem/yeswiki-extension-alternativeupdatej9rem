@@ -16,7 +16,6 @@ use AutoUpdate\Messages;
 use AutoUpdate\PackageCollection;
 use Throwable;
 use YesWiki\Alternativeupdatej9rem\Entity\Repository;
-use YesWiki\Alternativeupdatej9rem\Exception\UpgradeException;
 use YesWiki\Alternativeupdatej9rem\Service\AutoUpdateService;
 use YesWiki\Core\YesWikiAction;
 use YesWiki\Security\Controller\SecurityController;
@@ -42,14 +41,14 @@ class __UpdateAction extends YesWikiAction
         $this->securityController = $this->getService(SecurityController::class);
 
         // check if activated
-        if (!$this->autoUpdateService->isActivated()){
+        if (!$this->autoUpdateService->isActivated()) {
             return "";
         }
 
         $repository = $this->autoUpdateService->initRepository($this->arguments['version']);
 
         if ($this->autoUpdateService->isAdmin() &&
-            !$this->securityController->isWikiHibernated()){
+            !$this->securityController->isWikiHibernated()) {
             if (isset($_GET['upgrade'])) {
                 return $this->upgradeAlternativeIfNeeded($repository);
             }
@@ -57,10 +56,10 @@ class __UpdateAction extends YesWikiAction
                 return $this->deleteAlternativeIfNeeded($repository);
             }
             if (isset($_GET['activate'])) {
-                return $this->activationLocal($repository,true);
+                return $this->activationLocal($repository, true);
             }
             if (isset($_GET['deactivate'])) {
-                return $this->activationLocal($repository,false);
+                return $this->activationLocal($repository, false);
             }
         }
 
@@ -73,91 +72,25 @@ class __UpdateAction extends YesWikiAction
      */
     private function upgradeAlternativeIfNeeded(Repository $repository) :string
     {
-        $packageName = filter_var($_GET['upgrade'],FILTER_UNSAFE_RAW);
+        $packageName = filter_var($_GET['upgrade'], FILTER_UNSAFE_RAW);
         $packageName = ($packageName === false) ? "" : htmlspecialchars(strip_tags($packageName));
-        if (empty($packageName) || $packageName == "yeswiki"){
+        if (empty($packageName) || $packageName == "yeswiki") {
             return '';
         }
 
-        if (!empty($repository->getPackage($packageName))){
-            // leave core manage it
+        $messages = $this->autoUpdateService->upgradeAlternativeIfNeeded($repository, $packageName);
+
+        if (is_null($messages)) {
             return '';
-        }
-        list('key' => $key, 'package' => $package) = $repository->getAlternativePackage($packageName);
-        if (empty($package) || get_class($package) === PackageCollection::CORE_CLASS){
-            // not found for alternative repository or core
-            return '';
-        }
-
-        unset($_GET['upgrade']);
-        $_GET['alternativeupdatej9rem'] = "1";
-
-        // update alternative package
-        $messages = new Messages();
-
-        // Remise a zéro des messages
-        $messages->reset();
-
-        try {
-            // Téléchargement de l'archive
-            $file = $package ? $package->getFile() : false;
-            if (false === $file) {
-                $messages->add('AU_DOWNLOAD', 'AU_ERROR');
-                throw new UpgradeException("");
-            }
-
-            $messages->add('AU_DOWNLOAD', 'AU_OK');
-            // Vérification MD5
-            if (!$package->checkIntegrity($file)) {
-                $messages->add('AU_INTEGRITY', 'AU_ERROR');
-                throw new UpgradeException("");
-            }
-
-            $messages->add('AU_INTEGRITY', 'AU_OK');
-
-            // Extraction de l'archive
-            $path = $package->extract();
-            if (false === $path) {
-                $messages->add('AU_EXTRACT', 'AU_ERROR');
-                throw new UpgradeException("");
-            }
-
-            $messages->add('AU_EXTRACT', 'AU_OK');
-
-            // Vérification des droits sur le fichiers
-            if (!$package->checkACL()) {
-                $messages->add('AU_ACL', 'AU_ERROR');
-                throw new UpgradeException("");
-            }
-            $messages->add('AU_ACL', 'AU_OK');
-
-            // Mise à jour du paquet
-            if (!$package->upgrade()) {
-                $messages->add(
-                    _t('AU_UPDATE_PACKAGE') . $packageName,
-                    'AU_ERROR'
-                );
-                throw new UpgradeException("");
-            }
-            $messages->add(_t('AU_UPDATE_PACKAGE') . $packageName, 'AU_OK');
-
-            // Mise à jour de la configuration de YesWiki
-            if (!$package->upgradeInfos()) {
-                $messages->add('AU_UPDATE_INFOS', 'AU_ERROR');
-                throw new UpgradeException("");
-            }
-            $messages->add('AU_UPDATE_INFOS', 'AU_OK');
-
-            $package->cleanTempFiles();
-        } catch (UpgradeException $ex) {
-            $package->cleanTempFiles();
+        } else {
+            unset($_GET['upgrade']);
+            $_GET['alternativeupdatej9rem'] = "1";
         }
         
         return $this->render("@autoupdate/update.twig", [
             'messages' => $messages,
             'baseUrl' => $this->autoUpdateService->baseUrl(),
         ]);
-
     }
 
     
@@ -167,23 +100,23 @@ class __UpdateAction extends YesWikiAction
      */
     private function deleteAlternativeIfNeeded(Repository $repository) :string
     {
-        $packageName = filter_var($_GET['delete'],FILTER_UNSAFE_RAW);
+        $packageName = filter_var($_GET['delete'], FILTER_UNSAFE_RAW);
         $packageName = ($packageName === false) ? "" : htmlspecialchars(strip_tags($packageName));
-        if (empty($packageName) || $packageName == "yeswiki"){
+        if (empty($packageName) || $packageName == "yeswiki") {
             return '';
         }
 
-        if (!empty($repository->getPackage($packageName))){
+        if (!empty($repository->getPackage($packageName))) {
             // leave core manage it
             return '';
         }
         list('key' => $key, 'package' => $package) = $repository->getAlternativePackage($packageName);
-        if (!empty($package) && get_class($package) === PackageCollection::CORE_CLASS){
+        if (!empty($package) && get_class($package) === PackageCollection::CORE_CLASS) {
             // not found for alternative repository or core
             return '';
-        } elseif (empty($package)){
+        } elseif (empty($package)) {
             $package = $repository->getLocalPackage($packageName);
-            if (empty($package) || get_class($package) === PackageCollection::CORE_CLASS){
+            if (empty($package) || get_class($package) === PackageCollection::CORE_CLASS) {
                 return '';
             }
         }
@@ -218,18 +151,18 @@ class __UpdateAction extends YesWikiAction
     protected function activationLocal(Repository $repository, $activation = true): string
     {
         $key = $activation ? 'activate' : 'deactivate';
-        $packageName = filter_var($_GET[$key],FILTER_UNSAFE_RAW);
+        $packageName = filter_var($_GET[$key], FILTER_UNSAFE_RAW);
         unset($_GET[$key]);
         $packageName = ($packageName === false) ? "" : htmlspecialchars(strip_tags($packageName));
-        if (!empty($packageName) && $packageName != "yeswiki"){
+        if (!empty($packageName) && $packageName != "yeswiki") {
             $package = $repository->getLocalPackage($packageName);
-            if (!empty($package) && get_class($package) !== PackageCollection::CORE_CLASS && 
-                    $package->activate($activation)){
-                flash("L'extension '$packageName' a été ".($activation ? "activée": "désactivée"),'success');
+            if (!empty($package) && get_class($package) !== PackageCollection::CORE_CLASS &&
+                    $package->activate($activation)) {
+                flash("L'extension '$packageName' a été ".($activation ? "activée": "désactivée"), 'success');
                 $this->wiki->Redirect($this->wiki->Href());
             }
         }
-        flash("L'extension '$packageName' n'a été ".($activation ? "activée": "désactivée"),'error');
+        flash("L'extension '$packageName' n'a été ".($activation ? "activée": "désactivée"), 'error');
         $this->wiki->Redirect($this->wiki->Href());
     }
 }

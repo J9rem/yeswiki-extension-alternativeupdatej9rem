@@ -11,7 +11,7 @@
 
 namespace YesWiki\Alternativeupdatej9rem\Entity;
 
-use AutoUpdate\PackageTheme;
+use YesWiki\Alternativeupdatej9rem\Entity\PackageTheme;
 use AutoUpdate\Release;
 use Exception;
 

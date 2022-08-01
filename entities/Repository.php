@@ -15,11 +15,16 @@ use AutoUpdate\PackageCollection;
 use Exception;
 use YesWiki\Alternativeupdatej9rem\Entity\PackageThemeLocal;
 use YesWiki\Alternativeupdatej9rem\Entity\PackageToolLocal;
+use YesWiki\Alternativeupdatej9rem\Entity\PackageTheme;
+use YesWiki\Alternativeupdatej9rem\Entity\PackageTool;
 
 include_once 'tools/autoupdate/vendor/autoload.php';
 
 class Repository extends PackageCollection
 {
+    const THEME_CLASS = 'YesWiki\Alternativeupdatej9rem\Entity\PackageTheme';
+    const TOOL_CLASS = 'YesWiki\Alternativeupdatej9rem\Entity\PackageTool';
+
     private $address;
     private $alternativeAddresses;
 
@@ -57,7 +62,7 @@ class Repository extends PackageCollection
 
     public function addAlternative($key, $release, $address, $file, $description, $documentation, $minimalPhpVersion = null)
     {
-        $className = $this->getPackageType($file);
+        $className = $this->getPackageTypeLocal($file);
         $package = new $className(
             $release,
             $address . $file,
@@ -118,12 +123,12 @@ class Repository extends PackageCollection
 
     public function getAlternativeThemesPackages()
     {
-        return $this->filterAlternativePackages(parent::THEME_CLASS);
+        return $this->filterAlternativePackages(self::THEME_CLASS);
     }
 
     public function getAlternativeToolsPackages()
     {
-        return $this->filterAlternativePackages(parent::TOOL_CLASS);
+        return $this->filterAlternativePackages(self::TOOL_CLASS);
     }
 
     public function getLocalToolsPackages()
@@ -166,6 +171,28 @@ class Repository extends PackageCollection
 
             case 'theme':
                 return PackageCollection::THEME_CLASS;
+                break;
+
+            default:
+                throw new Exception(_t('AU_UNKWON_PACKAGE_TYPE'));
+                break;
+        }
+    }
+
+    private function getPackageTypeLocal($filename)
+    {
+        $type = explode('-', $filename)[0];
+        switch ($type) {
+            case 'yeswiki':
+                return PackageCollection::CORE_CLASS;
+                break;
+
+            case 'extension':
+                return self::TOOL_CLASS;
+                break;
+
+            case 'theme':
+                return self::THEME_CLASS;
                 break;
 
             default:

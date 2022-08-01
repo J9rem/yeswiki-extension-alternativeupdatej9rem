@@ -13,11 +13,14 @@ namespace YesWiki\Alternativeupdatej9rem\Service;
 
 use AutoUpdate\Configuration;
 use AutoUpdate\Files;
+use AutoUpdate\PackageCollection;
+use AutoUpdate\Messages;
 use AutoUpdate\Release;
 use AutoUpdate\Repository as CoreRepository;
 use Exception;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use YesWiki\Alternativeupdatej9rem\Entity\Repository;
+use YesWiki\Alternativeupdatej9rem\Exception\UpgradeException;
 use YesWiki\Plugins;
 use YesWiki\Wiki;
 
@@ -217,7 +220,7 @@ class AutoUpdateService
         
         $this->loadARepo($repository, $repository->getAddress(), false);
         foreach ($repository->getAlternativeAddresses() as $key => $addr) {
-            $this->loadARepo($repository, $addr, true, $key);
+            $this->loadARepo($repository, $addr, true, $key, $packagesData);
         }
         $this->loadLocalTools($repository);
         $this->loadLocalThemes($repository);
@@ -374,5 +377,112 @@ class AutoUpdateService
             return $this->pluginService->getPluginInfo("tools/$dirName/desc.xml");
         }
         return [];
+    }
+
+    /**
+     * update alternative package
+     * @param Repository $repository
+     * @param string $packageName
+     * @param string $packageFile
+     * @param string $packageFileMD5
+     * @return null|Messages $message
+     */
+    public function upgradeAlternativeIfNeeded(
+        Repository $repository,
+        string $packageName,
+        string $packageFile = "",
+        string $packageFileMD5 = ""
+    ) :?Messages {
+        if (empty($packageName) || $packageName == "yeswiki") {
+            return null;
+        }
+
+        if (!empty($repository->getPackage($packageName))) {
+            // leave core manage it
+            return null;
+        }
+        list('key' => $key, 'package' => $package) = $repository->getAlternativePackage($packageName);
+        if (empty($package) || get_class($package) === PackageCollection::CORE_CLASS) {
+            // not found for alternative repository or core
+            return null;
+        }
+
+        // update alternative package
+        $messages = new Messages();
+
+        // Remise a zéro des messages
+        $messages->reset();
+
+        try {
+            if (empty($packageFile)) {
+                // Téléchargement de l'archive
+                $file = $package ? $package->getFile() : false;
+                if (false === $file) {
+                    $messages->add('AU_DOWNLOAD', 'AU_ERROR');
+                    throw new UpgradeException("");
+                }
+            } else {
+                $file = $packageFile;
+                $package->setdownloadedFile($packageFile);
+            }
+
+            $messages->add('AU_DOWNLOAD', 'AU_OK');
+            // Vérification MD5
+            if (empty($packageFileMD5)) {
+                if (!$package->checkIntegrity($file)) {
+                    $messages->add('AU_INTEGRITY', 'AU_ERROR');
+                    throw new UpgradeException("");
+                }
+            } else {
+                $md5Repo = explode(' ', file_get_contents($packageFileMD5))[0];
+                $md5File = md5_file($file);
+                $package->setMD5File($packageFileMD5);
+                if ($md5File !== $md5Repo) {
+                    $messages->add('AU_INTEGRITY', 'AU_ERROR');
+                    throw new UpgradeException("");
+                }
+            }
+
+            $messages->add('AU_INTEGRITY', 'AU_OK');
+
+            // Extraction de l'archive
+            $path = $package->extract();
+            if (false === $path) {
+                $messages->add('AU_EXTRACT', 'AU_ERROR');
+                throw new UpgradeException("");
+            }
+
+            $messages->add('AU_EXTRACT', 'AU_OK');
+
+            // Vérification des droits sur le fichiers
+            if (!$package->checkACL()) {
+                $messages->add('AU_ACL', 'AU_ERROR');
+                throw new UpgradeException("");
+            }
+            $messages->add('AU_ACL', 'AU_OK');
+
+            // Mise à jour du paquet
+            if (!$package->upgrade()) {
+                $messages->add(
+                    _t('AU_UPDATE_PACKAGE') . $packageName,
+                    'AU_ERROR'
+                );
+                throw new UpgradeException("");
+            }
+            $messages->add(_t('AU_UPDATE_PACKAGE') . $packageName, 'AU_OK');
+
+            // Mise à jour de la configuration de YesWiki
+            if (!$package->upgradeInfos()) {
+                $messages->add('AU_UPDATE_INFOS', 'AU_ERROR');
+                throw new UpgradeException("");
+            }
+            $messages->add('AU_UPDATE_INFOS', 'AU_OK');
+
+            $package->cleanTempFiles();
+        } catch (UpgradeException $ex) {
+            $package->cleanTempFiles();
+        }
+        
+        return $messages;
     }
 }
