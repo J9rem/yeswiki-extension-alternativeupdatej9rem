@@ -205,7 +205,7 @@ let appParams = {
             });
         },
         refresh: function (){
-            if (!app.ready || !app.token || app.installing){
+            if (!this.ready || !this.token || this.installing || this.loadingPackages){
                 return;
             }
             this.postInstallMessage = "";

@@ -95,8 +95,8 @@ export default {
                 <template v-if="keyName != '__local'">
                   <button v-if="!isHibernated"
                     class="btn btn-xs btn-info"
-                    :title="_t('ALTERNATIVEUPDATE_REINSTALL')"
-                    v-html="_t('ALTERNATIVEUPDATE_REINSTALL')"
+                    :title="_t(ext.updateAvailable ? 'ALTERNATIVEUPDATE_UPDATE' : 'ALTERNATIVEUPDATE_REINSTALL')"
+                    v-html="_t(ext.updateAvailable ? 'ALTERNATIVEUPDATE_UPDATE' : 'ALTERNATIVEUPDATE_REINSTALL')"
                     :data-ext-name="ext.name"
                     :data-version="version"
                     :data-type="type"
@@ -106,7 +106,7 @@ export default {
                   </button>
                   <button v-else disabled
                       class="btn btn-xs btn-info"
-                      :title="_t('ALTERNATIVEUPDATE_WIKI_IN_HIBERNATION')"
+                      :title="_t(ext.updateAvailable ? 'ALTERNATIVEUPDATE_UPDATE' : 'ALTERNATIVEUPDATE_WIKI_IN_HIBERNATION')"
                       data-toggle="tooltip"
                       data-placement="bottom"
                       v-html="_t('ALTERNATIVEUPDATE_REINSTALL')"

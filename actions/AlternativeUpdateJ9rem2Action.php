@@ -14,6 +14,7 @@ namespace YesWiki\Alternativeupdatej9rem;
 
 use AutoUpdate\Messages;
 use AutoUpdate\PackageCollection;
+use Exception;
 use Throwable;
 use YesWiki\Alternativeupdatej9rem\Entity\Repository;
 use YesWiki\Alternativeupdatej9rem\Exception\UpgradeException;
@@ -44,6 +45,9 @@ class AlternativeUpdateJ9rem2Action extends YesWikiAction
         // check if activated
         if (!$this->autoUpdateService->isActivated()) {
             return "";
+        }
+        if (empty($this->arguments['versions'])) {
+            throw new Exception("params 'versions' should not be empty");
         }
 
         if ($this->autoUpdateService->isAdmin()) {
