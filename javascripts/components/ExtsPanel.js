@@ -8,7 +8,7 @@
  */
 
 export default {
-  props: [ 'keyName', 'type','repo' ,'isHibernated','version'],
+  props: [ 'keyName', 'type','repo' ,'isHibernated','version','uid'],
   data() {
     return {
     }
@@ -35,7 +35,7 @@ export default {
       }
     },
     keyId(){
-      let keyId = (this.keyName+this.version).toLowerCase().replace(/\s/,"");
+      let keyId = (this.keyName+this.version+this.uid).toLowerCase().replace(/(?:\s|\W)/g,"");
       switch (this.type) {
         case 'themes':
           return `Themes${keyId}`;

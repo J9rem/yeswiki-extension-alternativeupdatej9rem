@@ -102,38 +102,13 @@ class __UpdateAction extends YesWikiAction
     {
         $packageName = filter_var($_GET['delete'], FILTER_UNSAFE_RAW);
         $packageName = ($packageName === false) ? "" : htmlspecialchars(strip_tags($packageName));
-        if (empty($packageName) || $packageName == "yeswiki") {
+        $messages = $this->autoUpdateService->deleteAlternativeOrLocal($repository, $packageName);
+
+        if (is_null($messages)) {
             return '';
-        }
-
-        if (!empty($repository->getPackage($packageName))) {
-            // leave core manage it
-            return '';
-        }
-        list('key' => $key, 'package' => $package) = $repository->getAlternativePackage($packageName);
-        if (!empty($package) && get_class($package) === PackageCollection::CORE_CLASS) {
-            // not found for alternative repository or core
-            return '';
-        } elseif (empty($package)) {
-            $package = $repository->getLocalPackage($packageName);
-            if (empty($package) || get_class($package) === PackageCollection::CORE_CLASS) {
-                return '';
-            }
-        }
-
-        unset($_GET['delete']);
-        $_GET['alternativeupdatej9rem'] = "1";
-
-        // update alternative package
-        $messages = new Messages();
-
-        // Remise a zéro des messages
-        $messages->reset();
-
-        if (false === $package->deletePackage()) {
-            $messages->add('AU_DELETE', 'AU_ERROR');
         } else {
-            $messages->add('AU_DELETE', 'AU_OK');
+            unset($_GET['delete']);
+            $_GET['alternativeupdatej9rem'] = "1";
         }
         
         return $this->render("@autoupdate/update.twig", [
@@ -154,15 +129,13 @@ class __UpdateAction extends YesWikiAction
         $packageName = filter_var($_GET[$key], FILTER_UNSAFE_RAW);
         unset($_GET[$key]);
         $packageName = ($packageName === false) ? "" : htmlspecialchars(strip_tags($packageName));
-        if (!empty($packageName) && $packageName != "yeswiki") {
-            $package = $repository->getLocalPackage($packageName);
-            if (!empty($package) && get_class($package) !== PackageCollection::CORE_CLASS &&
-                    $package->activate($activation)) {
-                flash("L'extension '$packageName' a été ".($activation ? "activée": "désactivée"), 'success');
-                $this->wiki->Redirect($this->wiki->Href());
-            }
+
+        if ($this->autoUpdateService->activationLocal($repository, $packageName, $activation)) {
+            flash("L'extension '$packageName' a été ".($activation ? "activée": "désactivée"), 'success');
+            $this->wiki->Redirect($this->wiki->Href());
+        } else {
+            flash("L'extension '$packageName' n'a été ".($activation ? "activée": "désactivée"), 'error');
+            $this->wiki->Redirect($this->wiki->Href());
         }
-        flash("L'extension '$packageName' n'a été ".($activation ? "activée": "désactivée"), 'error');
-        $this->wiki->Redirect($this->wiki->Href());
     }
 }

@@ -3,10 +3,19 @@
 # For the full copyright and license information, please view the LICENSE
 # file that was distributed with this source code. #}
 
+{{ include_javascript('tools/alternativeupdatej9rem/javascripts/vendor/jszip/jszip.min.js') }}
+{{ include_javascript('tools/alternativeupdatej9rem/javascripts/vendor/jszip-utils/jszip-utils.min.js') }}
 {{ include_javascript('javascripts/vendor/vue/vue.js') }}
 {{ include_javascript('tools/alternativeupdatej9rem/javascripts/alternativej9rem2.js',false,true) }}
 
 <div class="alternativej9rem2-container" data-uid="{{uid}}" data-versions="{{versions}}">
+    <div 
+        v-if="ready || !installing" 
+        class="pull-right btn btn-xs btn-primary" 
+        @click="refresh" data-tooltip="toogle" 
+        title="Refresh">
+            <i class="fas fa-redo-alt"></i>
+    </div>
     <div v-if="!token" class="input-group">
         <div class="input-group-prepend">
             <span class="input-group-text">
@@ -33,11 +42,11 @@
         <template v-for="(versiondata,version) in data.versions">
             <h2>Version <i v-html="version"></i></h2>
             <template v-for="(repo,key) in versiondata.repos">
-                <exts-panel v-if="repo.themes && Object.keys(repo.themes).length > 0" :key-name="key" :repo="repo" :type="'themes'" :is-hibernated="data.isHibernated" :version="version"></exts-panel>
-                <exts-panel v-if="repo.tools && Object.keys(repo.tools).length > 0" :key-name="key" :repo="repo" :type="'tools'":is-hibernated="data.isHibernated" :version="version"></exts-panel>
+                <exts-panel v-if="repo.themes && Object.keys(repo.themes).length > 0" :key-name="key" :repo="repo" :type="'themes'" :is-hibernated="data.isHibernated" :version="version" :uid="uid"></exts-panel>
+                <exts-panel v-if="repo.tools && Object.keys(repo.tools).length > 0" :key-name="key" :repo="repo" :type="'tools'":is-hibernated="data.isHibernated" :version="version" :uid="uid"></exts-panel>
             </template>
         </template>
-        <exts-panel v-if="data.localThemes && Object.keys(data.localThemes).length > 0" :key-name="'__local'" :repo="{themes:data.localThemes}" :type="'themes'" :is-hibernated="data.isHibernated" :version="''"></exts-panel>
-        <exts-panel v-if="data.localTools && Object.keys(data.localTools).length > 0" :key-name="'__local'" :repo="{tools:data.localTools}" :type="'tools'" :is-hibernated="data.isHibernated" :version="''"></exts-panel>
+        <exts-panel v-if="data.localThemes && Object.keys(data.localThemes).length > 0" :key-name="'__local'" :repo="{themes:data.localThemes}" :type="'themes'" :is-hibernated="data.isHibernated" :version="''" :uid="uid"></exts-panel>
+        <exts-panel v-if="data.localTools && Object.keys(data.localTools).length > 0" :key-name="'__local'" :repo="{tools:data.localTools}" :type="'tools'" :is-hibernated="data.isHibernated" :version="''" :uid="uid"></exts-panel>
     </div>
 </div>

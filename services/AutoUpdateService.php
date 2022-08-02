@@ -485,4 +485,65 @@ class AutoUpdateService
         
         return $messages;
     }
+
+    /** delete a package
+     * @param Repository $repository
+     * @param string $packageName
+     * @return null|Messages $message
+     */
+    public function deleteAlternativeOrLocal(
+        Repository $repository,
+        string $packageName,
+    ) :?Messages {
+        if (empty($packageName) || $packageName == "yeswiki") {
+            return null;
+        }
+
+        if (!empty($repository->getPackage($packageName))) {
+            // leave core manage it
+            return null;
+        }
+        list('key' => $key, 'package' => $package) = $repository->getAlternativePackage($packageName);
+        if (!empty($package) && get_class($package) === PackageCollection::CORE_CLASS) {
+            return null;
+        } elseif (empty($package)) {
+            $package = $repository->getLocalPackage($packageName);
+            if (empty($package) || get_class($package) === PackageCollection::CORE_CLASS) {
+                return null;
+            }
+        }
+
+        // update alternative package
+        $messages = new Messages();
+
+        // Remise a zéro des messages
+        $messages->reset();
+
+        if (false === $package->deletePackage()) {
+            $messages->add('AU_DELETE', 'AU_ERROR');
+        } else {
+            $messages->add('AU_DELETE', 'AU_OK');
+        }
+
+        return $messages;
+    }
+
+    /**
+     * deactive local ext
+     * @param Repository $repository
+     * @param string $packageName
+     * @param bool $activation
+     * @return bool
+     */
+    public function activationLocal(Repository $repository, string $packageName, bool $activation = true): bool
+    {
+        if (!empty($packageName) && $packageName != "yeswiki") {
+            $package = $repository->getLocalPackage($packageName);
+            if (!empty($package) && get_class($package) !== PackageCollection::CORE_CLASS &&
+                    $package->activate($activation)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

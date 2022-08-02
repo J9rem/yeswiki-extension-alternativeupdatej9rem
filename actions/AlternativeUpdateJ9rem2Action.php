@@ -86,19 +86,16 @@ class AlternativeUpdateJ9rem2Action extends YesWikiAction
             }
         }
 
-        $localTools = $repository->getLocalToolsPackages();
-        $localThemes = $repository->getLocalThemesPackages();
-
         return $this->wiki->render("@alternativeupdatej9rem/status.twig", [
             'baseUrl' => $this->autoUpdateService->baseUrl(),
             'isAdmin' => $this->autoUpdateService->isAdmin(),
             'isHibernated' => $this->securityController->isWikiHibernated(),
             'repos' => $repos,
-            'localTools' => $localTools,
-            'localThemes' => $localThemes,
+            'localTools' => [],
+            'localThemes' => [],
             'showThemes' => true,
             'showTools' => true,
-            'uid' => uniqid('alternativeupdate_', true),
+            'uid' => str_replace([".","/","-","\\"],'',uniqid('alternativeupdate_', true)),
             'versions' => implode(',', $this->arguments['versions'])
         ]);
     }

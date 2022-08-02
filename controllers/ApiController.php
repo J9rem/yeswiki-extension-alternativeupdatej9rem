@@ -207,39 +207,39 @@ class ApiController extends YesWikiController
                         $var = in_array($var, [false,null], true) ? "" : htmlspecialchars(strip_tags($var));
                         if (empty($var)) {
                             return new ApiResponse(
-                                ['error' => "empty '$var' in POST for action '$action'"],
+                                ['error' => "empty '$name' in POST for action '$action'"],
                                 Response::HTTP_BAD_REQUEST
                             );
                         }
                         extract([$name=>$var]);
                         unset($var);
                     }
-                    foreach (['file'] as $name) {
+                    foreach (['file','packages'] as $name) {
                         $var = filter_input(INPUT_POST, $name, FILTER_UNSAFE_RAW);
                         $var = in_array($var, [false,null], true) ? "" : $var;
                         if (empty($var)) {
-                            return new ApiResponse(
-                                ['error' => "empty '$var' in POST for action '$action'"],
-                                Response::HTTP_BAD_REQUEST
-                            );
-                        }
-                        extract([$name=>$var]);
-                        unset($var);
-                    }
-                    $file = htmlspecialchars_decode(base64_decode(str_replace(' ', '+', $file)));
-                    foreach (['packages'] as $name) {
-                        if (empty($_POST[$name])) {
                             return new ApiResponse(
                                 ['error' => "empty '$name' in POST for action '$action'"],
                                 Response::HTTP_BAD_REQUEST
                             );
                         }
-                        if (!is_array($_POST[$name])) {
-                            return new ApiResponse(
-                                ['error' => "'$name' is not an array in POST for action '$action'"],
-                                Response::HTTP_BAD_REQUEST
-                            );
-                        }
+                        extract([$name=>$var]);
+                        unset($var);
+                    }
+                    $file = base64_decode($file);
+                    if (empty($file)) {
+                        return new ApiResponse(
+                            ['error' => "error decoding file in POST for action '$action'"],
+                            Response::HTTP_BAD_REQUEST
+                        );
+                    }
+                    $packagesRaw = $packages;
+                    $packages = json_decode($packagesRaw, true);
+                    if (empty($packages) || !is_array($packages)) {
+                        return new ApiResponse(
+                            ['error' => "error decoding packages '$packagesRaw' in POST for action '$action'"],
+                            Response::HTTP_BAD_REQUEST
+                        );
                     }
                     if ($this->wiki->services->get(SecurityController::class)->isWikiHibernated()) {
                         return new ApiResponse(
@@ -251,8 +251,8 @@ class ApiController extends YesWikiController
                     $destPath = tempnam('cache', 'tmp_to_delete_zip_');
                     file_put_contents($destPath, $file);
                     $destPathMD5 = tempnam('cache', 'tmp_to_delete_md5_');
-                    file_put_contents($destPathMD5, $md5);
-                    $repository = $autoUpdateService->initRepository($version, $_POST['packages']);
+                    file_put_contents($destPathMD5, md5_file($destPath));
+                    $repository = $autoUpdateService->initRepository($version, $packages);
 
                     $messages = $autoUpdateService->upgradeAlternativeIfNeeded($repository, $packageName, $destPath, $destPathMD5);
 
@@ -268,6 +268,105 @@ class ApiController extends YesWikiController
                                 'baseUrl' => $autoUpdateService->baseUrl(),
                             ])],
                             Response::HTTP_OK
+                        );
+                    }
+                });
+            
+            case 'delete':
+                return $this->executeInSecureContext(function ($autoUpdateService) use ($action) {
+                    foreach (['packageName'] as $name) {
+                        $var = filter_input(INPUT_POST, $name, FILTER_UNSAFE_RAW);
+                        $var = in_array($var, [false,null], true) ? "" : htmlspecialchars(strip_tags($var));
+                        if (empty($var)) {
+                            return new ApiResponse(
+                                ['error' => "empty '$name' in POST for action '$action'"],
+                                Response::HTTP_BAD_REQUEST
+                            );
+                        }
+                        extract([$name=>$var]);
+                        unset($var);
+                    }
+                    foreach (['packages'] as $name) {
+                        $var = $_POST[$name] ?? null;
+                        if (empty($var) || !is_array($var)) {
+                            return new ApiResponse(
+                                ['error' => "empty '$name' or not array in POST for action '$action'"],
+                                Response::HTTP_BAD_REQUEST
+                            );
+                        }
+                        extract([$name=>$var]);
+                        unset($var);
+                    }
+                    if ($this->wiki->services->get(SecurityController::class)->isWikiHibernated()) {
+                        return new ApiResponse(
+                            ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate'=> true],
+                            Response::HTTP_INTERNAL_SERVER_ERROR
+                        );
+                    }
+
+                    $repository = $autoUpdateService->initRepository("", $packages);
+
+                    $messages = $autoUpdateService->deleteAlternativeOrLocal($repository, $packageName);
+
+                    if (is_null($messages)) {
+                        return new ApiResponse(
+                            ['error' => "'$packageName' has not been deleted in POST for action '$action'"],
+                            Response::HTTP_BAD_REQUEST
+                        );
+                    } else {
+                        return new ApiResponse(
+                            ['messages'=>$this->render("@autoupdate/update.twig", [
+                                'messages' => $messages,
+                                'baseUrl' => $autoUpdateService->baseUrl(),
+                            ])],
+                            Response::HTTP_OK
+                        );
+                    }
+                });
+            case 'activation':
+                return $this->executeInSecureContext(function ($autoUpdateService) use ($action) {
+                    foreach (['packageName','activation'] as $name) {
+                        $var = filter_input(INPUT_POST, $name, FILTER_UNSAFE_RAW);
+                        $var = in_array($var, [false,null], true) ? "" : htmlspecialchars(strip_tags($var));
+                        if (empty($var)) {
+                            return new ApiResponse(
+                                ['error' => "empty '$name' in POST for action '$action'"],
+                                Response::HTTP_BAD_REQUEST
+                            );
+                        }
+                        extract([$name=>$var]);
+                        unset($var);
+                    }
+                    foreach (['packages'] as $name) {
+                        $var = $_POST[$name] ?? null;
+                        if (empty($var) || !is_array($var)) {
+                            return new ApiResponse(
+                                ['error' => "empty '$name' or not array in POST for action '$action'"],
+                                Response::HTTP_BAD_REQUEST
+                            );
+                        }
+                        extract([$name=>$var]);
+                        unset($var);
+                    }
+                    if ($this->wiki->services->get(SecurityController::class)->isWikiHibernated()) {
+                        return new ApiResponse(
+                            ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate'=> true],
+                            Response::HTTP_INTERNAL_SERVER_ERROR
+                        );
+                    }
+                    $activation = in_array($activation,[1,"1",true,"true"],true);
+
+                    $repository = $autoUpdateService->initRepository("", $packages);
+
+                    if($autoUpdateService->activationLocal($repository, $packageName,$activation)){
+                        return new ApiResponse(
+                            [],
+                            Response::HTTP_OK
+                        );
+                    } else {
+                        return new ApiResponse(
+                            ['error' => "'$packageName' has not been ".($activation ? 'activated' : 'deactivated')." in POST for action '$action'"],
+                            Response::HTTP_BAD_REQUEST
                         );
                     }
                 });
