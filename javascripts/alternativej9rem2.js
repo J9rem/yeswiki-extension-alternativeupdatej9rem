@@ -205,6 +205,9 @@ let appParams = {
             });
         },
         refresh: function (){
+            if (!app.ready || !app.token || app.installing){
+                return;
+            }
             this.postInstallMessage = "";
             this.message = _t('ALTERNATIVEUPDATE_LOADING_DATA');
             this.messageClass = {alert:true,['alert-success']:true};
