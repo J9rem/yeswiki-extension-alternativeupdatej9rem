@@ -20,7 +20,7 @@ let appParams = {
             data: {},
             installing: false,
             loading: false,
-            loadingPackages: false,
+            loadingPackages: [],
             loadedVersion: 0,
             message: "",
             messageClass: {
@@ -117,21 +117,19 @@ let appParams = {
         },
         loadPackages: function (updateMessage = true){
             let app = this;
-            if (app.loadingPackages){
-                return;
-            }
-            app.loadingPackages = true;
             app.packagesPaths.forEach((url) => {
-                if (!app.packages.hasOwnProperty(url)){
+                if (!app.packages.hasOwnProperty(url) && !app.loadingPackages.includes(url)){
+                    app.loadingPackages.push(url);
                     $.ajax({
                         method: "GET",
                         url: url,
+                        cache: false,
                         success: function(data){
                             app.packages[url] = data;
-                            app.loadingPackages = false;
+                            app.loadingPackages = app.loadingPackages.filter((u)=>u != url);
                             if (Object.keys(app.packages).length != app.packagesPaths.length){
                                 app.loadPackages(updateMessage);
-                            } else if(app.loadedVersion == app.versions.length){
+                            } else if(app.loadedVersion == app.versions.length && app.loadingPackages.length == 0){
                                 app.updatePackagesInfo(updateMessage);
                             }
                         },
@@ -145,10 +143,10 @@ let appParams = {
         },
         updatePackagesInfo: function (updateMessage = true){
             let app = this;
-            if (app.loadingPackages || !app.token){
+            if (app.loadingPackages.length > 0 || !app.token){
                 return;
             }
-            app.loadingPackages = true;
+            app.loadingPackages.push('updatePackagesInfos');
             $.ajax({
                 method: "POST",
                 url: wiki.url(`api/alternativeupdatej9rem`),
@@ -173,7 +171,7 @@ let appParams = {
                     app.messageClass = {alert:true,['alert-danger']:true};
                 },
                 complete: function(){
-                    app.loadingPackages = false;
+                    app.loadingPackages = [];
                 }
             });
         },
@@ -205,14 +203,15 @@ let appParams = {
             });
         },
         refresh: function (){
-            if (!this.ready || !this.token || this.installing || this.loadingPackages){
+            if (!this.ready || !this.token || this.installing || this.loadingPackages.length > 0){
                 return;
             }
             this.postInstallMessage = "";
             this.message = _t('ALTERNATIVEUPDATE_LOADING_DATA');
             this.messageClass = {alert:true,['alert-success']:true};
             this.ready = false;
-            this.updatePackagesInfo(true);
+            this.packages = {};
+            this.loadPackages(true);
         },
         delete: function(event){
             let app = this;

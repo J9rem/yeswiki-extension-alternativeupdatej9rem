@@ -13,7 +13,7 @@
         v-if="ready || !installing" 
         class="pull-right btn btn-xs btn-primary" 
         @click="refresh" data-tooltip="toogle"
-        :disabled="!ready || installing || loadingPackages" 
+        :disabled="!ready || installing || loadingPackages.length > 0" 
         title="Refresh">
             <i class="fas fa-redo-alt"></i>
     </div>
