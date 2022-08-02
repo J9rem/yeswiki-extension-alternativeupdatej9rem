@@ -493,8 +493,9 @@ class AutoUpdateService
      */
     public function deleteAlternativeOrLocal(
         Repository $repository,
-        string $packageName,
-    ) :?Messages {
+        string $packageName
+    ) :?Messages
+    {
         if (empty($packageName) || $packageName == "yeswiki") {
             return null;
         }
