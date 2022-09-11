@@ -18,6 +18,7 @@ let appParams = {
         return {
             uid: null,
             data: {},
+            finishedUpdate: true,
             installing: false,
             loading: false,
             loadingPackages: [],
@@ -238,6 +239,7 @@ let appParams = {
                     app.data = data;
                     app.message = _t('ALTERNATIVEUPDATE_DATA_DELETED',{name});
                     app.messageClass = {alert:true,['alert-success']:true};
+                    app.finishedUpdate = false;
                     setTimeout(()=>{app.message=""},15000);
                 },
                 error: function(xhr,status,error){
@@ -365,6 +367,7 @@ let appParams = {
                     app.postInstallMessage = data.messages.replace('api/update',"").replace("href=",'style="display:none;" href=');
                     app.message = "";
                     app.messageClass = {alert:true,['alert-success']:true};
+                    app.finishedUpdate = false;
                 },
                 error: function(xhr,){
                     let res = JSON.parse(xhr.responseText)
@@ -384,6 +387,9 @@ let appParams = {
                     app.updatePackagesInfo(false);
                 }
             });
+        },
+        unsetFinishedUpdate: function(){
+            this.finishedUpdate = true;
         }
     },
     mounted(){

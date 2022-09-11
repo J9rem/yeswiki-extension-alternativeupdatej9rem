@@ -39,6 +39,7 @@
     </div>
     <div v-if="message.length > 0" v-html="message" :class="messageClass"></div>
     <div v-if="postInstallMessage.length > 0" v-html="postInstallMessage"></div>
+    <div v-if="!finishedUpdate"><a :href="wiki.url(wiki.pageTag+'/update')" class="btn btn-danger" target="_blank" @click="unsetFinishedUpdate">{{ _t('ALTERNATIVEUPDATE_FINISH_UPDATE') }}</a></div>
     <div v-if="ready" class="panel-group" role="tablist" aria-multiselectable="true" id="accordion_update_j9rem" >
         <template v-for="(versiondata,version) in data.versions">
             <h2>Version <i v-html="version"></i></h2>

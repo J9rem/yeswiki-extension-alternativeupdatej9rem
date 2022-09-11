@@ -14,4 +14,6 @@ return [
   'ALTERNATIVEUPDATE_REINSTALL' => 'Réinstaller',
   'ALTERNATIVEUPDATE_YOUR_PASSWORD' => 'Votre mot de passe :',
   'ALTERNATIVEUPDATE_CONFIRM_PASSWORD' => 'Confirmez votre mot de passe',
+  'ALTERNATIVEUPDATE_OTHER_UPDATE_METHOD' => 'Mettre à jour par l\'autre méthode',
+  'ALTERNATIVEUPDATE_FINISH_UPDATE' => 'Terminer la mise à jour',
 ];

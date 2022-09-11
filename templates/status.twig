@@ -106,3 +106,6 @@
         </div> <!-- end of panel -->
     {% endif %}
 </div><!-- end of accordion -->
+{% if ((repos is empty or repos|filter((r)=>(r.tools is empty and r.themes is empty)) is not empty) and (localTools is not empty or localThemes is not empty)) %}
+  <a href="{{ url({tag:"GererMisesAJourSpecific"}) }}" class="btn btn-warning btn-xs">{{ _t('ALTERNATIVEUPDATE_OTHER_UPDATE_METHOD') }}</a>
+{% endif %}
