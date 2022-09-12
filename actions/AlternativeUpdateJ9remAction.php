@@ -9,7 +9,6 @@
  * file that was distributed with this source code.
  */
 
-
 namespace YesWiki\Alternativeupdatej9rem;
 
 use AutoUpdate\Messages;
@@ -78,6 +77,7 @@ class AlternativeUpdateJ9remAction extends YesWikiAction
 
         $localTools = $repository->getLocalToolsPackages();
         $localThemes = $repository->getLocalThemesPackages();
+        $core = $repository->getCorePackage();
 
         return $this->wiki->render("@alternativeupdatej9rem/status.twig", [
             'baseUrl' => $this->autoUpdateService->baseUrl(),
@@ -88,6 +88,7 @@ class AlternativeUpdateJ9remAction extends YesWikiAction
             'localThemes' => $localThemes,
             'showThemes' => true,
             'showTools' => true,
+            'core' => $core,
         ]);
     }
 }
