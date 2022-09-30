@@ -15,11 +15,16 @@
   </thead>
   <tbody>
       {% for ext in exts %}
-        <tr>
+        {% set specificMessage = (ext.name == "bellerecherche" and ext.installed) ? "Cette extension devrait être désinstallée et remplacée par 'advancedsearch'&nbsp;!" : false %}
+        <tr {% if specificMessage %}style="background-color:lightpink;"{% endif %}>
             <td>
                 <strong>{{ ext.name }}</strong>
                 <br />
                 <small>{{ ext.description }}</small>
+                {% if specificMessage %}
+                    <br />
+                    <b>{{ specificMessage|raw }}</b>
+                {% endif %}
             </td>
             <td>
                 {% if ext.installed %}
