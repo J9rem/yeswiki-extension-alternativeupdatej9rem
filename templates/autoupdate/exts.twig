@@ -17,7 +17,7 @@
       {% for ext in exts %}
         {% set rev = core.localRelease|split('.') %}
         {% set specificMessage = (ext.name == "securitypatch422" and ext.installed and core.localVersion == "doryphore" and (rev[0] > 5 or (rev[0] == 4 and (rev[1] > 3 or (rev[1] == 2 and rev[2] > 2))) )) ? "Cette extension devrait être désinstallée&nbsp;!" : false %}
-        {% set specificMessage = (ext.name == "bellerecherche" and ext.installed) ? "Cette extension devrait être désinstallée et remplacée par 'advancedsearch'&nbsp;!" : specificMessage %}
+        {% set specificMessage = (ext.name == "bellerecherche" and ext.installed and core.localVersion == "doryphore" and (rev[0] > 5 or (rev[0] == 4 and (rev[1] > 3 or (rev[1] == 2 and rev[2] > 2))) )) ? "Cette extension devrait être désinstallée et remplacée par 'advancedsearch'&nbsp;!" : specificMessage %}
         <tr {% if specificMessage %}style="background-color:lightpink;"{% endif %}>
             <td>
                 <strong>{{ ext.name }}</strong>
