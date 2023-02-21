@@ -32,7 +32,7 @@ class DiffHandler extends YesWikiHandler
         $this->pageManager = $this->wiki->services->get(PageManager::class);
 
         if (!$aclService->hasAccess('read')){
-            return $this->renderInSquelette('@templates/alert-mesage.twig',[
+            return $this->renderInSquelette('@templates/alert-message.twig',[
                 'type' => 'warning',
                 'message' => 'Vous n\'avez pas accès à cette page.'
             ]);
