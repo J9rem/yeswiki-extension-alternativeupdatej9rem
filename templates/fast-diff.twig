@@ -1,0 +1,30 @@
+{# # This file is part of the YesWiki Extension alternativeupdatej9rem.
+# Authors : see README.md file that was distributed with this source code.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code. #}
+
+<b>Comparaison de <a href="{{ url({params:{time:pageA.time}}) }}">{{pageA.time}}</a> 
+<a class="btn btn-xs btn-primary new-window" href="{{ url({handler:'raw',params:{time:pageA.time}}) }}">raw</a> à 
+    <a href="{{ url({params:{time:pageB.time}}) }}">{{pageB.time}}</a>
+    <a class="btn btn-xs btn-primary new-window" href="{{ url({handler:'raw',params:{time:pageB.time}}) }}">raw</a></b><br />
+
+{% if added %}
+    <div>
+        <b>Ajouts:</b><br />
+        <div class="additions">
+            {{ format(added)|raw }}
+        </div>
+    </div>
+{% endif %}
+{% if deleted %}
+    <div>
+        <b>Suppressions:</b><br />
+        <div class="deletions">
+            {{ format(deleted)|raw }}
+        </div>
+    </div>
+{% endif %}
+{% if added is empty and deleted is empty %}
+    <div>Pas de différences !
+    </div>
+{% endif %}
