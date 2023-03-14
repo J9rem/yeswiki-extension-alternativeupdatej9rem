@@ -134,7 +134,7 @@ class __UpdateAction extends YesWikiAction
             flash("L'extension '$packageName' a été ".($activation ? "activée": "désactivée"), 'success');
             $this->wiki->Redirect($this->wiki->Href());
         } else {
-            flash("L'extension '$packageName' n'a été ".($activation ? "activée": "désactivée"), 'error');
+            flash("L'extension '$packageName' n'a pas été ".($activation ? "activée": "désactivée"), 'error');
             $this->wiki->Redirect($this->wiki->Href());
         }
     }
