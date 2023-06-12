@@ -6,7 +6,7 @@
 {{ include(['tools/archive/templates/autoupdate/core.twig','tools/autoupdate/templates/core.twig']) }}
 {% set locRev = core.localRelease|split('.') %}
 {% set rev = core.release|split('.') %}
-{% if core.requestedVersion == "doryphore" and (rev[0] > 5 or (rev[0] == 4 and rev[1] > 3  or (rev[1] == 3 and rev[2] > 1))) %}
+{% if core.requestedVersion == "doryphore" and (rev[0] > 5 or (rev[0] == 4 and rev[1] > 4  or (rev[1] == 4 and rev[2] > 0))) %}
     <div>
         <b>Attention : la version <code>doryphore {{ rev[0] }}.{{ rev[1] }}.{{ rev[2] }}</code> n'a pas encore été vérifiée par J9rem.
         <br>L'installer pourrait provoquer des erreurs. Veuillez attendre une mise à jour de l'extension <code>alternativeupdatej9rem</code>
