@@ -15,3 +15,9 @@ services:
     resource: 'services/*'
   YesWiki\Alternativeupdatej9rem\Controller\:
     resource: 'controllers/*'
+  YesWiki\Alternativeupdatej9rem\Service\ArchiveService:
+    decorates: YesWiki\Core\Service\ArchiveService
+    decoration_on_invalid: null
+  YesWiki\Alternativeupdatej9rem\Controller\ArchiveController:
+    decorates: YesWiki\Core\Controller\ArchiveController
+    decoration_on_invalid: null
