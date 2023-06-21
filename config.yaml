@@ -18,6 +18,12 @@ services:
   YesWiki\Alternativeupdatej9rem\Service\ArchiveService:
     decorates: YesWiki\Core\Service\ArchiveService
     decoration_on_invalid: null
+  YesWiki\Alternativeupdatej9rem\Service\TabsService:
+    decorates: YesWiki\Templates\Service\TabsService
+    decoration_on_invalid: null
+  YesWiki\Alternativeupdatej9rem\Service\FieldFactory:
+    decorates: YesWiki\Bazar\Service\FieldFactory
+    decoration_on_invalid: null
   YesWiki\Alternativeupdatej9rem\Controller\ArchiveController:
     decorates: YesWiki\Core\Controller\ArchiveController
     decoration_on_invalid: null
