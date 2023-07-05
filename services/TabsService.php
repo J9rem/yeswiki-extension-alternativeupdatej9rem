@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use YesWiki\Bazar\Field\TabsField;
 use YesWiki\Templates\Service\TabsService as RealTabsService;
 
-class TabsService extends RealTabsService
+trait TabsServiceDef
 {
     protected $states;
 
@@ -51,4 +51,15 @@ class TabsService extends RealTabsService
             return false;
         }
     }
+}
+
+if (file_exists('tools/templates/services/TabsService.php')){
+    class TabsService extends RealTabsService
+    {
+        use TabsServiceDef;
+    }
+} else {
+    class TabsService
+    {
+    }   
 }
