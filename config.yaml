@@ -30,3 +30,6 @@ services:
   YesWiki\Alternativeupdatej9rem\Controller\TabsController:
     decorates: YesWiki\Templates\Controller\TabsController
     decoration_on_invalid: null
+  YesWiki\Alternativeupdatej9rem\Controller\AuthController:
+    decorates: YesWiki\Core\Controller\AuthController
+    decoration_on_invalid: null
