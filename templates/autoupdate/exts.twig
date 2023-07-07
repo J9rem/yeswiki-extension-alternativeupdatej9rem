@@ -21,9 +21,9 @@
         <tr {% if specificMessage %}style="background-color:lightpink;"{% endif %}>
             <td>
                 <strong>{{ ext.name }}</strong>
-                <a class="small" href="{{ ext.documentation }}">
+                {% if ext.documentation is not empty %}<a class="small" href="{{ ext.documentation }}">
                     ({{ _t('AU_DOCUMENTATION_LINK') }})
-                </a>
+                </a>{% endif %}
                 <br />
                 <small>{{ ext.description }}</small>
                 {% if specificMessage %}
@@ -42,24 +42,26 @@
                 {{ ext.release }}
             </td>
             <td>
-                {% if isAdmin and ext.installed %}
-                    {% set text = ext.updateAvailable ? _t('AU_UPDATE') : _t('ALTERNATIVEUPDATE_REINSTALL') %}
-                    {% set class = ext.updateAvailable ? 'btn-primary' : 'btn-info' %}
+                {% if isAdmin and ext.installed and not (ext.isLocal)%}
                     {% if not isHibernated %}
                         <a  href="{{ url({params:{upgrade:ext.updateLink}}) }}"
-                            class="btn btn-xs {{ class }}"
-                            title="{{ text }}"
+                            class="btn btn-xs {% block updateButtonclass %}
+                                {{- ext.updateAvailable ? 'btn-primary' : 'btn-info' -}}
+                                {% endblock %}"
+                            title="{% block updateButtontxt %}
+                                {{- ext.updateAvailable ? _t('AU_UPDATE') : _t('ALTERNATIVEUPDATE_REINSTALL') -}}
+                                {% endblock %}"
                         >
-                            {{ text }}
+                            {{ block('updateButtontxt') }}
                         </a>
                     {% else %}
                         <button disabled
-                            class="btn btn-xs {{ class }}"
+                            class="btn btn-xs {{ block('updateButtonclass') }}"
                             title="{{ _t('WIKI_IN_HIBERNATION') }}"
                             data-toggle="tooltip"
                             data-placement="bottom"
                         >
-                            {{ text }}
+                            {{ block('updateButtontxt') }}
                         </button>
                     {% endif %}
                 {% endif %}
