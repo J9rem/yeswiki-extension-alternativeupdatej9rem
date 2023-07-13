@@ -13,5 +13,15 @@ registerFieldAUJ9rem(getSendMailSelectorField({
   defaultMapping,
   readConf,
   writeconf,
-  semanticConf
+  semanticConf,
+  renderHelper: templateHelper,
+  linkedLabelAUJ9remConf
+}))
+registerFieldAUJ9rem(getCustomSendMailField({
+  defaultMapping,
+  readConf,
+  writeconf,
+  semanticConf,
+  renderHelper: templateHelper,
+  linkedLabelAUJ9remConf
 }))

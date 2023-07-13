@@ -46,6 +46,16 @@ return [
   'ALTERNATIVEUPDATE_WIKI_IN_HIBERNATION' => 'Action désactivée car ce wiki est en lecture seule. Veuillez contacter l\'administrateur pour le réactiver.',
   'ALTERNATIVEUPDATE_WRONG_PASSWORD' => "Mauvais mot de passe",
 
+  // custom sendmail
+  'ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_LABEL' => "E-mail avec choix si envoyer",
+  'ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_ASK_FOR_CURRENT_SAVE' => "Demander pour envoyer un message à chaque sauvegarde",
+  'ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_ASK_FOR_CURRENT_SAVE_HINT' => "Concerne l'envoi d'un e-mail lors de la sauvegarde courante de la fiche",
+  'ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_LABEL_FOR_OPTIONS' => "Texte pour l'option d'envoi",
+  'ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_LABEL_FOR_OPTIONS_VALUE' => "Envoyer un e-mail cette fois-ci ?",
   // send mail selector
   'ALTERNATIVEUPDATE_SENDMAIL_SELECTOR_LABEL' => "Sélecteur d'e-mails",
+  // fields
+  'ALTERNATIVEUPDATE_FIELD_FORM' => 'Champ fourni par l\'extension "alternativeupdatej9rem"',
+  'ALTERNATIVEUPDATE_FIELD_LINKEDLABEL' => 'Champ e-mail dans la fiche courante',
+  'ALTERNATIVEUPDATE_FIELD_LINKEDLABEL_HINT' => 'Laisser vide pour ne pas utiliser la fiche courante',
 ];

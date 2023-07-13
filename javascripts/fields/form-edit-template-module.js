@@ -16,6 +16,7 @@ import {
     writeconf,
     semanticConf
 } from '../../../bazar/presentation/javascripts/form-edit-template/fields/commons/attributes.js'
+import renderHelper from '../../../bazar/presentation/javascripts/form-edit-template/fields/commons/render-helper.js'
 
 registerFieldAsModuleAUJ9rem(getSendMailSelectorField({
     formAndListIds,
@@ -23,5 +24,15 @@ registerFieldAsModuleAUJ9rem(getSendMailSelectorField({
     defaultMapping,
     readConf,
     writeconf,
-    semanticConf
+    semanticConf,
+    renderHelper,
+    linkedLabelAUJ9remConf
   }))
+registerFieldAsModuleAUJ9rem(getCustomSendMailField({
+    defaultMapping,
+    readConf,
+    writeconf,
+    semanticConf,
+    renderHelper,
+    linkedLabelAUJ9remConf
+}))

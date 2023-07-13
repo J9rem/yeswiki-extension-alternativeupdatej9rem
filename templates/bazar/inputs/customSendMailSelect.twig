@@ -1,0 +1,19 @@
+{% extends "@bazar/layouts/input.twig" %}
+
+{% block input %}
+    <select
+        id="{{ field.propertyName }}"
+        name="{{ field.propertyName }}"
+        class="form-control"
+        {% if field.required %}required{% endif %}
+    >
+        {% if not value %}
+            <option value='' selected="selected">{{ _t('BAZ_CHOISIR') }}</option>
+        {% else %}
+            <option value='' ></option>
+        {% endif %}
+        {% for key, option in options %}
+            <option value={{ key }} {% if value == key %}selected{% endif %}>{{ option|raw }}</option>
+        {% endfor %}
+    </select>
+{% endblock %}

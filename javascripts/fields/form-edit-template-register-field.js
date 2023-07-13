@@ -36,3 +36,9 @@ var registerFieldAsModuleAUJ9rem = function(field){
   window.formBuilderFields[field.field.name] = field
 }
 
+var linkedLabelAUJ9remConf = {
+  label: _t('ALTERNATIVEUPDATE_FIELD_LINKEDLABEL'),
+  value: "bf_mail",
+  placeholder: "bf_mail",
+}
+

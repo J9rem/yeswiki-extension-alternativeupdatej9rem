@@ -13,7 +13,9 @@ function getSendMailSelectorField({
   defaultMapping,
   readConf,
   writeconf,
-  semanticConf
+  semanticConf,
+  renderHelper,
+  linkedLabelAUJ9remConf
 }){
 
     return {
@@ -24,11 +26,11 @@ function getSendMailSelectorField({
           icon: '<i class="fas fa-at"></i>',
         },
         attributes: {
-          subtype: {
+          subtype2: {
               label: "Origine des données",
               options: {
-              list: "Une liste",
-              form: "Un Formulaire Bazar",
+                list: "Une liste",
+                form: "Un Formulaire Bazar",
               },
           },
           listeOrFormId: {
@@ -40,19 +42,7 @@ function getSendMailSelectorField({
               ...listAndFormUserValues,
               },
           },
-          listId: {
-              label: "",
-              options: { ...formAndListIds.lists, ...listAndFormUserValues },
-          },
-          formId: {
-              label: "",
-              options: { ...formAndListIds.forms, ...listAndFormUserValues },
-          },
-          linkedLabel:{
-              label: "Champ e-mail dans la fiche courante",
-              value: "bf_mail",
-              placeholder: "Laisser vide pour ne pas permettre la fiche courante (sinon mettre 'bf_mail')",
-          },
+          linkedLabel: linkedLabelAUJ9remConf,
           linkedLabelInForm:{
               label: "Champ e-mail dans la fiche du formulaire lié (si formulaire)",
               value: "bf_mail",
@@ -63,12 +53,15 @@ function getSendMailSelectorField({
           },
           defaultValue: {
               label: "Valeur par défaut",
+              value: ""
           },
-          hint: { label: "Texte d'aide" },
+          hint: { label: "Texte d'aide", value:"" },
           read: readConf,
           write: writeconf,
           semantic: semanticConf,
         },
+        advancedAttributes: ['read', 'write', 'semantic', 'hint','defaultValue','name'],
+        disabledAttributes: ['value'],
         attributesMapping: {
           ...defaultMapping,
           ...{
@@ -77,7 +70,7 @@ function getSendMailSelectorField({
             4:"linkedLabelInForm",
             5: "defaultValue",
             6: "name",
-            7:"subtype",
+            7:"subtype2",
             9:"replace_email_by_button"
           }
         },
@@ -93,11 +86,17 @@ function getSendMailSelectorField({
               Option ${index}
             </option>`
           }
-          return { field: `
-          <select name="${field.name}-preview" id="${field.name}-preview">
-            ${options}
-          </select>
-          ` }
+          return {
+            field: `
+              <select name="${field.name}-preview" id="${field.name}-preview">
+                ${options}
+              </select>
+              `,
+            onRender() {
+              renderHelper.prependHint(field, _t('ALTERNATIVEUPDATE_FIELD_FORM'))
+              renderHelper.defineLabelHintForGroup(field, 'linkedLabel', _t('ALTERNATIVEUPDATE_FIELD_LINKEDLABEL_HINT'))
+            }
+          }
         },
     }
 }
