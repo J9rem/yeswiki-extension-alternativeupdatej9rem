@@ -45,4 +45,7 @@ return [
   'ALTERNATIVEUPDATE_UPDATE' => 'Mettre à jour',
   'ALTERNATIVEUPDATE_WIKI_IN_HIBERNATION' => 'Action désactivée car ce wiki est en lecture seule. Veuillez contacter l\'administrateur pour le réactiver.',
   'ALTERNATIVEUPDATE_WRONG_PASSWORD' => "Mauvais mot de passe",
+
+  // send mail selector
+  'ALTERNATIVEUPDATE_SENDMAIL_SELECTOR_LABEL' => "Sélecteur d'e-mails",
 ];
