@@ -167,6 +167,8 @@ class SendMailSelectorField extends EnumField
         return $value ;
     }
 
+    // change return of this method to keep compatible with php 7.3 (mixed is not managed)
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $data = parent::jsonSerialize();
