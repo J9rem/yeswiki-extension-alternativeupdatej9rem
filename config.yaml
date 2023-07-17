@@ -24,8 +24,8 @@ services:
   YesWiki\Alternativeupdatej9rem\Service\FieldFactory:
     decorates: YesWiki\Bazar\Service\FieldFactory
     decoration_on_invalid: null
-  YesWiki\Alternativeupdatej9rem\Controller\FieldFactory:
-    decorates: YesWiki\Bazar\Controller\FieldFactory
+  YesWiki\Alternativeupdatej9rem\Controller\ArchiveController:
+    decorates: YesWiki\Core\Controller\ArchiveController
     decoration_on_invalid: null
   YesWiki\Alternativeupdatej9rem\Controller\IcalFormatter:
     decorates: YesWiki\Core\Controller\IcalFormatter
