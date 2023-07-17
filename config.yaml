@@ -28,7 +28,7 @@ services:
     decorates: YesWiki\Core\Controller\ArchiveController
     decoration_on_invalid: null
   YesWiki\Alternativeupdatej9rem\Controller\IcalFormatter:
-    decorates: YesWiki\Core\Controller\IcalFormatter
+    decorates: YesWiki\Bazar\Controller\IcalFormatter
     decoration_on_invalid: null
   YesWiki\Alternativeupdatej9rem\Controller\TabsController:
     decorates: YesWiki\Templates\Controller\TabsController

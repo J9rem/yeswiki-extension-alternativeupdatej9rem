@@ -239,14 +239,14 @@ class IcalFormatter extends YesWikiController
             $this->renderAndStripTags($entry['bf_description'])."\r\n"
             :'';
         $decription .= "Source: ".$entry['url'];
-        $output .=$this->splitAtnthChar(self::MAX_CHARS_BY_LINE, "DESCRIPTION:".str_replace(["\r","\n"], ['\\r','\\n'], $decription)."\r\n");
+        $output .=$this->splitAtnthChar(self::MAX_CHARS_BY_LINE, "DESCRIPTION:".str_replace(["\r","\n"], [' ','\\n'], $decription)."\r\n");
         $location = '';
         $location .= (!empty($entry['bf_adresse'])) ? $entry['bf_adresse'] .' ' : '';
         $location .= (!empty($entry['bf_code_postal'])) ? $entry['bf_code_postal'] .' ' : '';
         $location .= (!empty($entry['bf_ville'])) ? $entry['bf_ville'] .' ' : '';
         $location = trim($location);
         if (!empty($location)) {
-            $output .=$this->splitAtnthChar(self::MAX_CHARS_BY_LINE, "LOCATION:".$location."\r\n");
+            $output .=$this->splitAtnthChar(self::MAX_CHARS_BY_LINE, "LOCATION:".str_replace(["\r","\n"],' ',$location)."\r\n");
         }
         $geo = $this->geoJSONFormatter->getGeoData($entry, $cache);
         if (!empty($geo)) {
