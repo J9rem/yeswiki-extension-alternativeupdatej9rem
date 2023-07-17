@@ -19,6 +19,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use YesWiki\Bazar\Field\DateField;
 use YesWiki\Bazar\Controller\EntryController;
+use YesWiki\Bazar\Controller\GeoJSONFormatter;
 use YesWiki\Core\Service\Performer;
 use YesWiki\Core\YesWikiController;
 use \DateInterval;
@@ -178,7 +179,7 @@ class IcalFormatter extends YesWikiController
         }
         return [];
     }
-    
+
     /**
      * check if is all day date
      * @param string $date
