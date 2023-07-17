@@ -163,7 +163,7 @@ class IcalFormatter extends YesWikiController
                 return [];
             }
             // 24 h for end date if all day
-            if (isset($entry['bf_date_fin_evenement_allday']) && $entry['bf_date_fin_evenement_allday'] == "1") {
+            if ($this->isAllDay(strval($endData))) {
                 $endData = $endDataObject->add(new DateInterval('P1D'))->format('Y-m-d H:i:s');
                 $endDataObject = new DateTime($endData);
             }
@@ -177,6 +177,16 @@ class IcalFormatter extends YesWikiController
             ];
         }
         return [];
+    }
+    
+    /**
+     * check if is all day date
+     * @param string $date
+     * @return bool
+     */
+    protected function isAllDay(string $date): bool
+    {
+        return preg_match('/^[1-2][0-9]{3}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2][0-9]|3[0-1])$/',$date);
     }
 
     /**
