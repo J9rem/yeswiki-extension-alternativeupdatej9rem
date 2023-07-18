@@ -69,7 +69,8 @@ function getCustomSendMailField({
             </select>
             `,
             onRender() {
-              renderHelper.prependHint(field, _t('ALTERNATIVEUPDATE_FIELD_FORM'))
+              renderHelper.prependHint(field, _t('ALTERNATIVEUPDATE_FIELD_FORM')
+                +'<br/>'+_t('ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_HINT'))
               renderHelper.defineLabelHintForGroup(field, 'linkedLabel', _t('ALTERNATIVEUPDATE_FIELD_LINKEDLABEL_HINT'))
               renderHelper.defineLabelHintForGroup(field, 'askForCurrentSave', _t('ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_ASK_FOR_CURRENT_SAVE_HINT'))
             }

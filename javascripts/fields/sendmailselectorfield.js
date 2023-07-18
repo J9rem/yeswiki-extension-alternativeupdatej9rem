@@ -93,7 +93,8 @@ function getSendMailSelectorField({
               </select>
               `,
             onRender() {
-              renderHelper.prependHint(field, _t('ALTERNATIVEUPDATE_FIELD_FORM'))
+              renderHelper.prependHint(field, _t('ALTERNATIVEUPDATE_FIELD_FORM')
+              +'<br/>'+_t('ALTERNATIVEUPDATE_SENDMAIL_SELECTOR_HINT'))
               renderHelper.defineLabelHintForGroup(field, 'linkedLabel', _t('ALTERNATIVEUPDATE_FIELD_LINKEDLABEL_HINT'))
             }
           }

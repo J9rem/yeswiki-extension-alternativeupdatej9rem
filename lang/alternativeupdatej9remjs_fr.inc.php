@@ -52,8 +52,13 @@ return [
   'ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_ASK_FOR_CURRENT_SAVE_HINT' => "Concerne l'envoi d'un e-mail lors de la sauvegarde courante de la fiche",
   'ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_LABEL_FOR_OPTIONS' => "Texte pour l'option d'envoi",
   'ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_LABEL_FOR_OPTIONS_VALUE' => "Envoyer un e-mail cette fois-ci ?",
+  'ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_HINT' => 'Ce champ vient compléter le champ e-mail de la fiche mais ne le remplace pas.<br/>'.
+    'Il permet à l\'utilsateur de choisir s\'il veut recevoir une copie de sa fiche à chaque modification (alors que sinon ce comportement est figée par le formulaire).',
   // send mail selector
   'ALTERNATIVEUPDATE_SENDMAIL_SELECTOR_LABEL' => "Sélecteur d'e-mails",
+  'ALTERNATIVEUPDATE_SENDMAIL_SELECTOR_HINT' => 'Ce champ peut remplacer le champ e-mail de la fiche ou se rajouter à côté.<br/>'.
+    'Il permet de choisir l\'adresse e-mail parmi une liste. Ceci peut être pratique s\'il faut envoyer une '.
+    'copie de la fiche à chaque modification à une adresse différente selon la zone géographique concernée.',
   // fields
   'ALTERNATIVEUPDATE_FIELD_FORM' => 'Champ fourni par l\'extension "alternativeupdatej9rem"',
   'ALTERNATIVEUPDATE_FIELD_LINKEDLABEL' => 'Champ e-mail dans la fiche courante',
