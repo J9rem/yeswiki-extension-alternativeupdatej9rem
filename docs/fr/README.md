@@ -1,0 +1,97 @@
+# Documentation de l'extension `alternativeupdatej9rem`
+
+Cette extension permet de mettre à disposition un système de mise à jour des extensions non officielles fournies par [j9rem](https://github.com/J9rem) tout en continuant de recevoir les mises à jour de [`YesWiki`](https://yeswiki.net) et des extensions officielles via le dépôt officielle.
+
+Ce fichier d'aide sert particulièrement à partager de la documentation en vue de son intégration future dans le cœur de YesWiki.
+
+## Configurer un formulaire pour exporter les données en `json-ld` (sémantique)
+
+Le format `json` est un format standard pour l'échange de données. Il est déjà utilisé dans `YesWiki` pour exporter des données comme celles des fiches d'un formulaire ([exemple](?api/forms/1/entries ':ignore')).
+
+Toutefois, le format `json` n'est pas suffisant pour savoir comment les données y sont rangées. Pour celà, il faut donner du sens aux données, les rendre [**sémantiques**](https://fr.wikipedia.org/wiki/S%C3%A9mantique).
+
+Il existe donc le format [`json-ld`](https://fr.wikipedia.org/wiki/JSON-LD) qui est une couche supplémentaire de normalisation pour expliquer comment les données y sont rangées. Le site officiel concernant ce format est : https://json-ld.org/.
+
+## Concept d'ontolgie
+
+Le concept d'[**ontologie**](https://fr.wikipedia.org/wiki/Ontologie_(informatique)) est à la base du web des données sémantiques.
+
+Une ontologie est un modèle de données qui explique comment les données sont structurées entre elles.
+
+Deux ontologies très connues sont :
+ - https://schema.org/
+ - https://www.w3.org/TR/activitystreams-core/ ([article Wikipedia](https://fr.wikipedia.org/wiki/Activity_Streams_(format)))
+
+Les données sémantiques indiquent toujours à quelle ontologie elles font référence pour que le destinataire puisse s'y retrouver automatiquement.
+
+## Configuration dans YesWiki
+
+Il est possible d'exporter les fiches d'un formulaire au format `json-ld` en utilisant une url de ce type [`?api/forms/{formId}/entries/json-ld`](?api/forms/1/entries/json-ld ':ignore').
+
+Si le formulaire en question n'a pas été correctement configuré, les données ne s'afficheront pas comme il faut.
+
+Une page de documentation existe depuis un moment. Il peut arriver qu'elle ne soit plus à jour : https://yeswiki.net/?RendreYeswikiSemantique.
+
+### 1. Activer le contexte sémantique
+
+ - se rendre sur la page d'édition du formulaire concerné [?BazaR&vue=formulaire&action=modif&idformulaire={formId}](?BazaR&vue=formulaire&action=modif&idformulaire=1 ':ignore')
+ - tout en bas, déplier la partie "Configuration avancée"
+ - compléter la partie `contexte sémantique`
+   - si une seule ontologie utilisée, vous pouvez mettre l'url de l'ontologie
+     - exemple 1 : `https://www.w3.org/ns/activitystreams`
+     - exemple 2 : `https://schema.org/`
+   - si plusieurs ontologies seront utilisées, vous pouvez utiliser le format `json`
+      ```
+      [
+          "https://www.w3.org/ns/activitystreams",
+          {
+          "schema": "https://schema.org/"
+          }
+      ]
+      ```
+ - à ce stade, le formulaire ne sera pas exporté en `json-ld` : il vous faut définir le type qui correspond à chaque fiche de ce formulaire et l'indiquer
+   - exemple si une seule ontologie `https://www.w3.org/ns/activitystreams`
+     - pour une personne : `Person`
+     - pour un évènement : `Event`
+     - pour un lieu : `Place`
+     - pour un article de blog : `Article`
+     - pour un autre type de données : s'aider de cette page : https://www.w3.org/ns/activitystreams#class-definitions
+   - exemple si une seule ontologie `https://schema.org/`
+     - pour une personne : `Person`
+     - pour un évènement : `Event`
+     - pour un lieu : `Place`
+     - pour un article de blog : `Article`
+     - pour un autre type de données : s'aider de cette page : https://schema.org/docs/schemas.htmls
+   - exemple si deux ontologies (_exemple  précédent_)
+     - pour une personne : `Person, schema:Person`
+     - pour un évènement : `Event, schema:Event`
+     - pour un lieu : `Place, schema:Place`
+     - pour un article de blog : `Article, schema:Article`
+     - le types peuvent parfois porter des noms différents selon les ontologies
+ - à ce stade, les données seront bien formatées en `json-ld` mais elles contiendront peut d'information
+
+### 2. Configurer le contexte sémantique pour chaque champ du formulaire
+
+En effet, pour que les données soient affichées, il faut que les champs qui les concernent soient reliés à un type de l'ontologie.
+
+ - Se rendre dans le constructeur graphique de formulaire pour modifier le formulaire concerné
+ - Choisir un champ (exemple, le champ `bf_name` s'il existe)
+ - Éditer le champ et déplier la partie **paramètres avancées**
+ - Dans la partie `Type sémantique du champ`, ajouter le type sématique en respectant le formalisme précédent
+   - exemple si une seule ontologie `https://www.w3.org/ns/activitystreams`
+     - nom pour une `Person` ou un `Event` : `name`
+     - email pour une `Person`: non défini
+     - date de début pour un `Event` : `startTime`
+     - date de fin pour un `Event` : `endTime`
+     - beaucoup de ces propriétés sont héritées de https://www.w3.org/TR/activitystreams-vocabulary/#dfn-object
+   - exemple si une seule ontologie `https://schema.org/`
+     - nom de famille pour une `Person` : `familyName`
+     - email pour une `Person` : `email`
+     - nom pour un `Event` ou une personne `Person` : `name`
+     - date de début pour un `Event` : `startDate`
+     - date de fin pour un `Event` : `endDate`
+   - exemple si deux ontologies (_exemple  précédent_)
+     - nom pour une `Person` ou un `Event` : `name, schema:name`
+     - email pour une `Person` : `schema:email`
+     - date de début pour un `Event` : `startTime,schema:startDate`
+     - date de fin pour un `Event` : `endTime,schema:endDate`
