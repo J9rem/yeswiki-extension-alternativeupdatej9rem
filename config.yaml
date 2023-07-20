@@ -18,6 +18,9 @@ services:
   YesWiki\Alternativeupdatej9rem\Service\ArchiveService:
     decorates: YesWiki\Core\Service\ArchiveService
     decoration_on_invalid: null
+  YesWiki\Alternativeupdatej9rem\Service\AssetsManager:
+    decorates: YesWiki\Core\Service\AssetsManager
+    decoration_on_invalid: null
   YesWiki\Alternativeupdatej9rem\Service\TabsService:
     decorates: YesWiki\Templates\Service\TabsService
     decoration_on_invalid: null
