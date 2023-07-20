@@ -1,0 +1,43 @@
+{# # This file is part of the YesWiki Extension alternativeupdatej9rem.
+# Authors : see README.md file that was distributed with this source code.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code. #}
+
+<table class="yeswiki-table prevent-auto-init table table-condensed table-striped">
+  <tbody>
+    <tr style="font-weight:900;">
+      <td>Nom</td>
+      <td>Id</td>
+      <td>Pages</td>
+      <td style="line-break: anywhere;">Formulaires associés</td>
+      <td>Nb fiches</td>
+    </tr>
+    {% for form in forms %}
+      <tr>
+        <td>
+          <a
+            href="{{ url({tag:'BazaR',params:{vue:'formulaire',action:'modif',idformulaire:form.id}}) }}"
+            title="éditer le formulaire">
+            {{ form.title }}
+          </a>
+        </td>
+        <td>{{ form.id }}</td>
+        <td style="line-break: anywhere;">
+          {{ form.pages|map(page=>"<a href=\"#{url({tag:page})}\">#{page}</a>")|join(',')|raw }}
+        </td>
+        <td style="line-break: anywhere;">
+          {{ form.associatedForms|map(formInt=>"<a href=\"#{url({tag:'BazaR',params:{vue:'formulaire',action:'modif',idformulaire:formInt.id}})}\" class=\"new-window\">#{formInt.title}</a>")|join(',')|raw }}
+        </td>
+        <td>
+          <a
+            href="{{ url({tag:'BazaR',params:{vue:'consulter',action:'recherche',id:form.id}}) }}"
+            class="new-window"
+            title="voir la liste"
+            >
+            {{ form.nbEntries }}
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
