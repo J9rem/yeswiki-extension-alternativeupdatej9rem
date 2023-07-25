@@ -81,22 +81,22 @@ En effet, pour que les données soient affichées, il faut que les champs qui le
  - Éditer le champ et déplier la partie **paramètres avancées**
  - Dans la partie `Type sémantique du champ`, ajouter le type sématique en respectant le formalisme précédent
    - exemple si une seule ontologie `https://www.w3.org/ns/activitystreams`
-     - nom pour une `Person` ou un `Event` : `name`
+     - nom pour une `Person` ou un `Event` : mettre `name`
      - email pour une `Person`: non défini
-     - date de début pour un `Event` : `startTime`
-     - date de fin pour un `Event` : `endTime`
+     - date de début pour un `Event` : mettre `startTime`
+     - date de fin pour un `Event` : mettre `endTime`
      - beaucoup de ces propriétés sont héritées de https://www.w3.org/TR/activitystreams-vocabulary/#dfn-object
    - exemple si une seule ontologie `https://schema.org/`
-     - nom de famille pour une `Person` : `familyName`
-     - email pour une `Person` : `email`
-     - nom pour un `Event` ou une personne `Person` : `name`
-     - date de début pour un `Event` : `startDate`
-     - date de fin pour un `Event` : `endDate`
+     - nom de famille pour une `Person` : mettre `familyName`
+     - email pour une `Person` : mettre `email`
+     - nom pour un `Event` ou une personne `Person` : mettre `name`
+     - date de début pour un `Event` : mettre `startDate`
+     - date de fin pour un `Event` : mettre `endDate`
    - exemple si deux ontologies (_exemple  précédent_)
-     - nom pour une `Person` ou un `Event` : `name, schema:name`
-     - email pour une `Person` : `schema:email`
-     - date de début pour un `Event` : `startTime,schema:startDate`
-     - date de fin pour un `Event` : `endTime,schema:endDate`
+     - nom pour une `Person` ou un `Event` : mettre `name, schema:name`
+     - email pour une `Person` : mettre `schema:email`
+     - date de début pour un `Event` : mettre `startTime,schema:startDate`
+     - date de fin pour un `Event` : mettre `endTime,schema:endDate`
 
 !> **Important**: il n'est pas nécessaire de définir un _type sémantique_ du champ pour chaque champ. Dans le doute, il vaut mieux le laisser vide. Dans ce cas, le contenu du champ ne sera pas fourni dans le `json-ld`.
 Pour afficher un champ, il reste important de lui attribuer un type qui correspond. Ainsi, seul le champ titre ou nom devrait avoir le type `name`. Pour les autres champs, il faudra utiliser un autre type en respectant l'ontologie concernée.
