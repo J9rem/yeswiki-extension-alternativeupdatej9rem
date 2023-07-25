@@ -49,7 +49,7 @@ Une page de documentation existe depuis un moment. Il peut arriver qu'elle ne so
           }
       ]
       ```
- - à ce stade, le formulaire ne sera pas exporté en `json-ld` : il vous faut définir le type qui correspond à chaque fiche de ce formulaire et l'indiquer
+ - à ce stade, le formulaire ne sera pas exporté en `json-ld` : il vous faut définir le type qui correspond à chaque fiche de ce formulaire et l'indiquer **dans la partie `type sémantique`** en nas du formulaire (partie paramètres avancées)
    - exemple si une seule ontologie `https://www.w3.org/ns/activitystreams`
      - pour une personne : `Person`
      - pour un évènement : `Event`
@@ -61,7 +61,7 @@ Une page de documentation existe depuis un moment. Il peut arriver qu'elle ne so
      - pour un évènement : `Event`
      - pour un lieu : `Place`
      - pour un article de blog : `Article`
-     - pour un autre type de données : s'aider de cette page : https://schema.org/docs/schemas.htmls
+     - pour un autre type de données : s'aider de cette page : https://schema.org/docs/schemas.html
    - exemple si deux ontologies (_exemple  précédent_)
      - pour une personne : `Person, schema:Person`
      - pour un évènement : `Event, schema:Event`
@@ -69,6 +69,8 @@ Une page de documentation existe depuis un moment. Il peut arriver qu'elle ne so
      - pour un article de blog : `Article, schema:Article`
      - le types peuvent parfois porter des noms différents selon les ontologies
  - à ce stade, les données seront bien formatées en `json-ld` mais elles contiendront peut d'information
+
+?> _Info_ : dans les paramètres avancées, il existe une case à cochée `Utiliser un template sémantique s'il est disponible pour ce type d'objet`. Son état n'a pour le moment pas d'importance car il n'est pas pris en compte. C'est une case dans l'idée de détecter automatiquement le type sémantique de chaque champ à partir de ce qu'il est (par exemple, un champ `url` pourrait être automatiquement considéré comme le type sémantique `url`). Donc, ne pas prendre en compte cette case, cochée ou non.
 
 ### 2. Configurer le contexte sémantique pour chaque champ du formulaire
 
@@ -95,3 +97,6 @@ En effet, pour que les données soient affichées, il faut que les champs qui le
      - email pour une `Person` : `schema:email`
      - date de début pour un `Event` : `startTime,schema:startDate`
      - date de fin pour un `Event` : `endTime,schema:endDate`
+
+!> **Important**: il n'est pas nécessaire de définir un _type sémantique_ du champ pour chaque champ. Dans le doute, il vaut mieux le laisser vide. Dans ce cas, le contenu du champ ne sera pas fourni dans le `json-ld`.
+Pour afficher un champ, il reste important de lui attribuer un type qui correspond. Ainsi, seul le champ titre ou nom devrait avoir le type `name`. Pour les autres champs, il faudra utiliser un autre type en respectant l'ontologie concernée.
