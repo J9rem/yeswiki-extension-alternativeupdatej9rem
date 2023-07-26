@@ -2,7 +2,7 @@
 
 Cette extension permet de mettre à disposition un système de mise à jour des extensions non officielles fournies par [j9rem](https://github.com/J9rem) tout en continuant de recevoir les mises à jour de [`YesWiki`](https://yeswiki.net) et des extensions officielles via le dépôt officielle.
 
-Ce fichier d'aide sert particulièrement à partager de la documentation en vue de son intégration future dans le cœur de YesWiki.
+!> Ce fichier d'aide sert particulièrement à partager de la documentation en vue de **son intégration future dans le cœur de YesWiki** ; ce qui explique la non relation entre l'extension et le contenu.
 
 ## Configurer un formulaire pour exporter les données en `json-ld` (sémantique)
 
@@ -24,13 +24,19 @@ Deux ontologies très connues sont :
 
 Les données sémantiques indiquent toujours à quelle ontologie elles font référence pour que le destinataire puisse s'y retrouver automatiquement.
 
+Une ontologie peut être décrite via la norme [`OWL`](https://fr.wikipedia.org/wiki/Web_Ontology_Language) ou par le format [`RDFS`](https://en.wikipedia.org/wiki/RDF_Schema)
+
 ## Configuration dans YesWiki
 
 Il est possible d'exporter les fiches d'un formulaire au format `json-ld` en utilisant une url de ce type [`?api/forms/{formId}/entries/json-ld`](?api/forms/1/entries/json-ld ':ignore').
 
 Si le formulaire en question n'a pas été correctement configuré, les données ne s'afficheront pas comme il faut.
 
-Une page de documentation existe depuis un moment. Il peut arriver qu'elle ne soit plus à jour : https://yeswiki.net/?RendreYeswikiSemantique.
+La configuration se fait en deux étapes:
+ 1. on associe le formulaire à une classe de l'ontologie (ou modèle de données)
+ 2. on associe chaque champ du formulaire aux attributs de l'ontologie
+
+?> Une page de documentation existe depuis un moment. Il peut arriver qu'elle ne soit plus à jour : <https://yeswiki.net/?RendreYeswikiSemantique>, **les informations sont donc complétées ici**.
 
 ### 1. Activer le contexte sémantique
 
@@ -49,7 +55,7 @@ Une page de documentation existe depuis un moment. Il peut arriver qu'elle ne so
           }
       ]
       ```
- - à ce stade, le formulaire ne sera pas exporté en `json-ld` : il vous faut définir le type qui correspond à chaque fiche de ce formulaire et l'indiquer **dans la partie `type sémantique`** en nas du formulaire (partie paramètres avancées)
+ - à ce stade, le formulaire ne sera pas exporté en `json-ld` : il vous faut définir le type qui correspond aux fiches de ce formulaire et l'indiquer **dans la partie `type sémantique`** en bas du formulaire (partie paramètres avancées)
    - exemple si une seule ontologie `https://www.w3.org/ns/activitystreams`
      - pour une personne : `Person`
      - pour un évènement : `Event`
@@ -74,7 +80,7 @@ Une page de documentation existe depuis un moment. Il peut arriver qu'elle ne so
 
 ### 2. Configurer le contexte sémantique pour chaque champ du formulaire
 
-En effet, pour que les données soient affichées, il faut que les champs qui les concernent soient reliés à un type de l'ontologie.
+En effet, pour que les données soient affichées, il faut que les champs qui les concernent soient reliés à un type de l'ontologie; **sinon les données de ce champ ne sont pas diffusées**
 
  - Se rendre dans le constructeur graphique de formulaire pour modifier le formulaire concerné
  - Choisir un champ (exemple, le champ `bf_name` s'il existe)
@@ -82,7 +88,7 @@ En effet, pour que les données soient affichées, il faut que les champs qui le
  - Dans la partie `Type sémantique du champ`, ajouter le type sématique en respectant le formalisme précédent
    - exemple si une seule ontologie `https://www.w3.org/ns/activitystreams`
      - nom pour une `Person` ou un `Event` : mettre `name`
-     - email pour une `Person`: non défini
+     - email pour une `Person`: non défini, il n'y a pas d'attribut pour ce champ, il ne sera pas diffusé
      - date de début pour un `Event` : mettre `startTime`
      - date de fin pour un `Event` : mettre `endTime`
      - beaucoup de ces propriétés sont héritées de https://www.w3.org/TR/activitystreams-vocabulary/#dfn-object
@@ -97,6 +103,8 @@ En effet, pour que les données soient affichées, il faut que les champs qui le
      - email pour une `Person` : mettre `schema:email`
      - date de début pour un `Event` : mettre `startTime,schema:startDate`
      - date de fin pour un `Event` : mettre `endTime,schema:endDate`
+
+?> **Astuce**: beaucoup des attributs sont hérités de la classe parente (`Extends`). Il est donc possible d'utiliser les attributs de la classe `Object` par exemple, même s'ils n'ont pas été indiqués dans la classe fille (ex.: `Person`)
 
 !> **Important**: il n'est pas nécessaire de définir un _type sémantique_ du champ pour chaque champ. Dans le doute, il vaut mieux le laisser vide. Dans ce cas, le contenu du champ ne sera pas fourni dans le `json-ld`.
 Pour afficher un champ, il reste important de lui attribuer un type qui correspond. Ainsi, seul le champ titre ou nom devrait avoir le type `name`. Pour les autres champs, il faudra utiliser un autre type en respectant l'ontologie concernée.
