@@ -1,0 +1,20 @@
+{# # This file is part of the YesWiki Extension alternativeupdatej9rem.
+# Authors : see README.md file that was distributed with this source code.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code. #}
+
+{{ include_javascript('tools/alternativeupdatej9rem/javascripts/toggle-button-hidden.js') }}
+{{ include_css('tools/alternativeupdatej9rem/styles/toggle-button-hidden.css') }}
+
+<div class="button-to-hide-field">
+    <button class="btn btn-secondary-1" onClick="toggleButtonToHideField(event)">
+        <span class="show-icon">
+            <i class="far fa-eye"></i>
+            {{ _t('ALTERNATIVEUPDATEJ9REM_SHOW_FIELDS') }}
+        </span>
+        <span class="hide-icon">
+            <i class="fas fa-eye-slash"></i>
+            {{ _t('ALTERNATIVEUPDATEJ9REM_HIDE_FIELDS') }}
+        </span>
+    </button>
+</div>

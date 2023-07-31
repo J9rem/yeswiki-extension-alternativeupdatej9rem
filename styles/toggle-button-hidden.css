@@ -1,0 +1,22 @@
+/*
+ * This file is part of the YesWiki Extension alternativeupdatej9rem.
+ *
+ * Authors : see README.md file that was distributed with this source code.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+.button-to-hide-field .hide-icon,
+.hidden-field-specific {
+    display: none;
+}
+
+.force-show .button-to-hide-field .hide-icon,
+.force-show .hidden-field-specific {
+    display: initial !important;
+}
+
+.force-show .button-to-hide-field .show-icon {
+    display: none;
+}
