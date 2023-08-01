@@ -11,8 +11,7 @@
 
 namespace YesWiki\Alternativeupdatej9rem;
 
-use YesWiki\Alternativeupdatej9rem\Entity\PackageToolLocal;
-use YesWiki\Alternativeupdatej9rem\Service\FilesService;
+use Exception;
 use YesWiki\Core\YesWikiHandler;
 use YesWiki\Core\Service\AclService;
 use YesWiki\Core\Service\PageManager;
@@ -26,7 +25,7 @@ class UpdateHandler__ extends YesWikiHandler
     public function run()
     {
         if ($this->getService(SecurityController::class)->isWikiHibernated()) {
-            throw new \Exception(_t('WIKI_IN_HIBERNATION'));
+            throw new Exception(_t('WIKI_IN_HIBERNATION'));
         };
         if (!$this->wiki->UserIsAdmin()) {
             return null;
@@ -34,19 +33,20 @@ class UpdateHandler__ extends YesWikiHandler
 
         $aclService = $this->wiki->services->get(AclService::class);
         $pageManager = $this->wiki->services->get(PageManager::class);
-        $output = '<strong>Extension AlternativeUpdateJ9rem</strong><br/>';
+        
+        $messages = [];
         if (!$pageManager->getOne(self::SPECIFIC_PAGE_NAME)) {
-            $output .= 'ℹ️ Adding the <em>'.self::SPECIFIC_PAGE_NAME.'</em> page<br />';
+            $message = 'ℹ️ Adding the <em>'.self::SPECIFIC_PAGE_NAME.'</em> page<br />';
             // save the page with default value
             $body = "{{alternativeupdatej9rem2 versions=\"doryphore\"}}\n";
             $aclService->save(self::SPECIFIC_PAGE_NAME, 'read', '@admins');
             $aclService->save(self::SPECIFIC_PAGE_NAME, 'write', '@admins');
             $aclService->save(self::SPECIFIC_PAGE_NAME, 'comment', 'comments-closed');
             $pageManager->save(self::SPECIFIC_PAGE_NAME, $body);
-            $output .= '✅ Done !<br />';
+            $message .= '✅ Done !';
+            $messages[] = $message;
         }
 
-        $filesService = $this->getService(FilesService::class);
         $foldersToRemove = [
             'archive' => false,
             'actionsbuilderfor422' => false,
@@ -69,49 +69,47 @@ class UpdateHandler__ extends YesWikiHandler
         }
         foreach($foldersToRemove as $folderName => $deactivate){
             if (file_exists("tools/$folderName")){
-                $deactivate = $deactivate || (DIRECTORY_SEPARATOR === '\\' && is_dir("tools/$folderName") && is_dir("tools/$folderName/.git"));
-                if ($deactivate && is_dir("tools/$folderName") && is_file("tools/$folderName/desc.xml")){
-                    $info = $this->getInfoFromDesc($folderName);
-                    $active = empty($info['active']) ? false : in_array($info['active'], [1,"1",true,"true"]);
-                    if ($active){
-                        $output .= "ℹ️ Deactivating folder <em>tools/$folderName</em>... ";
-                        $package = new PackageToolLocal(
-                            $active,
-                            $folderName,
-                            "",
-                            "",
-                            null
-                        );
-                        $package->activate(false);
-                        $info = $this->getInfoFromDesc($folderName);
-                        if (empty($info['active']) ? false : in_array($info['active'], [1,"1",true,"true"])){
-                            $output .= '❌ Error : not deactivated !<br />';
-                        } else {
-                            $output .= '✅ Done !<br />';
-                        }
+                if ($deactivate || $this->shouldDeactivateInsteadOfDeleting($folderName)){
+                    if (is_file("tools/$folderName/desc.xml")){
+                        $messages[] = $this->isActive($folderName)
+                            ? (
+                                "ℹ️ Deactivating folder <em>tools/$folderName</em>... "
+                                .(
+                                    $this->deactivate($folderName)
+                                    ? '✅ Done !'
+                                    : '❌ Error : not deactivated !'
+                                )
+                            )
+                            : "ℹ️ Folder <em>tools/$folderName</em> already deactived !";
                     } else {
-                        $output .= "ℹ️ Folder <em>tools/$folderName</em> already deactived !<br/>";
+                        $messages[] = "❌ Error <em>tools/$folderName</em> can not be deactivated : remove it manually !";
                     }
                 } else {
-                    $output .= "ℹ️ Removing folder <em>tools/$folderName</em>... ";
-                    $filesService->delete("tools/$folderName");
-                    if (file_exists("tools/$folderName")){
-                        $output .= '❌ Error : not deleted !<br />';
-                    } else {
-                        $output .= '✅ Done !<br />';
-                    }
+                    $messages[] = "ℹ️ Removing folder <em>tools/$folderName</em>... "
+                        .(
+                            $this->deleteTool($folderName)
+                            ? '✅ Done !'
+                            : '❌ Error : not deleted !'
+                        );
                 }
-            } else {
-                $output .= "ℹ️ Folder <em>tools/$folderName</em> is not present.<br />";
             }
         }
+        
+        if (!empty($messages)){
+            $message = implode('<br/>',$messages);
+            $output = <<<HTML
+            <strong>Extension AlternativeUpdateJ9rem</strong><br/>
+            $message<br/>
+            <hr/>
+            HTML;
 
-        // set output
-        $this->output = str_replace(
-            '<!-- end handler /update -->',
-            $output.'<!-- end handler /update -->',
-            $this->output
-        );
+            // set output
+            $this->output = str_replace(
+                '<!-- end handler /update -->',
+                $output.'<!-- end handler /update -->',
+                $this->output
+            );
+        }
         return null;
     }
 
@@ -128,5 +126,76 @@ class UpdateHandler__ extends YesWikiHandler
             return $pluginService->getPluginInfo("tools/$dirName/desc.xml");
         }
         return [];
+    }
+    
+    /**
+     * test if on Windows and prefer deactive to prevent git folder to be deleted
+     */
+    protected function shouldDeactivateInsteadOfDeleting(string $folderName): bool
+    {
+        return (DIRECTORY_SEPARATOR === '\\' && is_dir("tools/$folderName") && is_dir("tools/$folderName/.git"));
+    }
+
+    protected function isActive(string $folderName): bool
+    {
+        $info = $this->getInfoFromDesc($folderName);
+        return  empty($info['active']) ? false : in_array($info['active'], [1,"1",true,"true"]);
+
+    }
+    
+    protected function deactivate(string $dirName): bool
+    {
+        $xmlPath = "tools/$dirName/desc.xml";
+        if (is_file($xmlPath)) {
+            $xml = file_get_contents($xmlPath);
+            $newXml = preg_replace("/(active=)\"([^\"]+)\"/", "$1\"".($status ? "1" : "0")."\"", $xml);
+            if (!empty($newXml) && $newXml != $xml) {
+                file_put_contents($xmlPath, $newXml);
+                return !$this->isActive($dirName);
+            }
+        }
+        return false;
+    }
+    
+    protected function deleteTool(string $dirName): bool
+    {
+        return (!$this->delete("tools/$dirName"))
+            ? false
+            : !file_exists("tools/$dirName");
+    }
+
+    protected function delete($path)
+    {
+        if (empty($path)) {
+            return false;
+        }
+        if (is_file($path)) {
+            if (unlink($path)) {
+                return true;
+            }
+            return false;
+        }
+        if (is_dir($path)) {
+            return $this->deleteFolder($path);
+        }
+    }
+
+    private function deleteFolder($path)
+    {
+        $file2ignore = array('.', '..');
+        if (is_link($path)) {
+            unlink($path);
+        } else {
+            if ($res = opendir($path)) {
+                while (($file = readdir($res)) !== false) {
+                    if (!in_array($file, $file2ignore)) {
+                        $this->delete($path . '/' . $file);
+                    }
+                }
+                closedir($res);
+            }
+            rmdir($path);
+        }
+        return true;
     }
 }
