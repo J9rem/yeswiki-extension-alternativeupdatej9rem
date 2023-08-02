@@ -1,0 +1,15 @@
+{# # This file is part of the YesWiki Extension alternativeupdatej9rem.
+# Authors : see README.md file that was distributed with this source code.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code. #}
+
+{{ include([
+    "custom/templates/tools/bazar/templates/entries/index-dynamic-templates/list.twig",
+    "custom/templates/bazar/templates/entries/index-dynamic-templates/list.twig",
+    "custom/templates/bazar/entries/index-dynamic-templates/list.twig",
+    "themes/tools/bazar/templates/entries/index-dynamic-templates/list.twig",
+    "themes/tools/bazar/entries/index-dynamic-templates/list.twig",
+    "tools/bazar/templates/entries/index-dynamic-templates/list.twig",
+    ])|replace({
+    '<span class="title">{{ entry.title || entry.bf_titre }}</span>':'<span class="title" v-html="entry.title || entry.bf_titre"></span>'
+})|raw }}
