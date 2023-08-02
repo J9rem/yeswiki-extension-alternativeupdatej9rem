@@ -20,6 +20,7 @@ class __LinkStyleAction extends YesWikiAction
     public function run()
     {
         $this->getService(AssetsManager::class)->AddCSSFile('tools/alternativeupdatej9rem/styles/fix.css');
+        $this->getService(AssetsManager::class)->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/toggle-button-hidden.js');
         $this->getService(AssetsManager::class)->AddCSSFile('tools/alternativeupdatej9rem/styles/toggle-button-hidden.css');
     }
 }
