@@ -11,6 +11,7 @@
 
 namespace YesWiki\Alternativeupdatej9rem\Field;
 
+use Psr\Container\ContainerInterface;
 use YesWiki\Bazar\Field\LinkedEntryField as RealLinkedEntryField;
 use YesWiki\Core\Service\Performer;
 use YesWiki\Templates\Service\TabsService;
@@ -20,11 +21,21 @@ use YesWiki\Templates\Service\TabsService;
  */
 class LinkedEntryField extends RealLinkedEntryField
 {
+    protected const FIELD_LABEL = 7;
+    public function __construct(array $values, ContainerInterface $services)
+    {
+        parent::__construct($values, $services);
+        $this->label = $values[self::FIELD_LABEL] ?? '';
+    }
+
     protected function renderInput($entry)
     {
         // Display the linked entries only on update
         if (isset($entry['id_fiche'])) {
-            return $this->renderSecuredBazarList($entry);
+            $output = $this->renderSecuredBazarList($entry);
+            return $this->isEmptyOutput($output)
+                ? $output
+                : $this->render('@bazar/inputs/linked-entry.twig',compact(['output']));
         }
     }
 
@@ -32,10 +43,18 @@ class LinkedEntryField extends RealLinkedEntryField
     {
         // Display the linked entries only if id_fiche and id_typeannonce
         if (!empty($entry['id_fiche']) && !empty($entry['id_typeannonce'])) {
-            return $this->renderSecuredBazarList($entry);
+            $output = $this->renderSecuredBazarList($entry);
+            return $this->isEmptyOutput($output)
+                ? $output
+                : $this->render('@bazar/fields/linked-entry.twig',compact(['output']));
         } else {
             return "" ;
         }
+    }
+
+    protected function isEmptyOutput(string $output): bool
+    {
+        return empty($output) || preg_match('/<div id="[^"]+" class="bazar-list[^"]*"[^>]*>\s*<div class="list"><\/div>\s*<\/div>/',$output);
     }
 
     protected function renderSecuredBazarList($entry): string

@@ -32,6 +32,7 @@ class BazarAction__ extends YesWikiAction
             } else {
                 $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/form-edit-template.js');
             }
+            $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/linkedentryfield-for-4-4-0.js');
         }
     }
 }
