@@ -18,7 +18,7 @@ function getVideoField({
   return {
       field: {
         label: _t('ALTERNATIVEUPDATE_VIDEO_LABEL'),
-        name: "cvideo",
+        name: "video",
         attrs: { type: "video" },
         icon: '<i class="fas fa-video"></i>',
       },
