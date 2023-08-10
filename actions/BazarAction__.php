@@ -30,6 +30,7 @@ class BazarAction__ extends YesWikiAction
             $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/form-edit-template-register-field.js');
             $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/sendmailselectorfield.js');
             $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/customsendmailfield.js');
+            $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/videofield.js');
             if (file_exists('tools/bazar/presentation/javascripts/form-edit-template/fields/commons/render-helper.js')){
                 $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/form-edit-template-module.js', false, true);
             } else {

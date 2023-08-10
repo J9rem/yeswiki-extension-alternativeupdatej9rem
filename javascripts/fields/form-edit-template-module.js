@@ -36,3 +36,12 @@ registerFieldAsModuleAUJ9rem(getCustomSendMailField({
     renderHelper,
     linkedLabelAUJ9remConf
 }))
+registerFieldAsModuleAUJ9rem(getVideoField({
+    defaultMapping,
+    readConf,
+    writeconf,
+    semanticConf,
+    renderHelper,
+    linkedLabelAUJ9remConf
+}))
+
