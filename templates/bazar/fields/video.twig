@@ -1,0 +1,18 @@
+{% extends "@bazar/layouts/field.twig" %}
+
+{% block value %}
+	<div class="embed-responsive embed-responsive-16by9">
+		{% if type == 'youtube' or type == 'vimeo' %}
+			{{ format('{{video id="' ~ id ~ '"  serveur="' ~ type ~'" }}')|raw }}
+		{% endif %}
+  		{% if type == 'peertube' %}
+ 	 		{{ format('{{video id="' ~ id ~ '" peertubeinstance="' ~ instance ~ '" serveur="' ~ type ~'" }}')|raw }}
+  		{% endif %}
+		{% if type == 'dailymotion' %}
+		 {# Gérer en iframe car pas encore dans le composant video#}
+			<iframe style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden" frameborder="0" type="text/html" src="https://www.dailymotion.com/embed/video/{{id}}" width="100%" height="100%" allowfullscreen title="Dailymotion Video Player" > </iframe> 
+	  {% endif %}
+  
+	</div>
+	<p>Lien vers la vidéo : <a href="{{value}}" target="_blank">{{value}}</a> </p>
+{% endblock %}

@@ -63,4 +63,8 @@ return [
   'ALTERNATIVEUPDATE_FIELD_FORM' => 'Champ fourni par l\'extension "alternativeupdatej9rem"',
   'ALTERNATIVEUPDATE_FIELD_LINKEDLABEL' => 'Champ e-mail dans la fiche courante',
   'ALTERNATIVEUPDATE_FIELD_LINKEDLABEL_HINT' => 'Laisser vide pour ne pas utiliser la fiche courante',
+  // vidéo
+  'ALTERNATIVEUPDATE_VIDEO_LABEL' => 'vidéo',
+
+  
 ];

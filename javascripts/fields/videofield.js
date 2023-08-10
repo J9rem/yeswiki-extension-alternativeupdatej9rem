@@ -12,8 +12,7 @@ function getVideoField({
   readConf,
   writeconf,
   semanticConf,
-  renderHelper,
-  linkedLabelAUJ9remConf
+  renderHelper
 }){
   return {
       field: {
@@ -23,39 +22,20 @@ function getVideoField({
         icon: '<i class="fas fa-video"></i>',
       },
       attributes: {
-        linkedLabel: linkedLabelAUJ9remConf,
-        askForCurrentSave: {
-          label: _t('ALTERNATIVEUPDATE_VIDEO_ASK_FOR_CURRENT_SAVE'),
-          options: {
-            "": _t('NO'),
-            yes: _t('YES')
-          }
-        },
-        labelForOption: {
-          label: _t('ALTERNATIVEUPDATE_VIDEO_LABEL_FOR_OPTIONS'),
-          value: _t('ALTERNATIVEUPDATE_VIDEO_LABEL_FOR_OPTIONS_VALUE')
-        },
         read: readConf,
         write: writeconf,
         semantic: semanticConf
       },
-      attributesMapping: {
-        ...defaultMapping,
-        ...{
-          3:"linkedLabel",
-          4:"askForCurrentSave",
-          7: "labelForOption"
-        }
-      },
-      advancedAttributes: ['read', 'write', 'semantic', 'hint', 'name', 'value'],
+      attributesMapping: defaultMapping,
+
+      advancedAttributes: ['read', 'write', 'semantic', 'hint', 'value'],
       renderInput(field) {
         return {
      
+            field: '<input type="text" disabled value="https://framatube.org/w/pAQiVCgv2CsLg79KKXUoMw"/>', 
+
             onRender() {
-              renderHelper.prependHint(field, _t('ALTERNATIVEUPDATE_FIELD_FORM')
-                +'<br/>'+_t('ALTERNATIVEUPDATE_VIDEO_HINT'))
-              renderHelper.defineLabelHintForGroup(field, 'linkedLabel', _t('ALTERNATIVEUPDATE_FIELD_LINKEDLABEL_HINT'))
-              renderHelper.defineLabelHintForGroup(field, 'askForCurrentSave', _t('ALTERNATIVEUPDATE_VIDEO_ASK_FOR_CURRENT_SAVE_HINT'))
+              renderHelper.prependHint(field, _t('ALTERNATIVEUPDATE_FIELD_FORM'))
             }
         }
       },

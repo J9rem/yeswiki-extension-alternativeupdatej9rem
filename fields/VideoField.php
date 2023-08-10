@@ -13,18 +13,12 @@ namespace YesWiki\alternativeupdatej9rem\Field;
 
 
 use Psr\Container\ContainerInterface;
-use YesWiki\Bazar\Field\BazarField;
-use YesWiki\Bazar\Field\CheckboxEntryField;
-use YesWiki\Bazar\Field\SelectEntryField;
-use YesWiki\Bazar\Service\FormManager;
-use YesWiki\Core\Service\Performer;
-use YesWiki\Bazar\Service\EntryManager;
-
+use YesWiki\Bazar\Field\LinkField;
 
 /**
  * @Field({"video"})
  */
-class VideoField extends BazarField
+class VideoField extends LinkField
 {
     public function __construct(array $values, ContainerInterface $services)
     {
