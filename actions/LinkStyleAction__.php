@@ -21,7 +21,7 @@ class LinkStyleAction__ extends YesWikiAction
     public function run()
     {
         $themeManager = $this->getService(ThemeManager::class);
-        if (!$themeManager->getUseFallbackTheme()){
+        if (method_exists($themeManager,'getUseFallbackTheme') && !$themeManager->getUseFallbackTheme()){
             $favoriteStyle = $themeManager->getFavoriteStyle();
             $favoritePreset = $themeManager->getFavoritePreset();
             $styleFile = 'themes/'.$themeManager->getFavoriteTheme().'/styles/'.$favoriteStyle;

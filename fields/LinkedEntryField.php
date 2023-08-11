@@ -61,7 +61,11 @@ class LinkedEntryField extends RealLinkedEntryField
     {
         if ($this->getWiki()->services->has(TabsService::class)){
             $tabsService = $this->getService(TabsService::class);
-            $index = $tabsService->saveState();
+            if (method_exists($tabsService,'saveState')){
+                $index = $tabsService->saveState();
+            } else {
+                unset($tabsService);
+            }
         }
         $output = $this->getService(Performer::class)->run('wakka', 'formatter', ['text' => $this->getBazarListAction($entry)]);
         if (isset($tabsService)){

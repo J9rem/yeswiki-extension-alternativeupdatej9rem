@@ -22,15 +22,17 @@ class __BazarListeAction extends YesWikiAction
         if (!$iconAlreadyDefined) {
             if (!empty($icon)) {
                 try {
-                    $tabparam = $entryManager->getMultipleParameters($icon, ',', '=');
-                    if (count($tabparam) > 0 && !empty($iconField)) {
-                        // on inverse cle et valeur, pour pouvoir les reprendre facilement dans la carto
-                        foreach ($tabparam as $key=>$data) {
-                            $tabparam[$data] = $key;
+                    if (method_exists($entryManager,'getMultipleParameters')){
+                        $tabparam = $entryManager->getMultipleParameters($icon, ',', '=');
+                        if (count($tabparam) > 0 && !empty($iconField)) {
+                            // on inverse cle et valeur, pour pouvoir les reprendre facilement dans la carto
+                            foreach ($tabparam as $key=>$data) {
+                                $tabparam[$data] = $key;
+                            }
+                            $icon = $tabparam;
+                        } else {
+                            $icon = trim(array_values($tabparam)[0]);
                         }
-                        $icon = $tabparam;
-                    } else {
-                        $icon = trim(array_values($tabparam)[0]);
                     }
                 } catch (ParsingMultipleException $th) {
                     throw new Exception('action bazarliste : le paramètre icon est mal rempli.<br />Il doit être de la forme icon="nomIcone1=valeur1, nomIcone2=valeur2"<br/>('.$th->getMessage().')');
@@ -49,15 +51,17 @@ class __BazarListeAction extends YesWikiAction
         if (!$colorAlreadyDefined) {
             if (!empty($color)) {
                 try {
-                    $tabparam = $entryManager->getMultipleParameters($color, ',', '=');
-                    if (count($tabparam) > 0 && !empty($colorField)) {
-                        // on inverse cle et valeur, pour pouvoir les reprendre facilement dans la carto
-                        foreach ($tabparam as $key=>$data) {
-                            $tabparam[$data] = $key;
+                    if (method_exists($entryManager,'getMultipleParameters')){
+                        $tabparam = $entryManager->getMultipleParameters($color, ',', '=');
+                        if (count($tabparam) > 0 && !empty($colorField)) {
+                            // on inverse cle et valeur, pour pouvoir les reprendre facilement dans la carto
+                            foreach ($tabparam as $key=>$data) {
+                                $tabparam[$data] = $key;
+                            }
+                            $color = $tabparam;
+                        } else {
+                            $color = trim(array_values($tabparam)[0]);
                         }
-                        $color = $tabparam;
-                    } else {
-                        $color = trim(array_values($tabparam)[0]);
                     }
                 } catch (ParsingMultipleException $th) {
                     throw new Exception('action bazarliste : le paramètre color est mal rempli.<br />Il doit être de la forme color="couleur1=valeur1, couleur2=valeur2"<br/>('.$th->getMessage().')');
