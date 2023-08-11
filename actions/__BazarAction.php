@@ -12,7 +12,6 @@
 
 namespace YesWiki\Alternativeupdatej9rem;
 
-use BazarAction;
 use YesWiki\Core\YesWikiAction;
 
 class __BazarAction extends YesWikiAction
