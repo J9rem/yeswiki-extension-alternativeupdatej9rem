@@ -26,7 +26,7 @@ class __VideoAction extends YesWikiAction
         if (preg_match('/^'
             .'(https?:\\/\\/.*)' // begin as url
             .'(?:' // multiple options
-                .'youtu\.be\/(.+)|youtube.*watch\?v=(.+)' // youtube
+                .'youtu\.be\/(.+)|youtube.*watch\?v=([^&]+)' // youtube
                 .'|vimeo\.com\/(.+)' // vimeo
                 .'|dai\.?ly.+\/video\/(.+)' // dailymotion
                 .'|(?:\/videos\/embed\/|\/w\/)(.+)' // peertube
