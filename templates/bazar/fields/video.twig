@@ -14,5 +14,6 @@
 	  {% endif %}
   
 	</div>
-	<p>Lien vers la vidéo : <a href="{{value}}" target="_blank">{{value}}</a> </p>
+	<p>{{ _t('VIDEO_LINK_FIElD',{link:"<a href=\"#{value}" class=\"newtab\">#{value}</a>"}) }}</p>
+
 {% endblock %}
