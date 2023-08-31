@@ -28,7 +28,7 @@ class __VideoAction extends YesWikiAction
             .'(?:' // multiple options
                 .'youtu\.be\/(.+)|youtube.*watch\?v=([^&]+)' // youtube
                 .'|vimeo\.com\/(.+)' // vimeo
-                .'|dai\.?ly.+\/video\/(.+)' // dailymotion
+                .'|(?:dai\.?ly.*\/video\/|dai\.ly\/)(.+)' // dailymotion
                 .'|(?:\/videos\/embed\/|\/w\/)(.+)' // peertube
             .')/',$url,$matches)){
             if (!empty($matches[2])){
@@ -41,8 +41,10 @@ class __VideoAction extends YesWikiAction
                 $serveur  = 'vimeo';
                 $id = $matches[4];
             } elseif (!empty($matches[5])){
-                $serveur  = 'dailymotion';
+                // $serveur  = 'dailymotion';
+                $serveur  = 'peertube';
                 $id = $matches[5];
+                $peertubeinstance = 'dailymotion'; // fake
             } elseif (!empty($matches[6])){
                 $serveur  = 'peertube';
                 $id = $matches[6];
