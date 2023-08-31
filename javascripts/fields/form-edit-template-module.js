@@ -41,7 +41,6 @@ registerFieldAsModuleAUJ9rem(getVideoField({
     readConf,
     writeconf,
     semanticConf,
-    renderHelper,
-    linkedLabelAUJ9remConf
+    renderHelper
 }))
 

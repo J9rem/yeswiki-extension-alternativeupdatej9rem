@@ -30,6 +30,5 @@ registerFieldAUJ9rem(getVideoField({
   readConf,
   writeconf,
   semanticConf,
-  renderHelper: templateHelper,
-  linkedLabelAUJ9remConf
+  renderHelper: templateHelper
 }))
