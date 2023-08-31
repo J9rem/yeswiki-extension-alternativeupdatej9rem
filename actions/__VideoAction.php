@@ -20,7 +20,7 @@ class __VideoAction extends YesWikiAction
     {
         $url = (!empty($arg['url']) && is_string($arg['url'])) ? $arg['url'] : '';
         $matches = [];
-        $id = $arg['id'] ?? '';
+        $id = $arg['id'] ?? '1f5bfc59-998b-41b3-9be3-e8084ad1a2a1';
         $serveur = $arg['serveur'] ?? '';
         $peertubeinstance = $arg['peertubeinstance'] ?? '';
         if (preg_match('/^'

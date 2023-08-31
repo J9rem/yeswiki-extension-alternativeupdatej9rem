@@ -40,3 +40,8 @@ services:
   YesWiki\Alternativeupdatej9rem\Controller\AuthController:
     decorates: YesWiki\Core\Controller\AuthController
     decoration_on_invalid: null
+  YesWiki\Alternativeupdatej9rem\Service\ActionsBuilderService:
+    decorates: YesWiki\Aceditor\Service\ActionsBuilderService
+    decoration_on_invalid: null
+    arguments:
+      $parentActionsBuilderService: '@.inner'
