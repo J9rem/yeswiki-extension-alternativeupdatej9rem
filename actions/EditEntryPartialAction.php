@@ -57,26 +57,10 @@ class EditEntryPartialAction extends YesWikiAction
             ? $this->renderAlert(_t('BAZ_FICHE_MODIFIEE'),'success')
             : '';
 
-        if ($this->isPostingNewData()){
-            $idFiche = filter_input(INPUT_POST,'id_fiche',FILTER_SANITIZE_STRING);
-            $idFiche = empty($idFiche) ? '' : $idFiche;
-            if (!empty($idFiche)){
-                if (!empty($_POST['incomingurl'])){
-                    if (empty($_GET['incomingurl'])){
-                        $_GET['incomingurl'] = $_POST['incomingurl'];
-                    }
-                    unset($_POST['incomingurl']);
-                }
-                $this->entryController->update($idFiche);
-            }
-            // something is wrong
-            $error .= $this->renderAlert(_t('AUJ9_EDIT_PARTIAL_ENTRY_ERROR_REGISTER'));
-        }
-
         $form = $this->formManager->getOne($this->arguments['id']);
 
         if (empty($form['prepared'])){
-            return $this->renderAlert(_t('AUJ9_ID_PARAM_SHOULD_BE_A_FORM'));
+            return $error.$this->renderAlert(_t('AUJ9_ID_PARAM_SHOULD_BE_A_FORM'));
         }
 
         $editableEntries = $this->entryManager->search(
@@ -92,6 +76,30 @@ class EditEntryPartialAction extends YesWikiAction
                 return $this->aclService->hasAccess('write',$e['id_fiche']);
             }
         );
+
+        if ($this->isPostingNewData()){
+            $idFiche = filter_input(INPUT_POST,'id_fiche',FILTER_SANITIZE_STRING);
+            $idFiche = empty($idFiche) ? '' : $idFiche;
+            if (!empty($idFiche)){
+                $editEntry = null;
+                foreach($editableEntries as $entry){
+                    if ($editEntry === null && $entry['id_fiche'] === $idFiche){
+                        $editEntry = $entry;
+                    }
+                }
+                if (!empty($editEntry)){
+                    if (!empty($_POST['incomingurl'])){
+                        if (empty($_GET['incomingurl'])){
+                            $_GET['incomingurl'] = $_POST['incomingurl'];
+                        }
+                        unset($_POST['incomingurl']);
+                    }
+                    $this->entryController->update($idFiche);
+                }
+            }
+            // something is wrong
+            $error .= $this->renderAlert(_t('AUJ9_EDIT_PARTIAL_ENTRY_ERROR_REGISTER'));
+        }
 
         $selectedEntryId = empty($idFiche)
             ? filter_input(INPUT_POST,'selectedEntryId',FILTER_SANITIZE_STRING)
