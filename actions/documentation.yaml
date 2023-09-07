@@ -1,0 +1,13 @@
+label: _t(AUJ9_EDIT_ENTRY_PARTIAL_ACTION_LABEL)
+position: 3000
+needFormField: true
+previewHeight: 450px
+actions:
+  editentrypartial:
+    label: _t(AUJ9_EDIT_ENTRY_PARTIAL_ACTION_LABEL)
+    properties:
+      fields:
+        label: _t(AUJ9_EDIT_ENTRY_PARTIAL_ACTION_FIELDS_LABEL)
+        type: form-field
+        required: true
+        multiple: true
