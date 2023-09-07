@@ -5,6 +5,9 @@ namespace YesWiki\Alternativeupdatej9rem;
 use YesWiki\Core\Service\AclService;
 use YesWiki\Core\YesWikiHandler;
 
+/**
+ * not needed since 4.4.1
+ */
 class EditHandler__ extends YesWikiHandler
 {
     public function run()

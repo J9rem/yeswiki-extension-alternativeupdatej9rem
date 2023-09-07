@@ -1,6 +1,10 @@
 import LeafletMarkerCluster from '../../bazar/presentation/javascripts/components/LeafletMarkerCluster.js'
 import SpinnerLoader from '../../bazar/presentation/javascripts/components/SpinnerLoader.js'
 
+/**
+ * not needed since 4.4.1
+ */
+
 // allow usage of wiki in templates
 Vue.prototype.wiki = wiki
 

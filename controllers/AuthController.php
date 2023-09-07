@@ -16,6 +16,10 @@ use YesWiki\Core\Controller\AuthController as CoreAuthController;
 use YesWiki\Core\Entity\User;
 use YesWiki\Core\YesWikiController;
 
+/**
+ * not needed since 4.4.1
+ */
+
 if (class_exists(CoreAuthController::class,false)){
 
     class AuthController extends CoreAuthController

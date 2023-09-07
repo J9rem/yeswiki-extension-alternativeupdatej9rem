@@ -7,6 +7,9 @@ use YesWiki\Core\YesWikiHandler;
 use YesWiki\Security\Controller\SecurityController;
 use YesWiki\Tags\Service\TagsManager;
 
+/**
+ * not needed since 4.4.1
+ */
 class __EditHandler extends YesWikiHandler
 {
     public function run()

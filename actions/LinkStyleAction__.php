@@ -16,10 +16,20 @@ use YesWiki\Core\Service\AssetsManager;
 use YesWiki\Core\Service\ThemeManager;
 use YesWiki\Core\YesWikiAction;
 
+/**
+ * not needed since 4.4.1
+ */
 class LinkStyleAction__ extends YesWikiAction
 {
     public function run()
     {
+        $release = $this->params->get('yeswiki_release');
+        if (is_string($release)
+            && !preg_match('/^4\.(?:[0-3]\.[0-9]|4\.0)$/',$release)){
+            // do nothing since `doryphore 4.4.1` or for `doryphoore-dev`
+            return;
+        }
+        
         $themeManager = $this->getService(ThemeManager::class);
         if (method_exists($themeManager,'getUseFallbackTheme') && !$themeManager->getUseFallbackTheme()){
             $favoriteStyle = $themeManager->getFavoriteStyle();

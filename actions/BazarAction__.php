@@ -15,6 +15,9 @@ namespace YesWiki\Alternativeupdatej9rem;
 use BazarAction;
 use YesWiki\Core\YesWikiAction;
 
+/**
+ * register specific fields
+ */
 class BazarAction__ extends YesWikiAction
 {
     public function run()
@@ -32,7 +35,11 @@ class BazarAction__ extends YesWikiAction
             } else {
                 $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/form-edit-template.js');
             }
-            $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/linkedentryfield-for-4-4-0.js');
+            
+            $release = $this->params->get('yeswiki_release');
+            if ($release === '4.4.0'){
+                $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/linkedentryfield-for-4-4-0.js');
+            }
         }
     }
 }

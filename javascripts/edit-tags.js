@@ -1,3 +1,7 @@
+/**
+ * not needed since 4.4.1
+ */
+
 document.addEventListener('DOMContentLoaded',function (){
     var inputTags = $('#ACEditor .yeswiki-input-pagetag')
     const existingTagsInternal = 

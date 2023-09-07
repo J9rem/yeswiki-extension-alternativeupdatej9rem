@@ -11,15 +11,23 @@
 
 namespace YesWiki\Alternativeupdatej9rem\Service;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use YesWiki\Core\Service\AssetsManager as CoreAssetsManager;
+
+/**
+ * not needed since 4.4.1
+ */
 
 if (class_exists(CoreAssetsManager::class,false)){
     class AssetsManager extends CoreAssetsManager
     {
         public function AddJavascriptFile($file, $first = false, $module = false)
         {
+            $release = $this->wiki->services->get(ParameterBagInterface::class)->get('yeswiki_release');
+            $shouldReplace = (is_string($release)
+                && preg_match('/^4\.(?:[0-3]\.[0-9]|4\.0)$/',$release));
             return parent::AddJavascriptFile(
-                ($file == 'tools/bazar/presentation/javascripts/components/BazarMap.js')
+                ($shouldReplace && $file == 'tools/bazar/presentation/javascripts/components/BazarMap.js')
                 ? 'tools/alternativeupdatej9rem/javascripts/BazarMap.js'
                 : $file,
                 $first,

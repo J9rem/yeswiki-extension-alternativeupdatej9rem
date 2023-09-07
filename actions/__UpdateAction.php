@@ -22,6 +22,9 @@ use YesWiki\Security\Controller\SecurityController;
 
 include_once 'tools/autoupdate/vendor/autoload.php';
 
+/**
+ * customization for update
+ */
 class __UpdateAction extends YesWikiAction
 {
     protected $autoUpdateService;

@@ -17,6 +17,10 @@ use YesWiki\Core\Service\Performer;
 use YesWiki\Templates\Service\TabsService;
 
 /**
+ * not needed since 4.4.1
+ */
+
+/**
  * @Field({"listefichesliees", "listefiches"})
  */
 class LinkedEntryField extends RealLinkedEntryField

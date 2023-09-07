@@ -14,6 +14,9 @@ namespace YesWiki\Alternativeupdatej9rem;
 
 use YesWiki\Core\YesWikiAction;
 
+/**
+ * security (could be remove since doryphore 4.4.1)
+ */
 class __BazarAction extends YesWikiAction
 {
     public function formatArguments($arg)

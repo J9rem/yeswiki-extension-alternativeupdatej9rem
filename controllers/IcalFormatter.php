@@ -26,6 +26,9 @@ use \DateInterval;
 use \DateTime;
 use \DateTimeZone;
 
+/**
+ * not needed since 4.4.1
+ */
 class IcalFormatter extends YesWikiController
 {
     public const MAX_CHARS_BY_LINE = 74;

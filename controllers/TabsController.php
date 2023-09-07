@@ -6,6 +6,10 @@ use YesWiki\Bazar\Field\Tabsfield;
 use YesWiki\Core\YesWikiController;
 use YesWiki\Templates\Service\TabsService;
 
+/**
+ * not needed since 4.4.1
+ */
+
 class TabsController extends YesWikiController
 {
     protected $tabsService;

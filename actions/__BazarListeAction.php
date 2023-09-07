@@ -7,10 +7,20 @@ use YesWiki\Bazar\Exception\ParsingMultipleException;
 use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Core\YesWikiAction;
 
+/**
+ * not needed since 4.4.1
+ */
 class __BazarListeAction extends YesWikiAction
 {
     public function formatArguments($arg)
     {
+        $release = $this->params->get('yeswiki_release');
+        if (is_string($release)
+            && !preg_match('/^4\.(?:[0-3]\.[0-9]|4\.0)$/',$release)){
+            // do nothing since `doryphore 4.4.1` or for `doryphoore-dev`
+            return [];
+        }
+
         $entryManager = $this->getService(EntryManager::class);
 
         // ICONS FIELD

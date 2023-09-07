@@ -14,6 +14,10 @@ namespace YesWiki\Alternativeupdatej9rem\Controller;
 use YesWiki\Core\Controller\ArchiveController as CoreArchiveController;
 use YesWiki\Core\YesWikiController;
 
+/**
+ * not needed since 4.4.1
+ */
+
 if (class_exists(CoreArchiveController::class,false)){
 
     class ArchiveController extends CoreArchiveController

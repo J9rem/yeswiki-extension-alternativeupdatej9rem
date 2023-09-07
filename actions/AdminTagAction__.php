@@ -14,6 +14,9 @@ namespace YesWiki\Alternativeupdatej9rem;
 
 use YesWiki\Core\YesWikiAction;
 
+/**
+ * customization not to authorize admintag action for not admins
+ */
 class AdminTagAction__ extends YesWikiAction
 {
     public function run()

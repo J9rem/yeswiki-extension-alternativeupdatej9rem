@@ -18,6 +18,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use YesWiki\Core\Service\ArchiveService;
 use YesWiki\Wiki;
 
+/**
+ * not needed since 4.4.1
+ */
 class ArchiveCommand extends Command
 {
     // the name of the command (the part after "bin/console")

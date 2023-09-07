@@ -28,6 +28,10 @@ use YesWiki\Wiki;
 use Throwable;
 use ZipArchive;
 
+/**
+ * not needed since 4.4.1
+ */
+
 if (class_exists(CoreArchiveService::class,false)){
 
 class ArchiveService extends CoreArchiveService
