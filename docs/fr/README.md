@@ -2,9 +2,28 @@
 
 Cette extension permet de mettre à disposition un système de mise à jour des extensions non officielles fournies par [j9rem](https://github.com/J9rem) tout en continuant de recevoir les mises à jour de [`YesWiki`](https://yeswiki.net) et des extensions officielles via le dépôt officielle.
 
+## Contenu de l'extension
+
+ - l'extension contient de **multiples correctifs** dédiés aux versions `doryphore 4.3.1` et `doryphore 4.4.0`, correctifs présents dans cette extension en vue de la sortie de `dorypohre 4.4.1`. Cette version étant sortie, les correctifs seront **retirés** en octeobre 2023. **Pensez à passer en `doryphore 4.4.1`**.
+ - **Quelques actions sympathiques** indépendantes comme :
+   - `{{listformmeta}}` qui permet d'afficher la liste des formulaires du site en les reliant aux pages qui les utilisent et en idenfiant les formulaires vides ou reliées entre eux. _C'est pratique pour faire le tri dans les formulaires devenus inutiles._
+   - `{{editentrypartial}}` qui permet d'avoir un formulaire pour modifier des fiches sur certains champs sélectionnées. _C'est utile pour envoyer un lien aux usagers pour mettre à jour une information sans les noyer dans la relecture de leur fiche en entier (cas des formulaires longs)._
+ - Amélioration de l'**action `{{video}}`** pour permettre une syntaxe plus simple ``{{video url="..."}}` (configurable via composants)
+ - **Ajout des champs**:
+   - `video` pour permettre l'affichage direct d'une video dans une fiche
+   - `sendmailselector` pour permettre de choisir à qui envoyer une copie de la fiche, choix parmi une liste. _Pratique pour que la copie de la fiche soit envoyé au bon référent local_
+   - `customsendmail` permet d'offrir à l'usager la possibilité de recevoir ou non une copie de sa fiche à chaque modification. _Pratique pour éviter l'infobésité des e-mails tout en laissant le choix à l'usager_
+   - `choice-display-hidden` permet d'avoir une zone qui se déplie/replie lors de l'affichage d'une fiche. Pour l'utiliser, il faut encapsuler la zone concernée (une seule zone par fiche) dans `<div class="hidden-field-specific">/<div>` (ceci se fait à l'aide des champs `labelhtml`)
+ - Retrouver le **handler `/diff`** bien pratique pour comparer rapidement les changements dans une fiche ou une page
+ - Un **nouveau template dynamique** `{{bazarliste template="video"}}` qui permet d'afficher les fiches en vignettes comme pour le template dynamique `card` mais en affichant les vidéos des fiches.
+
+----
+
+## Documentation
+
 !> Ce fichier d'aide sert particulièrement à partager de la documentation en vue de **son intégration future dans le cœur de YesWiki** ; ce qui explique la non relation entre l'extension et le contenu.
 
-## Configurer un formulaire pour exporter les données en `json-ld` (sémantique)
+### Configurer un formulaire pour exporter les données en `json-ld` (sémantique)
 
 Le format `json` est un format standard pour l'échange de données. Il est déjà utilisé dans `YesWiki` pour exporter des données comme celles des fiches d'un formulaire ([exemple](?api/forms/1/entries ':ignore')).
 
@@ -12,7 +31,7 @@ Toutefois, le format `json` n'est pas suffisant pour savoir comment les données
 
 Il existe donc le format [`json-ld`](https://fr.wikipedia.org/wiki/JSON-LD) qui est une couche supplémentaire de normalisation pour expliquer comment les données y sont rangées. Le site officiel concernant ce format est : https://json-ld.org/.
 
-## Concept d'ontolgie
+### Concept d'ontolgie
 
 Le concept d'[**ontologie**](https://fr.wikipedia.org/wiki/Ontologie_(informatique)) est à la base du web des données sémantiques.
 
@@ -26,7 +45,7 @@ Les données sémantiques indiquent toujours à quelle ontologie elles font réf
 
 Une ontologie peut être décrite via la norme [`OWL`](https://fr.wikipedia.org/wiki/Web_Ontology_Language) ou par le format [`RDFS`](https://en.wikipedia.org/wiki/RDF_Schema)
 
-## Configuration dans YesWiki
+### Configuration dans YesWiki
 
 Il est possible d'exporter les fiches d'un formulaire au format `json-ld` en utilisant une url de ce type [`?api/forms/{formId}/entries/json-ld`](?api/forms/1/entries/json-ld ':ignore').
 
@@ -38,7 +57,7 @@ La configuration se fait en deux étapes:
 
 ?> Une page de documentation existe depuis un moment. Il peut arriver qu'elle ne soit plus à jour : <https://yeswiki.net/?RendreYeswikiSemantique>, **les informations sont donc complétées ici**.
 
-### 1. Activer le contexte sémantique
+#### 1. Activer le contexte sémantique
 
  - se rendre sur la page d'édition du formulaire concerné [?BazaR&vue=formulaire&action=modif&idformulaire={formId}](?BazaR&vue=formulaire&action=modif&idformulaire=1 ':ignore')
  - tout en bas, déplier la partie "Configuration avancée"
@@ -78,7 +97,7 @@ La configuration se fait en deux étapes:
 
 ?> _Info_ : dans les paramètres avancées, il existe une case à cochée `Utiliser un template sémantique s'il est disponible pour ce type d'objet`. Son état n'a pour le moment pas d'importance car il n'est pas pris en compte. C'est une case dans l'idée de détecter automatiquement le type sémantique de chaque champ à partir de ce qu'il est (par exemple, un champ `url` pourrait être automatiquement considéré comme le type sémantique `url`). Donc, ne pas prendre en compte cette case, cochée ou non.
 
-### 2. Configurer le contexte sémantique pour chaque champ du formulaire
+#### 2. Configurer le contexte sémantique pour chaque champ du formulaire
 
 En effet, pour que les données soient affichées, il faut que les champs qui les concernent soient reliés à un type de l'ontologie; **sinon les données de ce champ ne sont pas diffusées**
 

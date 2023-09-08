@@ -10,6 +10,11 @@ use Exception;
 use YesWiki\Bazar\Service\FieldFactory as BazarFieldFactory;
 use YesWiki\Wiki;
 
+
+/**
+ * not needed since 4.4.1 ??? needed to force rewrite field
+ */
+
 class FieldFactory extends BazarFieldFactory
 {
     private const CACHE_PATH = 'cache/';
@@ -71,6 +76,7 @@ class FieldFactory extends BazarFieldFactory
                     if ($annotation) {
                         // Add all listed keywords
                         foreach ($annotation->keywords as $keyword) {
+                            // === CHANGE HERE ===
                             if (!isset($this->availableFields[$keyword])) {
                                 $this->availableFields[$keyword] = $fieldClass->name;
                             }

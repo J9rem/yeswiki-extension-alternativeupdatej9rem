@@ -7,6 +7,10 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use YesWiki\Bazar\Field\TabsField;
 use YesWiki\Templates\Service\TabsService as RealTabsService;
 
+/**
+ * not needed since 4.4.1 
+ */
+
 trait TabsServiceDef
 {
     protected $states;
