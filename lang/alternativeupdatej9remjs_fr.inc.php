@@ -63,6 +63,14 @@ return [
   'ALTERNATIVEUPDATE_FIELD_FORM' => 'Champ fourni par l\'extension "alternativeupdatej9rem"',
   'ALTERNATIVEUPDATE_FIELD_LINKEDLABEL' => 'Champ e-mail dans la fiche courante',
   'ALTERNATIVEUPDATE_FIELD_LINKEDLABEL_HINT' => 'Laisser vide pour ne pas utiliser la fiche courante',
+  // javascripts/fields/videofield.js
+  'ALTERNATIVEUPDATE_VIDEO_MAXHEIGHT_LABEL' => 'Hauteur maximal de la vidéo',
+  'ALTERNATIVEUPDATE_VIDEO_MAXWIDTH_LABEL' => 'Largeur maximal de la vidéo',
+  'ALTERNATIVEUPDATE_VIDEO_MAX_HINT' => 'Uniquement un nombre positif de pixels sans l\'unité ; ex: 200',
+  'ALTERNATIVEUPDATE_VIDEO_RATIO_LABEL' => 'Forme de l\'affichage',
+  'ALTERNATIVEUPDATE_VIDEO_POSITION_LABEL' => 'Position de la vidéo',
+  'ALTERNATIVEUPDATE_VIDEO_POSITION_LEFT' => 'Alignée à gauche',
+  'ALTERNATIVEUPDATE_VIDEO_POSITION_RIGHT' => 'Alignée à droite',
   // vidéo
   'ALTERNATIVEUPDATE_VIDEO_LABEL' => 'vidéo',
 

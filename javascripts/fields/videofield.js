@@ -22,13 +22,40 @@ function getVideoField({
         icon: '<i class="fas fa-video"></i>',
       },
       attributes: {
+        ratio:{
+          label: _t('ALTERNATIVEUPDATE_VIDEO_RATIO_LABEL'),
+          options: {'':'16/9','4par3':'4/3'},
+        },
+        maxwidth:{
+          label: _t('ALTERNATIVEUPDATE_VIDEO_MAXWIDTH_LABEL'),
+          value: ''
+        },
+        maxheight:{
+          label: _t('ALTERNATIVEUPDATE_VIDEO_MAXHEIGHT_LABEL'),
+          value: ''
+        },
+        class:{
+          label: _t('ALTERNATIVEUPDATE_VIDEO_POSITION_LABEL'),
+          options: {
+            '': 'standard',
+            'pull-left': _t('ALTERNATIVEUPDATE_VIDEO_POSITION_LEFT'),
+            'pull-right': _t('ALTERNATIVEUPDATE_VIDEO_POSITION_RIGHT'),
+          }
+        },
         read: readConf,
         write: writeconf,
         semantic: semanticConf
       },
-      attributesMapping: defaultMapping,
-
-      advancedAttributes: ['read', 'write', 'semantic', 'hint', 'value'],
+      attributesMapping: {
+        ...defaultMapping,
+        ...{
+          3:'ratio',
+          4:'maxwidth',
+          6:'maxheight',
+          7:'class'
+        }
+      },
+      advancedAttributes: ['read', 'write', 'semantic', 'hint', 'value','ratio','maxwidth','maxheight','class'],
       renderInput(field) {
         return {
      
@@ -36,6 +63,8 @@ function getVideoField({
 
             onRender() {
               renderHelper.prependHint(field, _t('ALTERNATIVEUPDATE_FIELD_FORM'))
+              renderHelper.defineLabelHintForGroup(field, 'maxwidth', _t('ALTERNATIVEUPDATE_VIDEO_MAX_HINT'))
+              renderHelper.defineLabelHintForGroup(field, 'maxheight', _t('ALTERNATIVEUPDATE_VIDEO_MAX_HINT'))
             }
         }
       },
