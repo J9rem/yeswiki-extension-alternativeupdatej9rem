@@ -8,17 +8,23 @@ use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Core\YesWikiAction;
 
 /**
- * not needed since 4.4.1
+ * not needed since 4.4.1 for second part
  */
 class __BazarListeAction extends YesWikiAction
 {
     public function formatArguments($arg)
     {
+        $newArgs = [];
+
+        if (($arg['template'] ?? '') === 'video'){
+            $newArgs['dynamic'] = true;
+        }
+
         $release = $this->params->get('yeswiki_release');
         if (is_string($release)
             && !preg_match('/^4\.(?:[0-3]\.[0-9]|4\.0)$/',$release)){
             // do nothing since `doryphore 4.4.1` or for `doryphoore-dev`
-            return [];
+            return $newArgs;
         }
 
         $entryManager = $this->getService(EntryManager::class);
@@ -83,7 +89,7 @@ class __BazarListeAction extends YesWikiAction
         $this->arguments['icon'] = $icon;
         $this->arguments['color'] = $color;
 
-        return compact(['icon','color']);
+        return array_merge($newArgs,compact(['icon','color']));
     }
 
     public function run(){
