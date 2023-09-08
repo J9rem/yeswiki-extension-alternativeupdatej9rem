@@ -21,6 +21,7 @@ return [
 
   // actions/EditEntryPartialAction.php
   'AUJ9_EDIT_PARTIAL_ENTRY_ERROR_REGISTER' => 'Une erreur est survenue lors de l\'enregistrement de la fiche',
+  'AUJ9_EDIT_ENTRY_PARTIAL_WRONG_PARAMS' => 'Les paramètres de l\'action {{editentrypartials}} semblent avoir été modifiés par un compte non administrateur ou sans passer par le bouton \'composants\'. L\'action est donc désactivée !',
   'AUJ9_ID_PARAM_NOT_EMPTY' => 'le paramètre \'id\' ne doit pas être vide',
   'AUJ9_ID_PARAM_SHOULD_BE_A_FORM' => 'le paramètre \'id\' devrait correspondre à un formulaire existant',
   'AUJ9_ID_PARAM_SHOULD_BE_NUMBER' => 'le paramètre \'id\' devrait être un nombre positif',

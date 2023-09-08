@@ -17,6 +17,7 @@ use YesWiki\Bazar\Field\TitleField;
 use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Bazar\Service\FormManager;
 use YesWiki\Core\Service\AclService;
+use YesWiki\Core\Service\TripleStore;
 use YesWiki\Core\YesWikiAction;
 
 class EditEntryPartialAction extends YesWikiAction
@@ -25,6 +26,7 @@ class EditEntryPartialAction extends YesWikiAction
     protected $entryController;
     protected $entryManager;
     protected $formManager;
+    protected $tripleStore;
 
     public function formatArguments($arg)
     {
@@ -42,6 +44,7 @@ class EditEntryPartialAction extends YesWikiAction
         $this->entryController = $this->getService(EntryController::class);
         $this->entryManager = $this->getService(EntryManager::class);
         $this->formManager = $this->getService(FormManager::class);
+        $this->tripleStore = $this->getService(TripleStore::class);
 
         if (empty($this->arguments['id'])){
             return $this->renderAlert(_t('AUJ9_ID_PARAM_NOT_EMPTY'));
@@ -76,6 +79,11 @@ class EditEntryPartialAction extends YesWikiAction
                 return $this->aclService->hasAccess('write',$e['id_fiche']);
             }
         );
+
+        $triple = $this->tripleStore->getOne($this->wiki->getPageTag(),'https://yeswiki.net/triple/EditEntryPartialParams','','');
+        if (empty($triple) || (json_decode($triple,true)['sha1'] ?? '') != sha1("{$this->arguments['id']}-".implode(',',$this->arguments['fields']))){
+            return $error.$this->renderAlert(_t('AUJ9_EDIT_ENTRY_PARTIAL_WRONG_PARAMS'));
+        }
 
         if ($this->isPostingNewData()){
             $idFiche = filter_input(INPUT_POST,'id_fiche',FILTER_SANITIZE_STRING);
