@@ -56,7 +56,7 @@ class EditEntryPartialAction extends YesWikiAction
             return $this->renderAlert(_t('AUJ9_ID_PARAM_SHOULD_BE_NUMBER'));
         }
 
-        $error = ($_GET['message'] === 'modif_ok') 
+        $error = (($_GET['message'] ?? '') === 'modif_ok') 
             ? $this->renderAlert(_t('BAZ_FICHE_MODIFIEE'),'success')
             : '';
 
@@ -137,7 +137,7 @@ class EditEntryPartialAction extends YesWikiAction
 
         $renderedInputs = empty($selectedEntryId)
             ? []
-            : $this->getRenderedInputs($form,$selectedEntry,$this->arguments['fields']);
+            : $this->getRenderedInputs($form,$this->arguments['fields'],$selectedEntry);
 
         return $this->render(
             '@alternativeupdatej9rem/edit-entry-partial-action.twig',
@@ -158,7 +158,7 @@ class EditEntryPartialAction extends YesWikiAction
         ]);
     }
 
-    private function getRenderedInputs($form, $entry = null, array $fieldsNames)
+    private function getRenderedInputs($form, array $fieldsNames, $entry = null)
     {
         $renderedFields = [];
         foreach($this->arguments['fields'] as $wantedFieldName){

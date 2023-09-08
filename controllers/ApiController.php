@@ -486,6 +486,17 @@ class ApiController extends YesWikiController
                 ''
             );
         }
+        $triple = $tripleStore->getOne(
+            $resource,
+            'https://yeswiki.net/triple/EditEntryPartialParams',
+            '',
+            ''
+        );
+        $sha1 = empty($triple) ? '' : (json_decode($triple,true)['sha1'] ?? '');
+        return new ApiResponse(
+            ['sha1' => $sha1],
+            Response::HTTP_OK
+        );
     }
 
     protected function formatEditEntryPartialValue($id,$fields): string
