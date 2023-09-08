@@ -26,6 +26,9 @@ return [
   'AUJ9_ID_PARAM_SHOULD_BE_A_FORM' => 'le paramètre \'id\' devrait correspondre à un formulaire existant',
   'AUJ9_ID_PARAM_SHOULD_BE_NUMBER' => 'le paramètre \'id\' devrait être un nombre positif',
   'AUJ9_FIELDS_PARAM_NOT_EMPTY' => 'le paramètre \'fields\' ne doit pas être vide',
+
+  // fields/video.twig
+  'VIDEO_LINK_FIELD' => 'Lien vers la vidéo : %{link}',
   
   // services/ActionsBuilderService.php
   'AUJ9_EDIT_ENTRY_PARTIAL_ACTION_FIELDS_LABEL' => 'Champs à modifier',
@@ -34,5 +37,4 @@ return [
   // templates/edit-entry-partial-action.twig
   'AUJ9_EDIT_PARTIAL_NO_ENTRY' => 'Aucune fiche du formulaire <code>%{form}</code> n\'est modifiable pour votre compte utilisateur',
   'AUJ9_EDIT_PARTIAL_SELECT_ENTRY' => 'Fiche sélectionée',
-
 ];
