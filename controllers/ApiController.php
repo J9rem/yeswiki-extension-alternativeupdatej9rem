@@ -21,6 +21,8 @@ use Symfony\Component\Security\Csrf\Exception\TokenNotFoundException;
 use YesWiki\Alternativeupdatej9rem\Service\AutoUpdateService;
 use YesWiki\Core\ApiResponse;
 use YesWiki\Core\Controller\AuthController;
+use YesWiki\Core\Controller\CsrfTokenController;
+use YesWiki\Core\Service\TripleStore;
 use YesWiki\Core\Service\UserManager;
 use YesWiki\Core\YesWikiController;
 use YesWiki\Security\Controller\SecurityController;
@@ -426,5 +428,81 @@ class ApiController extends YesWikiController
             'isActive' => method_exists($package, 'isActive') ? $package->isActive() : null,
             'isTheme' => method_exists($package, 'isTheme') ? $package->isTheme() : null,
         ];
+    }
+
+    
+
+    /**
+     * @Route("/api/alternativeupdatej9rem/set-edit-entry-partial-params/{resource}/{id}/{fields}", methods={"POST"}, options={"acl":{"public", "@admins"}})
+     */
+    public function setEditEntryPartialParams($resource,$id,$fields)
+    {
+        $this->wiki->services->get(CsrfTokenController::class)->checkToken('admin-token', 'POST', 'anti-csrf-token',true);
+        if ($this->wiki->services->get(SecurityController::class)->isWikiHibernated()) {
+            return new ApiResponse(
+                ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate'=> true],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+        if (empty($resource) || empty($id) || empty($fields)) {
+            return new ApiResponse(
+                ['error' => 'parameters should not be empty'],
+                Response::HTTP_BAD_REQUESTHTTP_BAD_REQUEST
+            );
+        }
+
+        $tripleStore = $this->wiki->services->get(TripleStore::class);
+
+        // find previous triples
+        $previousTriples = $tripleStore->getAll($resource,'https://yeswiki.net/triple/EditEntryPartialParams','','');
+        if (!empty($previousTriples)){
+            if (count($previousTriples) > 1){
+                // delete duplicate
+                for ($i=1; $i <= count($previousTriples); $i++) { 
+                    $tripleStore->delete(
+                        $resource,
+                        'https://yeswiki.net/triple/EditEntryPartialParams',
+                        null,
+                        '',
+                        '',
+                        " `id` = '{$previousTriples[$i]['id']}'"
+                    );
+                }
+            }
+            $tripleStore->update(
+                $resource,
+                'https://yeswiki.net/triple/EditEntryPartialParams',
+                $previousTriples[0]['value'],
+                $this->formatEditEntryPartialValue($id,$fields),
+                '',
+                ''
+            );
+        } else {
+            $tripleStore->create(
+                $resource,
+                'https://yeswiki.net/triple/EditEntryPartialParams',
+                $this->formatEditEntryPartialValue($id,$fields),
+                '',
+                ''
+            );
+        }
+    }
+
+    protected function formatEditEntryPartialValue($id,$fields): string
+    {
+        return json_encode([
+            'sha1' => sha1("$id-$fields")
+        ]);
+    }
+
+    /**
+     * @Route("/api/alternativeupdatej9rem/getToken", methods={"POST"}, options={"acl":{"public", "@admins"}})
+     */
+    public function getToken()
+    {
+        return new ApiResponse(
+            ['token' => $this->wiki->services->get(CsrfTokenManager::class)->refreshToken('admin-token')->getValue()],
+            Response::HTTP_OK
+        );
     }
 }

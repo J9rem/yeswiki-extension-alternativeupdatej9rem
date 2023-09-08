@@ -1,0 +1,72 @@
+{# # This file is part of the YesWiki Extension alternativeupdatej9rem.
+# Authors : see README.md file that was distributed with this source code.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code. #}
+
+{% if editableEntries is empty %}
+  {{ include('@templates/alert-message.twig',{
+        type:'info',
+        message:_t('AUJ9_EDIT_PARTIAL_NO_ENTRY',{form:"#{form.bn_label_nature} (#{form.bn_id_nature})"})
+      }
+    ) }}
+{% else %}
+  {# selet entry #}
+  {% set field = {type:'liste',label:_t('AUJ9_EDIT_PARTIAL_SELECT_ENTRY')} %}
+  {% set propName = 'selectedEntryId' %}
+  <form action="{{ url({handler:''}) }}" method="post" enctype="multipart/form-data">
+    {% embed "@bazar/layouts/input.twig" %}
+      {% block input %}
+          <select
+              id="{{ propName }}"
+              name="{{ propName }}"
+              class="form-control"
+              value="{{ selectedEntryId }}"
+              onChange="event.target.parentNode.parentNode.parentNode.submit()"
+          >
+            {% if editableEntries|length > 1 %}
+              <option value='' {% if selectedEntryId is empty %}selected="selected"{% endif %}>{{ _t('BAZ_CHOISIR') }}</option>
+            {% endif %}
+            {% for entry in editableEntries %}
+              <option value="{{ entry.id_fiche }}" {% if entry.id_fiche == selectedEntryId %}selected{% endif %}>{{ entry.bf_titre ?? entry.id_fiche }}</option>
+            {% endfor %}
+          </select>
+      {% endblock %}
+    {% endembed %}
+  </form>
+  <div class="clearfix"></div>
+  {% if selectedEntryId is not empty %}
+  <div>
+    <a
+      class="btn btn-primary btn-xs modalbox" 
+      data-size="modal-lg"
+      data-iframe="1"
+      data-header="false"
+      title="{{ _t('BAZ_SEE_ENTRY') }} {{ selectedEntryId }}"
+      href="{{ url({tag:selectedEntryId,handler:'iframe'}) }}"
+      >
+        <i class="fa fa-eye"></i> {{ _t('BAZ_SEE_ENTRY') }}
+      </a>
+  </div>
+  {% endif %}
+  {% if renderedInputs is not empty %}
+    {{ include(
+      "@bazar/entries/form.twig",
+      {
+        entryId: selectedEntryId,
+        form:form,
+        renderedInputs:renderedInputs,
+        showConditions:form.bn_condition is not same as '' and request.post.accept_condition is not defined,
+        passwordForEditing:(conf['password_for_editing'] is not empty and request.post.password_for_editing is defined) ? request.post.password_for_editing : '',
+        incomingUrl:incomingUrl is empty ? url({params:{selectedEntryId:selectedEntryId,message:'modif_ok'}}) : incomingUrl,
+        error:error,
+        captchaField:'',
+        imageSmallWidth:conf['image-small-width'],
+        imageSmallHeight:conf['image-small-height'],
+        imageMediumWidth:conf['image-medium-width'],
+        imageMediumHeight:conf['image-medium-height'],
+        imageBigWidth:conf['image-big-width'],
+        imageBigHeight:conf['image-big-height'],
+      })
+    }}
+  {% endif %}
+{% endif %}
