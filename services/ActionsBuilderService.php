@@ -71,6 +71,53 @@ trait ActionsBuilderServiceCommon
                     $this->data['action_groups']['video']['actions']['video']['properties']['id']['advanced'] = true;
                     unset($this->data['action_groups']['video']['actions']['video']['properties']['id']['value']);
             }
+            
+            if (isset($this->data['action_groups']['bazarliste']['actions'])) {
+                if (!isset($this->data['action_groups']['bazarliste']['actions']['bazarvideo'])){
+                    $this->data['action_groups']['bazarliste']['actions']['bazarvideo'] = [];
+                }
+                $props = [
+                    'template' => [
+                        'value' => 'video'
+                    ]
+                ];
+                foreach(($this->data['action_groups']['bazarliste']['actions']['bazarcard']['properties'] ?? []) as $propName => $propDef){
+                    if($propName == 'displayfields'){
+                        $props[$propName] = [
+                            'type' => 'correspondance',
+                            'subproperties' => [
+                                'videofieldname' => [
+                                    'type' => 'form-field',
+                                    'label' => _t('AUJ9_BAZARVIDEO_ACTION_VIDEO_FIELDNAME_LABEL'),
+                                    'value' => 'bf_video'
+                                ],
+                                'imagefieldname' => $propDef['subproperties']['visual'] ?? [],
+                                'urlfieldname' => [
+                                    'type' => 'form-field',
+                                    'label' => _t('AUJ9_BAZARVIDEO_ACTION_VIDEO_LINK_LABEL'),
+                                    'value' => 'bf_url'
+                                ],
+                                'title' => $propDef['subproperties']['title'] ?? [],
+                                'subtitle' => $propDef['subproperties']['subtitle'] ?? [],
+                                'text' => $propDef['subproperties']['text'] ?? [],
+                                'footer' => $propDef['subproperties']['footer'] ?? [],
+                                'floating' => $propDef['subproperties']['floating'] ?? [],
+                            ]
+                        ];
+                    } elseif ($propName !== 'template'){
+                        $props[$propName] = $propDef;
+                    }
+                }
+                $this->data['action_groups']['bazarliste']['actions']['bazarvideo'] = 
+                    array_merge(
+                        $this->data['action_groups']['bazarliste']['actions']['bazarvideo'],
+                        [
+                            'label' => _t('AUJ9_BAZARVIDEO_ACTION_LABEL'),
+                            'width' => '35%',
+                            'properties' => $props
+                        ]
+                    );
+            }
         }
         return $this->data;
     }
