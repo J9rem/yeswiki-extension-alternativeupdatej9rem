@@ -86,7 +86,7 @@ class EditEntryPartialAction extends YesWikiAction
         }
 
         if ($this->isPostingNewData()){
-            $idFiche = filter_input(INPUT_POST,'id_fiche',FILTER_SANITIZE_STRING);
+            $idFiche = filter_input(INPUT_POST,'id_fiche');
             $idFiche = empty($idFiche) ? '' : $idFiche;
             if (!empty($idFiche)){
                 $editEntry = null;
@@ -110,9 +110,9 @@ class EditEntryPartialAction extends YesWikiAction
         }
 
         $selectedEntryId = empty($idFiche)
-            ? filter_input(INPUT_POST,'selectedEntryId',FILTER_SANITIZE_STRING)
+            ? filter_input(INPUT_POST,'selectedEntryId')
             : empty($idFiche);
-        $selectedEntryId = empty($selectedEntryId) ? filter_input(INPUT_GET,'selectedEntryId',FILTER_SANITIZE_STRING) : $selectedEntryId;
+        $selectedEntryId = empty($selectedEntryId) ? filter_input(INPUT_GET,'selectedEntryId') : $selectedEntryId;
         $selectedEntryId = empty($selectedEntryId) ? '' : $selectedEntryId;
         $conf = [];
         foreach([
