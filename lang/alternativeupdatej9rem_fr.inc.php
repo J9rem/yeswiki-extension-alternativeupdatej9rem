@@ -37,6 +37,25 @@ return [
   'AUJ9_BAZARVIDEO_ACTION_VIDEO_FIELDNAME_LABEL' => 'Champ vidéo',
   'AUJ9_BAZARVIDEO_ACTION_VIDEO_LINK_LABEL' => 'Champ lien',
 
+  // templates/bazar/inputs/date.twig
+  'EVENT_EVERY_X_DAYS' => 'Tous les X jours',
+  'EVENT_EVERY_X_WEEKS' => 'Toutes les X semaines',
+  'EVENT_EVERY_X_MONTHS' => 'Tous les X mois',
+  'EVENT_EVERY_X_YEARS' => 'Toutes les X années',
+  'EVENT_FIRST_Y_OF_MONTH' => 'Le premier Y du mois',
+  'EVENT_FORTH_Y_OF_MONTH' => 'Le quatrième Y du mois',
+  'EVENTS_IS_RECURRENT_LABEL' => 'Évènement récurrent ?',
+  'EVENTS_HINT' => 'Cet évènement est récurrent. Toute modification de cette fiche entraîne la modification '
+    .'voire suppression des évènements liés.<br/> '
+    .'Les évènements liés ne seront supprimés que si vous sauvegardez cette fiche en retirant la récurrence (c\'est-à-dire en décochant la case ci-dessus).',
+    'EVENT_LAST_Y_OF_MONTH' => 'Le dernier Y du mois',
+  'EVENT_NTH_OF_MONTH' => 'Chaque Y du mois',
+  'EVENTS_REPETITION_PERIOD' => 'Répétition :',
+  'EVENTS_REPETITION_STEP' => 'X =',
+  'EVENT_SECOND_Y_OF_MONTH' => 'Le second Y du mois',
+  'EVENT_THIRD_Y_OF_MONTH' => 'Le troisième Y du mois',
+  'EVENTS_WHEN_IN_MONTH' => 'A quel moment du mois ?',
+
   // templates/edit-entry-partial-action.twig
   'AUJ9_EDIT_PARTIAL_NO_ENTRY' => 'Aucune fiche du formulaire <code>%{form}</code> n\'est modifiable pour votre compte utilisateur',
   'AUJ9_EDIT_PARTIAL_SELECT_ENTRY' => 'Fiche sélectionée',

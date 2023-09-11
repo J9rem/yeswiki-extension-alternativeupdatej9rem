@@ -57,7 +57,8 @@ class DateField extends CoreDateField
             'hour' => $hour,
             'minute' => $minute,
             'hasTime' => $hasTime,
-            'value' => $value
+            'value' => $value,
+            'data' => $entry["{$this->getPropertyName()}_data"] ?? []
         ]);
     }
 
