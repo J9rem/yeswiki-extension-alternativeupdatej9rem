@@ -10,6 +10,8 @@
 let rootsElements = ['.selector_is_recurrent'];
 let isVueJS3 = (typeof Vue.createApp == "function");
 
+const maxForNbMax = 50
+
 let appParams = {
     components: {},
     data() {
@@ -17,6 +19,7 @@ let appParams = {
             days:[],
             isRecurrent: false,
             months:[],
+            nbmax:maxForNbMax,
             nth:'',
             repetition: '',
             step:1,
@@ -52,6 +55,8 @@ let appParams = {
         this.whenInMonth =  data?.whenInMonth ?? ''
         this.month =  data?.month ?? ''
         this.nth =  data?.nth ?? ''
+        const nbmax =  Number(data?.nbmax ?? maxForNbMax)
+        this.nbmax = (nbmax && nbmax > 0 && nbmax <= maxForNbMax) ? nbmax : maxForNbMax
         this.days = Object.entries(data?.days ?? {})
             .filter(([,val])=>val === '1')
             .map(([idx,])=>idx)

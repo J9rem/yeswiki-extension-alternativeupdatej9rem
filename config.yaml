@@ -45,3 +45,6 @@ services:
     decoration_on_invalid: null
     arguments:
       $parentActionsBuilderService: '@.inner'
+  YesWiki\Alternativeupdatej9rem\Service\DateService:
+    tags:
+      - { name: yeswiki.event_subscriber }

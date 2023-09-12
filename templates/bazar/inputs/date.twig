@@ -124,6 +124,20 @@
                               </template>
                             </select>
                         </div>
+                        <div class="range-wrap">
+                          <span><b>{{ _t('EVENT_NB_MAX_REPETITIONS') }}</b></span>
+                          <input
+                              type="range"
+                              v-model="nbmax"
+                              name="{{ "#{field.propertyName}_data[nbmax]" }}"
+                              class="form-control input-xxlarge"
+                              min="1"
+                              max="50"
+                              data-default="50"
+                              required
+                          />
+                          <output class="range-output">{{ "{{nbmax}}" }}</output>
+                        </div>
                     </div>
                 </div>
             </div>

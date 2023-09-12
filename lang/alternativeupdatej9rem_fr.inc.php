@@ -49,6 +49,7 @@ return [
     .'voire suppression des évènements liés.<br/> '
     .'Les évènements liés ne seront supprimés que si vous sauvegardez cette fiche en retirant la récurrence (c\'est-à-dire en décochant la case ci-dessus).',
     'EVENT_LAST_Y_OF_MONTH' => 'Le dernier Y du mois',
+  'EVENT_NB_MAX_REPETITIONS' => 'Nombre maximum de répétitions :',
   'EVENT_NTH_OF_MONTH' => 'Chaque Y du mois',
   'EVENTS_REPETITION_PERIOD' => 'Répétition :',
   'EVENTS_REPETITION_STEP' => 'X =',

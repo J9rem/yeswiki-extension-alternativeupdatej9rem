@@ -11,7 +11,7 @@
 
 namespace YesWiki\Alternativeupdatej9rem\Field;
 
-use YesWiki\Alternativeupdatej9rem\Service\DateService441;
+use YesWiki\Alternativeupdatej9rem\Service\DateService;
 use YesWiki\Bazar\Field\DateField as CoreDateField;
 
 /**
@@ -33,7 +33,7 @@ class DateField extends CoreDateField
 
         if (!empty($value)) {
             // Default value when entry exist
-            $day = $this->getService(DateService441::class)->getDateTimeWithRightTimeZone($value)->format('Y-m-d H:i');
+            $day = $this->getService(DateService::class)->getDateTimeWithRightTimeZone($value)->format('Y-m-d H:i');
             $hasTime = (strlen($value) > 10);
             if ($hasTime) {
                 $result = explode(' ', $day);
@@ -64,10 +64,15 @@ class DateField extends CoreDateField
 
     public function formatValuesBeforeSave($entry)
     {
+        if ($this->getPropertyname() === 'bf_date_fin_evenement'
+            && !empty($entry['id_fiche'])
+            && is_string($entry['id_fiche'])){
+            $this->getService(DateService::class)->followId($entry['id_fiche']);
+        }
         $value = $this->getValue($entry);
         if (!empty($value) && isset($entry[$this->propertyName . '_allday']) && $entry[$this->propertyName . '_allday'] == 0
              && isset($entry[$this->propertyName . '_hour']) && isset($entry[$this->propertyName . '_minutes'])) {
-            $value = $this->getService(DateService441::class)->getDateTimeWithRightTimeZone("$value {$entry[$this->propertyName . '_hour']}:{$entry[$this->propertyName . '_minutes']}")->format('c');
+            $value = $this->getService(DateService::class)->getDateTimeWithRightTimeZone("$value {$entry[$this->propertyName . '_hour']}:{$entry[$this->propertyName . '_minutes']}")->format('c');
         }
         return [$this->propertyName => $value,
             'fields-to-remove' =>[$this->propertyName . '_allday',$this->propertyName . '_hour',$this->propertyName . '_minutes']];
@@ -81,7 +86,7 @@ class DateField extends CoreDateField
         }
 
         if (strlen($value) > 10) {
-            $value = $this->getService(DateService441::class)->getDateTimeWithRightTimeZone($value)->format('d.m.Y - H:i');
+            $value = $this->getService(DateService::class)->getDateTimeWithRightTimeZone($value)->format('d.m.Y - H:i');
         } else {
             $value =  date('d.m.Y', strtotime($value));
         }
