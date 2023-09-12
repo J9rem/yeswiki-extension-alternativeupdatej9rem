@@ -33,18 +33,23 @@ let appParams = {
     },
     methods:{
         toggleDay(key){
-            if (this.days.includes(key)){
-                this.days = this.days.filter((elem)=>elem != key)
+            if (this.repetition === 'w'){
+                if (this.days.includes(key)){
+                    this.days = this.days.filter((elem)=>elem != key)
+                } else {
+                    this.days.push(key)
+                }
             } else {
-                this.days.push(key)
+                this.days = [key]
             }
         },
         toggleMonth(key){
-            if (this.months.includes(key)){
-                this.months = this.months.filter((elem)=>elem != key)
-            } else {
-                this.months.push(key)
-            }
+            // if (this.months.includes(key)){
+            //     this.months = this.months.filter((elem)=>elem != key)
+            // } else {
+            //     this.months.push(key)
+            // }
+            this.months = [key]
         }
     },
     mounted(){
@@ -63,6 +68,13 @@ let appParams = {
         this.months = Object.entries(data?.months ?? {})
             .filter(([,val])=>val === '1')
             .map(([idx,])=>idx)
+    },
+    watch: {
+        repetition(repetition){
+            if (repetition !== 'w' && this.days?.length > 1){
+                this.days = [this.days[0]]
+            }
+        }
     }
 }
 if (isVueJS3){

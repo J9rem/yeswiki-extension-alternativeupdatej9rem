@@ -70,8 +70,11 @@
                             nov: 'BAZ_NOVEMBRE',
                             dec: 'BAZ_DECEMBRE',
                           } %}
+                            {% if not loop.first %}
+                              |
+                            {% endif %}
                             <input 
-                                type="checkbox"
+                                type="radio"
                                 class="element_checkbox" 
                                 name="{{ "#{field.propertyName}_data[months][#{key}]" }}"
                                 value="1"
@@ -105,8 +108,11 @@
                             sat: 'BAZ_SAMEDI',
                             sun: 'BAZ_DIMANCHE',
                           } %}
+                            {% if not loop.first %}
+                              |
+                            {% endif %}
                             <input 
-                                type="checkbox"
+                                :type="repetition == 'w' ?'checkbox': 'radio'"
                                 class="element_checkbox" 
                                 name="{{ "#{field.propertyName}_data[days][#{key}]" }}"
                                 value="1"
