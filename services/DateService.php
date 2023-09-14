@@ -12,7 +12,6 @@
 namespace YesWiki\Alternativeupdatej9rem\Service;
 
 use DateInterval;
-use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use Exception;
@@ -111,16 +110,18 @@ class DateService implements EventSubscriberInterface
         if (empty($extract)){
             return;
         }
-        extract($extract);
+        list(
+            'data'=>$data,
+            'currentStartDate'=>$currentStartDate,
+            'currentEndDate'=>$currentEndDate
+            ) = $extract;
         $step = intval($data['step']);
         $nbmax = intval($data['nbmax']);
         if ($nbmax > 50){
             $nbax = 50;
         }
         $newStartDate = DateTimeImmutable::createFromInterface($currentStartDate);
-        $newStartDate = $this->resetTimeZone($newStartDate);
         $newEndDate = DateTimeImmutable::createFromInterface($currentEndDate);
-        $newEndDate = $this->resetTimeZone($newEndDate);
         $days = $this->getDays($data);
         if (empty($days)){
             $days = [intval($newStartDate->format('N'))];
@@ -272,7 +273,7 @@ class DateService implements EventSubscriberInterface
     protected function getNbDaysInMonth(int $year,int $month): int
     {
         return intval(
-            (new DateTime())->setDate($year,$month,1)->format('t')
+            (new DateTimeImmutable())->setDate($year,$month,1)->format('t')
         );
     }
 
@@ -288,9 +289,10 @@ class DateService implements EventSubscriberInterface
             || empty($entry['bf_date_debut_evenement'])){
             return [];
         }
-        $currentStartDate = new DateTimeImmutable($entry['bf_date_debut_evenement']);
-        $currentEndDate = new DateTimeImmutable($entry['bf_date_fin_evenement']);
-        if (empty($currentEndDate) || empty($currentStartDate)){
+        try {
+            $currentStartDate = $this->getDateTimeWithRightTimeZone($entry['bf_date_debut_evenement']);
+            $currentEndDate = $this->getDateTimeWithRightTimeZone($entry['bf_date_fin_evenement']);
+        } catch (Throwable $th) {
             return [];
         }
         $data = $entry['bf_date_fin_evenement_data'];
@@ -435,30 +437,5 @@ class DateService implements EventSubscriberInterface
             );
         }
         return $newDate;
-    }
-
-    /**
-     * be carefull to TimeZone
-     * @param DateTimeImmutable $date
-     * @return DateTimeImmutable
-     */
-    protected function resetTimeZone(DateTimeImmutable $date):DateTimeImmutable
-    {
-        $currentTimeZone = $date->getTimeZone();
-        $currentTimezoneOffset = $currentTimeZone->getOffset($date);
-        $newDateTimeZone = new DateTimeZone($this->params->get('timezone'));
-        if (!$newDateTimeZone){
-            $newDateTimeZone = new DateTimeZone('GMT');
-        }
-        $date = $date->setTimeZone($newDateTimeZone);
-        $newTimezoneOffset = $newDateTimeZone->getOffset($date);
-        $timezoneOffset = $newTimezoneOffset - $currentTimezoneOffset;
-        if ($timezoneOffset > 0){
-            $date = $date->add(new DateInterval("PT{$timezoneOffset}S"));
-        } elseif ($timezoneOffset < 0){
-            $timezoneOffsetAbs = abs($timezoneOffset);
-            $date = $date->sub(new DateInterval("PT{$timezoneOffsetAbs}S"));
-        }
-        return $date;
     }
 }
