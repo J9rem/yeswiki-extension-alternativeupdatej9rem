@@ -6,6 +6,9 @@ parameters:
   comments_handler: yeswiki
   alternative_yeswiki_repository:
     J9rem: "https://repository.oui-wiki.pro/"
+  activateEventRepetition: false
+  alternativeupdatej9rem_editable_config_params:
+   - 'activateEventRepetition'
 
 services:
   _defaults:

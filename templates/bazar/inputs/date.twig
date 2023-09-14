@@ -14,7 +14,7 @@
     {% block input %}
         {{ include_javascript('tools/bazar/libs/vendor/bootstrap-datepicker.js') }}
         {{ parent() }}
-        {% if field.propertyname == 'bf_date_fin_evenement' %}
+        {% if field.propertyname == 'bf_date_fin_evenement' and config.activateEventRepetition is same as true %}
             {{ include_javascript('javascripts/vendor/vue/vue.js') }}
             {{ include_javascript('tools/alternativeupdatej9rem/javascripts/recurrent-event.js') }}
             {{ include_css('tools/alternativeupdatej9rem/styles/recurrent-event.css') }}

@@ -17,6 +17,13 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
    - `choice-display-hidden` permet d'avoir une zone qui se déplie/replie lors de l'affichage d'une fiche. Pour l'utiliser, il faut encapsuler la zone concernée (une seule zone par fiche) dans `<div class="hidden-field-specific">/<div>` (ceci se fait à l'aide des champs `labelhtml`)
  - Retrouver le **handler `/diff`** bien pratique pour comparer rapidement les changements dans une fiche ou une page
  - Un **nouveau template dynamique** `{{bazarliste template="video"}}` qui permet d'afficher les fiches en vignettes comme pour le template dynamique `card` mais en affichant les vidéos des fiches.
+ - **La possibilité de gérer des évènements récurrents**
+
+!> la gestion des évènements récurrents est temporairement désativée.
+
+>Pour l'activer:
+>  - se rendre dans [GererConfig](?GererConfig ':ignore')
+>  - dans la partie `ALTERNATIVEUPDATEJ9REM`, mettre `true` pour la variable `activateEventRepetition`
 
 ----
 

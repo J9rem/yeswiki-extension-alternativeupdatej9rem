@@ -26,6 +26,7 @@ class DateService implements EventSubscriberInterface
 {
     protected $entryManager;
     protected $followedIds;
+    protected $isActivated;
     protected $params;
     
     public static function getSubscribedEvents()
@@ -44,6 +45,7 @@ class DateService implements EventSubscriberInterface
         $this->entryManager = $entryManager;
         $this->followedIds = [];
         $this->params = $params;
+        $this->isActivated = $this->params->get('activateEventRepetition') === true;
     }
 
     /**
@@ -51,10 +53,12 @@ class DateService implements EventSubscriberInterface
      */
     public function followEntryChange($event)
     {
-        $entry = $this->getEntry($event);
-        if ($this->shouldFollowEntry($entry)){
-            $this->deleteLinkedEntries($entry);
-            $this->createRepetitions($entry);
+        if ($this->isActivated){
+            $entry = $this->getEntry($event);
+            if ($this->shouldFollowEntry($entry)){
+                $this->deleteLinkedEntries($entry);
+                $this->createRepetitions($entry);
+            }
         }
     }
 
@@ -63,9 +67,11 @@ class DateService implements EventSubscriberInterface
      */
     public function followEntryDeletion($event)
     {
-        $entryBeforeDeletion = $this->getEntry($event);
-        if (!empty($entryBeforeDeletion)){
-            $this->deleteLinkedEntries($entryBeforeDeletion);
+        if ($this->isActivated){
+            $entryBeforeDeletion = $this->getEntry($event);
+            if (!empty($entryBeforeDeletion)){
+                $this->deleteLinkedEntries($entryBeforeDeletion);
+            }
         }
     }
 
