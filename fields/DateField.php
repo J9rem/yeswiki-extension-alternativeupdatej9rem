@@ -91,8 +91,17 @@ class DateField extends CoreDateField
             $value =  date('d.m.Y', strtotime($value));
         }
 
+        $matches = [];
+        $recurrenceBaseId = '';
+        if ($this->getPropertyname() === 'bf_date_fin_evenement' 
+                && !empty($entry['bf_date_fin_evenement_data'])
+                && is_string($entry['bf_date_fin_evenement_data'])
+                && preg_match('/\{\\"recurrentParentId\\":\\"([^"]+)\\"\}/',$entry['bf_date_fin_evenement_data'],$matches)){
+            $recurrenceBaseId = $matches[1];
+        }
         return $this->render('@bazar/fields/date.twig', [
-            'value' => $value
+            'value' => $value,
+            'recurrenceBaseId' => $recurrenceBaseId
         ]);
     }
 }

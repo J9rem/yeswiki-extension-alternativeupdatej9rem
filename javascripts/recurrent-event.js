@@ -21,6 +21,7 @@ let appParams = {
             months:[],
             nbmax:maxForNbMax,
             nth:'',
+            recurrenceBaseId: '',
             repetition: '',
             step:1,
             whenInMonth:''
@@ -54,7 +55,16 @@ let appParams = {
     },
     mounted(){
         const data = JSON.parse(this.element?.dataset?.data)
-        this.isRecurrent =  data?.isRecurrent === '1'
+        if (data?.isRecurrent === '1'){
+            this.isRecurrent = true
+        } else {
+            this.recurrenceBaseId = (
+                typeof data === 'string'
+                && data.match(/^\{"recurrentParentId":"([^"]+)"}$/)
+            )
+            ? data.replace(/^\{"recurrentParentId":"([^"]+)"}$/,'$1')
+            : ''
+        }
         this.repetition =  data?.repetition ?? ''
         this.step =  data?.step ?? 1
         this.whenInMonth =  data?.whenInMonth ?? ''

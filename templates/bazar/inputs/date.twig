@@ -20,7 +20,7 @@
             {{ include_css('tools/alternativeupdatej9rem/styles/recurrent-event.css') }}
             <div class="flex-break"></div>
             <div class="input-prepend input-group selector_is_recurrent" data-data="{{ data|json_encode }}">
-                <div class="form-control">
+                <div class="form-control" v-if="!recurrenceBaseId">
                     <label for="{{ "#{field.propertyName}_is_recurrent" }}" 
                             @click="isRecurrent = !isRecurrent">
                     {% apply spaceless %}
@@ -145,6 +145,11 @@
                           <output class="range-output">{{ "{{nbmax}}" }}</output>
                         </div>
                     </div>
+                </div>
+                <div v-else class="alert alert-info">
+                  {{ _t('EVENT_IS_LINKED_TO_RECURRENT_EDIT',{
+                    link:"<a class=\"newtab\" :href=\"`${wiki.url(recurrenceBaseId)}`\">{{recurrenceBaseId}}</a>"
+                    })|raw }}
                 </div>
             </div>
         {% endif %}
