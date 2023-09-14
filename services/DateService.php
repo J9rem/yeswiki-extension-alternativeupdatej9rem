@@ -130,7 +130,7 @@ class DateService implements EventSubscriberInterface
         if (empty($months)){
             $months = [intval($newStartDate->format('n'))];
         }
-        for ($i=1; $i < $nbmax; $i++) {
+        for ($i=1; $i <= $nbmax; $i++) {
             $calculateNewStartDate = $newStartDate;
             switch ($data['repetition']) {
                 case 'y':
