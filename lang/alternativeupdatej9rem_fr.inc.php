@@ -38,7 +38,16 @@ return [
   'AUJ9_BAZARVIDEO_ACTION_VIDEO_LINK_LABEL' => 'Champ lien',
 
   // templates/bazar/inputs/date.twig
-  'EVENT_IS_LINKED_TO_RECURRENT' => 'Cette évènement est un évènement récurrent lié à la fiche %{link}',
+  'EVENT_IS_RECURRENT' => 'Cet évènement est récurrent : %{repetition}, %{nb} fois maximum',
+  'EVENT_REPETITION_FOR_DAYS' => 'tous les %{x} jours',
+  'EVENT_REPETITION_FOR_MONTHS' => 'tous les %{x} mois, %{monthRepetition}',
+  'EVENT_REPETITION_FOR_WEEKS' => 'toutes les %{x} semaines, %{days}',
+  'EVENT_REPETITION_FOR_YEAR' => 'tous les ans, %{monthRepetition}',
+  'EVENT_REPETITION_FOR_YEARS' => 'toutes les %{x} années, %{monthRepetition}',
+  'EVENT_REPETITION_NTH_OF_MONTH' => 'le %{nth} %{month}',
+  'EVENT_REPETITION_NTH_OF_MONTH_ALONE' => 'le %{nth}',
+  'EVENT_REPETITION_IN_MONTH' => 'en %{month}, ',
+  'EVENT_IS_LINKED_TO_RECURRENT' => 'Cet évènement est un évènement récurrent lié à la fiche %{link}',
 
   // templates/bazar/inputs/date.twig
   'EVENT_EVERY_X_DAYS' => 'Tous les X jours',
