@@ -51,6 +51,7 @@ class UpdateHandler__ extends YesWikiHandler
             'archive' => false,
             'actionsbuilderfor422' => false,
             'ebook' => false,
+            'events' => false,
             'checkaccesslink' => false,
             'fontautoinstall' => false,
             'alternatepublication' => false,
