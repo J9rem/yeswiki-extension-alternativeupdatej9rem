@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
 use YesWiki\Bazar\Field\DateField;
 use YesWiki\Bazar\Controller\EntryController;
 use YesWiki\Bazar\Controller\GeoJSONFormatter;
-use YesWiki\Alternativeupdatej9rem\Service\DateService441;
+use YesWiki\Alternativeupdatej9rem\Service\DateService;
 use YesWiki\Core\Service\Performer;
 use YesWiki\Core\YesWikiController;
 
@@ -41,7 +41,7 @@ class IcalFormatter extends YesWikiController
     protected $performer;
 
     public function __construct(
-        DateService441 $dateService,
+        DateService $dateService,
         EntryController $entryController,
         GeoJSONFormatter $geoJSONFormatter,
         ParameterBagInterface $params,
