@@ -37,8 +37,9 @@ return [
   'AUJ9_BAZARVIDEO_ACTION_VIDEO_FIELDNAME_LABEL' => 'Champ vidéo',
   'AUJ9_BAZARVIDEO_ACTION_VIDEO_LINK_LABEL' => 'Champ lien',
 
-  // templates/bazar/inputs/date.twig
+  // templates/bazar/fields/date.twig
   'EVENT_IS_RECURRENT' => 'Cet évènement est récurrent : %{repetition}, %{nb} fois maximum',
+  'EVENT_LIMIT_DATE' => 'jusqu\'au %{date}',
   'EVENT_REPETITION_FOR_DAYS' => 'tous les %{x} jours',
   'EVENT_REPETITION_FOR_MONTHS' => 'tous les %{x} mois, %{monthRepetition}',
   'EVENT_REPETITION_FOR_WEEKS' => 'toutes les %{x} semaines, %{days}',
@@ -68,6 +69,7 @@ return [
   'EVENTS_REPETITION_STEP' => 'X =',
   'EVENT_SECOND_Y_OF_MONTH' => 'Le second Y du mois',
   'EVENT_THIRD_Y_OF_MONTH' => 'Le troisième Y du mois',
+  'EVENT_UP_TO_DATE' => 'Répétition jusqu\'au :',
   'EVENTS_WHEN_IN_MONTH' => 'A quel moment du mois ?',
 
   // templates/edit-entry-partial-action.twig

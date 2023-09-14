@@ -16,6 +16,7 @@ let appParams = {
     components: {},
     data() {
         return {
+            datePickerForLimitInternal:null,
             days:[],
             isRecurrent: false,
             months:[],
@@ -28,6 +29,22 @@ let appParams = {
         }
     },
     computed:{
+        datePickerForLimit(){
+            let datePicker = this.datePickerForLimitInternal
+            if (datePicker === null){
+                let parentOfDatePicker = null
+                let nextS = this.element
+                do {
+                    nextS = nextS.nextSibling
+                    if (nextS?.classList?.contains('input-prepend')){
+                        parentOfDatePicker = nextS
+                    }
+                } while (parentOfDatePicker === null && nextS !== null);
+                datePicker = parentOfDatePicker?.querySelector('input[name="bf_date_fin_evenement_data[limitdate]"]')
+                this.datePickerForLimitInternal = datePicker
+            }
+            return datePicker
+        },
         element(){
             return isVueJS3 ? this.$el.parentNode : this.$el
         }
@@ -55,6 +72,10 @@ let appParams = {
     },
     mounted(){
         const data = JSON.parse(this.element?.dataset?.data)
+        const limitdate =  data?.limitdate ?? ''
+        if (limitdate && 'value' in this.datePickerForLimit){
+            this.datePickerForLimit.value = limitdate
+        }
         if (data?.isRecurrent === '1'){
             this.isRecurrent = true
         } else {
@@ -80,6 +101,17 @@ let appParams = {
             .map(([idx,])=>idx)
     },
     watch: {
+        isRecurrent(isRecurrent){
+            if (this.datePickerForLimit?.parentNode?.style){
+                if (isRecurrent){
+                    this.datePickerForLimit.removeAttribute('disabled')
+                    this.datePickerForLimit.parentNode.removeAttribute('style')
+                } else {
+                    this.datePickerForLimit.parentNode.setAttribute('style','display:none !important;')
+                    this.datePickerForLimit.setAttribute('disabled','disabled')
+                }
+            }
+        },
         repetition(repetition){
             if (repetition !== 'w' && this.days?.length > 1){
                 this.days = [this.days[0]]

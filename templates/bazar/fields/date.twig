@@ -84,7 +84,7 @@
             )
           ),
         nb: data.nbmax ?? '?'
-      }) }}</i></small>
+      }) }}{% if data.limitdate %}, {{ _t('EVENT_LIMIT_DATE',{date:data.limitdate}) }}{% endif %}</i></small>
     </span>
   {% endif %}
 {% endblock %}

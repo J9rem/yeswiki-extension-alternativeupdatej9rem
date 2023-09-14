@@ -152,6 +152,22 @@
                     })|raw }}
                 </div>
             </div>
+            <div class="flex-break"></div>
+            <div class="input-prepend input-group" style="display:none!important;">
+                <span class="add-on input-group-addon">
+                    {{ _t('EVENT_UP_TO_DATE') }}
+                </span>
+                <span class="add-on input-group-addon">
+                    <i class="icon-calendar fa fa-calendar"></i>
+                </span>
+                <input
+                    type="text"
+                    value=""
+                    name="{{ "#{field.propertyName}_data[limitdate]" }}"
+                    class="form-control bazar-date"
+                    disabled
+                />
+            </div>
         {% endif %}
 
     {% endblock %}

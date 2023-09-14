@@ -197,24 +197,28 @@ class DateService implements EventSubscriberInterface
                 $delta = $newStartDate->diff($calculateNewStartDate);
                 $newStartDate = $calculateNewStartDate;
                 $newEndDate= $newEndDate->add($delta);
-                $newEntry = $entry;
-                $newEntry['id_fiche'] = $entry['id_fiche'].$newStartDate->format('Ymd');
-                foreach([
-                    'bf_date_debut_evenement' => $newStartDate,
-                    'bf_date_fin_evenement' => $newEndDate,
-                ] as $key => $dateObj){
-                    if (strlen($entry[$key])>10){
-                        $newEntry[$key] = $dateObj->format('c');
-                    } else {
-                        $newEntry[$key] = $dateObj->format('Y-m-d');
+                if (empty($data['limitdate']) || (
+                    ($data['limitdate'])->diff($newEndDate)->invert == 1 && ($data['limitdate'])->diff($newStartDate)->invert == 1
+                    )){
+                    $newEntry = $entry;
+                    $newEntry['id_fiche'] = $entry['id_fiche'].$newStartDate->format('Ymd');
+                    foreach([
+                        'bf_date_debut_evenement' => $newStartDate,
+                        'bf_date_fin_evenement' => $newEndDate,
+                    ] as $key => $dateObj){
+                        if (strlen($entry[$key])>10){
+                            $newEntry[$key] = $dateObj->format('c');
+                        } else {
+                            $newEntry[$key] = $dateObj->format('Y-m-d');
+                        }
                     }
+                    $newEntry['bf_date_fin_evenement_data'] = "{\"recurrentParentId\":\"{$entry['id_fiche']}\"}";
+                    $newEntry['antispam'] = 1;
+                    $this->entryManager->create(
+                        $entry['id_typeannonce'],
+                        $newEntry
+                    );
                 }
-                $newEntry['bf_date_fin_evenement_data'] = "{\"recurrentParentId\":\"{$entry['id_fiche']}\"}";
-                $newEntry['antispam'] = 1;
-                $this->entryManager->create(
-                    $entry['id_typeannonce'],
-                    $newEntry
-                );
             }
         }
     }
@@ -320,9 +324,20 @@ class DateService implements EventSubscriberInterface
         if (empty($data['step']) || !is_scalar($data['step']) || intval($data['step']) <= 0){
             return [];
         }
-        // check nbmaw format
+        // check nbmax format
         if (empty($data['nbmax']) || !is_scalar($data['nbmax']) || intval($data['nbmax']) <= 0){
             return [];
+        }
+        // check limitdate format
+        if (!empty($data['limitdate'])){
+            if(!is_string($data['limitdate'])){
+                return [];
+            }
+            $dateTimeObj = new DateTimeImmutable($data['limitdate']);
+            if (!$dateTimeObj){
+                return [];
+            }
+            $data['limitdate'] = $dateTimeObj;
         }
         return compact(['data','currentStartDate','currentEndDate']);
     }
