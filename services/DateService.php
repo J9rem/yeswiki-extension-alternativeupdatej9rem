@@ -203,7 +203,7 @@ class DateService implements EventSubscriberInterface
                     'bf_date_debut_evenement' => $newStartDate,
                     'bf_date_fin_evenement' => $newEndDate,
                 ] as $key => $dateObj){
-                    if (strlen($entry[$key])>9){
+                    if (strlen($entry[$key])>10){
                         $newEntry[$key] = $dateObj->format('c');
                     } else {
                         $newEntry[$key] = $dateObj->format('Y-m-d');
