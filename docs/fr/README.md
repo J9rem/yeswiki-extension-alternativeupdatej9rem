@@ -5,6 +5,7 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
 ## Contenu de l'extension
 
  - l'extension contient de **multiples correctifs** dédiés aux versions `doryphore 4.3.1` et `doryphore 4.4.0`, correctifs présents dans cette extension en vue de la sortie de `dorypohre 4.4.1`. Cette version étant sortie, les correctifs seront **retirés** en octeobre 2023. **Pensez à passer en `doryphore 4.4.1`**.
+ - l'extension corrige aussi des soucis pouvant aussi survenir dans l'enregistrement des dates et leur affichage via `{{bazarliste template="calendar"}}` ou via l'export `ICAL`
  - **Quelques actions sympathiques** indépendantes comme :
    - `{{listformmeta}}` qui permet d'afficher la liste des formulaires du site en les reliant aux pages qui les utilisent et en idenfiant les formulaires vides ou reliées entre eux. _C'est pratique pour faire le tri dans les formulaires devenus inutiles._
    - `{{editentrypartial}}` qui permet d'avoir un formulaire pour modifier des fiches sur certains champs sélectionnées. _C'est utile pour envoyer un lien aux usagers pour mettre à jour une information sans les noyer dans la relecture de leur fiche en entier (cas des formulaires longs)._

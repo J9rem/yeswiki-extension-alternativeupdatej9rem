@@ -22,7 +22,14 @@ class __LinkStyleAction extends YesWikiAction
         $this->getService(AssetsManager::class)->AddCSSFile('tools/alternativeupdatej9rem/styles/fix.css');
         $this->getService(AssetsManager::class)->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/toggle-button-hidden.js');
         $this->getService(AssetsManager::class)->AddCSSFile('tools/alternativeupdatej9rem/styles/toggle-button-hidden.css');
+        $timezone = json_encode(date_default_timezone_get());
+        $this->getService(AssetsManager::class)->AddJavascript(<<<JS
+        if (typeof wiki === 'object' && !wiki.hasOwnProperty('timezone')){
+            wiki.timezone = $timezone
+        }
+        JS);
 
+        $this->replaceBazarCalendar(); // only doryphore 4.4.1
         $this->replaceBazarList();
     }
 
@@ -60,6 +67,20 @@ class __LinkStyleAction extends YesWikiAction
                     );
                 $GLOBALS['js'] = str_replace($fileToReplace,$replacement,$GLOBALS['js']);
             }
+        }
+    }
+
+    protected function replaceBazarCalendar()
+    {
+        $release = $this->params->get('yeswiki_release');
+        $baseUrl = $this->wiki->getBaseUrl();
+        $rev = "?v=$release";
+        $fileToReplace = "$baseUrl/tools/bazar/presentation/javascripts/components/BazarCalendar.js$rev";
+        if ($release === '4.4.1'
+            && !empty($GLOBALS['js'])
+            && strpos($GLOBALS['js'],$fileToReplace) !== false){
+            $replacement = "$baseUrl/tools/alternativeupdatej9rem/javascripts/components/BazarCalendar-4-4-1.js";
+            $GLOBALS['js'] = str_replace($fileToReplace,$replacement,$GLOBALS['js']);
         }
     }
 }

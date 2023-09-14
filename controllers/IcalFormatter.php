@@ -18,12 +18,12 @@ namespace YesWiki\Alternativeupdatej9rem\Controller;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeZone;
-use Exception;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use YesWiki\Bazar\Field\DateField;
 use YesWiki\Bazar\Controller\EntryController;
 use YesWiki\Bazar\Controller\GeoJSONFormatter;
+use YesWiki\Alternativeupdatej9rem\Service\DateService441;
 use YesWiki\Core\Service\Performer;
 use YesWiki\Core\YesWikiController;
 
@@ -34,17 +34,20 @@ class IcalFormatter extends YesWikiController
 {
     public const MAX_CHARS_BY_LINE = 74;
 
+    protected $dateService;
     protected $entryController;
     protected $geoJSONFormatter;
     protected $params;
     protected $performer;
 
     public function __construct(
+        DateService441 $dateService,
         EntryController $entryController,
         GeoJSONFormatter $geoJSONFormatter,
         ParameterBagInterface $params,
         Performer $performer
     ) {
+        $this->dateService = $dateService;
         $this->entryController = $entryController;
         $this->geoJSONFormatter = $geoJSONFormatter;
         $this->params = $params;
@@ -158,11 +161,11 @@ class IcalFormatter extends YesWikiController
     private function getICALData(array $entry):array
     {
         if (!empty($entry['bf_date_debut_evenement']) && !empty($entry['bf_date_fin_evenement'])) {
-            $startDate = $this->getDateTimeWithRightTimeZone($entry['bf_date_debut_evenement']);
+            $startDate = $this->dateService->getDateTimeWithRightTimeZone($entry['bf_date_debut_evenement']);
             if (is_null($startDate)){
                 return [];
             }
-            $endDate = $this->getDateTimeWithRightTimeZone($entry['bf_date_fin_evenement']);
+            $endDate = $this->dateService->getDateTimeWithRightTimeZone($entry['bf_date_fin_evenement']);
             if (is_null($endDate)){
                 return [];
             }
@@ -365,33 +368,5 @@ class IcalFormatter extends YesWikiController
             $baseUrl = substr($baseUrl, 0, -1);
         }
         return $baseUrl;
-    }
-
-    protected function getDateTimeWithRightTimeZone(String $date): DateTimeImmutable
-    {        $dateObj = new DateTimeImmutable($date);
-        if (!$dateObj){
-            throw new Exception("date '$date' can not be converted to DateImmutable !");
-        }
-        // retrieve right TimeZone from parameters
-        $defaultTimeZone = new DateTimeZone(date_default_timezone_get());
-        if (!$defaultTimeZone){
-            $defaultTimeZone = new DateTimeZone('GMT');
-        }
-        $newDate = $dateObj->setTimeZone($defaultTimeZone);
-        $anchor = '+00:00';
-        if (substr($date,-strlen($anchor)) == $anchor){
-            // it could be an error
-            $offsetToGmt = $defaultTimeZone->getOffset($newDate);
-            // be careful to offset time because time is changed by setTimeZone
-            $offSetAbs = abs($offsetToGmt);
-            return ($offsetToGmt == 0)
-            ? $newDate
-            : (
-                $offsetToGmt > 0
-                ? $newDate->sub(new DateInterval("PT{$offSetAbs}S"))
-                : $newDate->add(new DateInterval("PT{$offSetAbs}S"))
-            );
-        }
-        return $newDate;
     }
 }
