@@ -48,7 +48,7 @@ class __VideoAction extends YesWikiAction
             } elseif (!empty($matches[6])){
                 $serveur  = 'peertube';
                 $id = $matches[6];
-                $peertubeinstance = $matches[1];
+                $peertubeinstance = $matches[1].'/';
             }
         }
         return [
