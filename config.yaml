@@ -8,8 +8,9 @@ parameters:
     J9rem: "https://repository.oui-wiki.pro/"
   activateEventRepetition: false
   updatablePackagesViaAlternative:
-    - 'stats'
+    - 'advancedsearch'
     - 'nextcloudconnector'
+    - 'stats'
   alternativeupdatej9rem_editable_config_params:
     - 'activateEventRepetition'
 
