@@ -11,6 +11,7 @@ parameters:
     - 'advancedsearch'
     - 'nextcloudconnector'
     - 'stats'
+    - 'twolevels'
   alternativeupdatej9rem_editable_config_params:
     - 'activateEventRepetition'
 
