@@ -50,12 +50,14 @@ class UpdateHandler__ extends YesWikiHandler
         $foldersToRemove = [
             'archive' => false,
             'actionsbuilderfor422' => false,
+            'bellerecherche' => false,
             'ebook' => false,
             'events' => false,
             'checkaccesslink' => false,
             'fontautoinstall' => false,
             'alternatepublication' => false,
             'geolocater' => false,
+            'securitypatch422' => true,
             'tabimprovementmay' => true,
             'featexternalbazarservicecorrespondancefor431' => true
         ];

@@ -56,6 +56,7 @@ class AutoUpdateService
     protected $filesService ;
     protected $params ;
     protected $pluginService;
+    protected $updatablePackagesViaAlternative;
     protected $wiki ;
 
     private $cacheRepo ;
@@ -71,6 +72,12 @@ class AutoUpdateService
         $this->activated = true || ($version === "doryphore") && preg_match("/^4\.2\.[2-9]$|^4\.(?:[3-9]|[1-9][0-9])\.\d\d?\d?$|^[5-9]\.\d\d?\.\d\d?\d?$/", $release);
         $this->filesService = new Files();
         $this->pluginService = null;
+        $this->updatablePackagesViaAlternative = $this->params->has("updatablePackagesViaAlternative")
+            ? $this->params->get("updatablePackagesViaAlternative")
+            : [];
+        $this->updatablePackagesViaAlternative = is_array($this->updatablePackagesViaAlternative)
+            ? array_filter($this->updatablePackagesViaAlternative,'is_string')
+            : [];
         $this->cacheRepo = [];
     }
 
@@ -402,7 +409,9 @@ class AutoUpdateService
             return null;
         }
         list('key' => $key, 'package' => $package) = $repository->getAlternativePackage($packageName);
-        if (empty($package) || get_class($package) === PackageCollection::CORE_CLASS) {
+        if (empty($package) || (
+            !in_array($packageName,$this->updatablePackagesViaAlternative) && get_class($package) === PackageCollection::CORE_CLASS
+            )) {
             // not found for alternative repository or core
             return null;
         }
@@ -546,5 +555,42 @@ class AutoUpdateService
             }
         }
         return false;
+    }
+
+    /**
+     * @param Repository $repository
+     * @return array $repos
+     */
+    public function getReposForAlternative(Repository $repository): array
+    {
+        $repos = [];
+        foreach ([
+            'themes' => ['function' => 'getThemesPackages','altFunction' => 'getAlternativeThemesPackages'],
+            'tools' => ['function' => 'getToolsPackages','altFunction' => 'getAlternativeToolsPackages'],
+            ] as $type => $info) {
+            $corePackages = $repository->{$info['function']}();
+            $packagesNames = [];
+            foreach ($corePackages as $package) {
+                if (!in_array($package->name,$this->updatablePackagesViaAlternative)){
+                    $packagesNames[] = $package->name;
+                }
+            }
+            $alternativePackages = $repository->{$info['altFunction']}();
+            foreach ($alternativePackages as $key => $packages) {
+                foreach ($packages as $package) {
+                    if (!in_array($package->name, $packagesNames)) {
+                        if (!isset($repos[$key])) {
+                            $repos[$key] = [];
+                        }
+                        if (!isset($repos[$key][$type])) {
+                            $repos[$key][$type] = [];
+                        }
+                        $repos[$key][$type][$package->name] = $package;
+                        $packagesNames[] = $package->name;
+                    }
+                }
+            }
+        }
+        return $repos;
     }
 }

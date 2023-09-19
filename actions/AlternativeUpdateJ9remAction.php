@@ -47,33 +47,7 @@ class AlternativeUpdateJ9remAction extends YesWikiAction
 
         $repository = $this->autoUpdateService->initRepository($this->arguments['version']);
 
-        $repos = [];
-
-        foreach ([
-            'themes' => ['function' => 'getThemesPackages','altFunction' => 'getAlternativeThemesPackages'],
-            'tools' => ['function' => 'getToolsPackages','altFunction' => 'getAlternativeToolsPackages'],
-            ] as $type => $info) {
-            $corePackages = $repository->{$info['function']}();
-            $packagesNames = [];
-            foreach ($corePackages as $package) {
-                $packagesNames[] = $package->name;
-            }
-            $alternativePackages = $repository->{$info['altFunction']}();
-            foreach ($alternativePackages as $key => $packages) {
-                foreach ($packages as $package) {
-                    if (!in_array($package->name, $packagesNames)) {
-                        if (!isset($repos[$key])) {
-                            $repos[$key] = [];
-                        }
-                        if (!isset($repos[$key][$type])) {
-                            $repos[$key][$type] = [];
-                        }
-                        $repos[$key][$type][$package->name] = $package;
-                        $packagesNames[] = $package->name;
-                    }
-                }
-            }
-        }
+        $repos = empty($repository) ? [] : $this->autoUpdateService->getReposForAlternative($repository);
 
         $localTools = $repository->getLocalToolsPackages();
         $localThemes = $repository->getLocalThemesPackages();

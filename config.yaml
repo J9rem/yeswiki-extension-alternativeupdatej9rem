@@ -7,8 +7,10 @@ parameters:
   alternative_yeswiki_repository:
     J9rem: "https://repository.oui-wiki.pro/"
   activateEventRepetition: false
+  updatablePackagesViaAlternative:
+    - 'stats'
   alternativeupdatej9rem_editable_config_params:
-   - 'activateEventRepetition'
+    - 'activateEventRepetition'
 
 services:
   _defaults:
