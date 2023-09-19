@@ -404,7 +404,8 @@ class AutoUpdateService
             return null;
         }
 
-        if (!empty($repository->getPackage($packageName))) {
+        if (!in_array($packageName,$this->updatablePackagesViaAlternative)
+            && !empty($repository->getPackage($packageName))) {
             // leave core manage it
             return null;
         }
