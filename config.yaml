@@ -9,6 +9,7 @@ parameters:
   activateEventRepetition: false
   updatablePackagesViaAlternative:
     - 'stats'
+    - 'nextcloudconnector'
   alternativeupdatej9rem_editable_config_params:
     - 'activateEventRepetition'
 
