@@ -61,7 +61,7 @@ class UpdateHandler__ extends YesWikiHandler
             'tabimprovementmay' => true,
             'featexternalbazarservicecorrespondancefor431' => true
         ];
-        if (preg_match('/^([5-9]\.[0-9]+\.[0-9]+|4\.[3-9]+\.[0-9]+*)$/',$this->params->get('yeswiki_release'))){
+        if (preg_match('/^([5-9]\.[0-9]+\.[0-9]+|4\.[3-9]+\.[0-9]+)$/',$this->params->get('yeswiki_release'))){
             $foldersToRemove['zfuture43'] = false;
         }
         if (preg_match('/^([5-9]\.[0-9]+\.[0-9]+|4\.[5-9]+\.[0-9]+|4\.4\.[1-9][0-9]*)$/',$this->params->get('yeswiki_release'))){
