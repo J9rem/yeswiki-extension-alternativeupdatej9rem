@@ -125,4 +125,10 @@ class DateField extends CoreDateField
             'data' => $data
         ]);
     }
+
+    protected function getValue($entry)
+    {
+        // do not take default for this field
+        return $entry[$this->propertyName] ?? $_REQUEST[$this->propertyName] ?? null;
+    }
 }

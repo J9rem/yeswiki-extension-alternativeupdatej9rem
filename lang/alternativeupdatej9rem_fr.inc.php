@@ -29,6 +29,10 @@ return [
 
   // fields/video.twig
   'VIDEO_LINK_FIELD' => 'Lien vers la vidéo : %{link}',
+
+  // handlers/DuplicationHandler.php
+  'AUJ9_DUPLICATION_TROUBLE' => 'La duplication de la présente fiche a bien eu lieu mais il n\'a pas été possible de retrouver le lien vers la nouvelle fiche.',
+  'AUJ9_OTHER_ENTRIES_CREATED' => 'D\autres fiches ont été créées : %{links}',
   
   // services/ActionsBuilderService.php
   'AUJ9_EDIT_ENTRY_PARTIAL_ACTION_FIELDS_LABEL' => 'Champs à modifier',
