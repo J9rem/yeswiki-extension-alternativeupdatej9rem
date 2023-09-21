@@ -19,6 +19,7 @@ use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Bazar\Service\FormManager;
 use YesWiki\Core\Service\AclService;
 use YesWiki\Core\Service\PageManager;
+use YesWiki\Core\Service\Performer;
 use YesWiki\Core\YesWikiHandler;
 
 class DuplicateHandler extends YesWikiHandler
@@ -29,6 +30,7 @@ class DuplicateHandler extends YesWikiHandler
     protected $entryManager;
     protected $formManager;
     protected $pageManager;
+    protected $performer;
 
     public function run()
     {
@@ -39,6 +41,7 @@ class DuplicateHandler extends YesWikiHandler
         $this->entryManager = $this->getService(EntryManager::class);
         $this->formManager = $this->getService(FormManager::class);
         $this->pageManager = $this->getService(PageManager::class);
+        $this->performer = $this->getService(Performer::class);
 
         // check current user can read
         if (!$this->aclService->hasAccess('read')){
@@ -51,12 +54,21 @@ class DuplicateHandler extends YesWikiHandler
         $page = $this->pageManager->getOne($tag);
         $isEntry = $this->entryManager->isEntry($tag);
 
+        // check current user can write for new entry/page
+        if (!$this->aclService->hasAccess('write','--unknown-tag--')){
+            return $this->finalRender($this->render('@templates/alert-message.twig',[
+                'type' => 'danger',
+                'message' => _t('EDIT_NO_WRITE_ACCESS')
+            ]));
+        }
+
         if (!empty($page)){
             return ($this->entryManager->isEntry($tag))
                 ? $this->duplicateEntry($tag)
                 : $this->duplicatePage($tag);
         }
-        return $this->chooseFromPageOrCreate($tag);
+        $this->wiki->method = $this->isInIframe() ?  'editiframe' : 'edit';
+        return $this->performer->run($this->wiki->method,'handler',[]);
     }
 
     protected function finalRender(string $content, bool $includePage = false): string
@@ -67,7 +79,7 @@ class DuplicateHandler extends YesWikiHandler
                 $content
             </div>
             HTML
-            : $conten;
+            : $content;
         return $this->wiki->Header().$content.$this->wiki->Footer() ;
     }
 
@@ -144,24 +156,35 @@ class DuplicateHandler extends YesWikiHandler
 
     protected function duplicatePage(string $tag): string
     {
-        return $this->finalRender($this->render('@templates/alert-message.twig',[
-            'type' => 'info',
-            'message' => "Duplication of page $tag"
-        ]));
-    }
-
-    protected function chooseFromPageOrCreate(string $tag): string
-    {
-        // check current user can write
-        if (!$this->aclService->hasAccess('write')){
-            return $this->finalRender($this->render('@templates/alert-message.twig',[
-                'type' => 'danger',
-                'message' => _t('EDIT_NO_WRITE_ACCESS')
-            ]));
+        $message = '';
+        $type = '';
+        if (isset($_POST['newName'])){
+            if(empty($_POST['newName']) || !is_string($_POST['newName'])){
+                $type = 'warning';
+                $message = _t('AUJ9_DUPLICATION_NOT_POSSIBLE_IF_NO_NAME');
+            } else {
+                $page = $this->pageManager->getOne($_POST['newName']);
+                if (!empty($page)){
+                    $type = 'danger';
+                    $message = _t('AUJ9_DUPLICATION_NOT_POSSIBLE_IF_EXISTING');
+                } else {
+                    // fake body for new Tag
+                    $this->wiki->page['tag'] = $_POST['newName'];
+                    $this->wiki->tag = $_POST['newName'];
+                    unset($_POST['submit']);
+                    $this->wiki->method = $this->isInIframe() ? 'editiframe' : 'edit';
+                    flash(_t('AUJ9_DUPLICATION_IN_COURSE',[
+                        'originTag' => $tag,
+                        'destinationTag' => $_POST['newName'],
+                    ]),'info');
+                    return $this->performer->run($this->wiki->method,'handler',[]);
+                }
+            }
         }
-        return $this->finalRender($this->render('@templates/alert-message.twig',[
-            'type' => 'danger',
-            'message' => 'test'
+        return $this->finalRender($this->render('@alternativeupdatej9rem/duplicate-handler-ask-new-name.twig',[
+            'type' => $type,
+            'message' => $message,
+            'isInIframe' => $this->isInIframe()
         ]));
     }
 
