@@ -18,7 +18,6 @@
             {{ include_javascript('javascripts/vendor/vue/vue.js') }}
             {{ include_javascript('tools/alternativeupdatej9rem/javascripts/recurrent-event.js') }}
             {{ include_css('tools/alternativeupdatej9rem/styles/recurrent-event.css') }}
-            <div class="flex-break"></div>
             <div class="input-prepend input-group selector_is_recurrent" data-data="{{ data|json_encode }}">
                 <div class="form-control" v-if="!recurrenceBaseId">
                     <label for="{{ "#{field.propertyName}_is_recurrent" }}" 
