@@ -31,6 +31,7 @@ return [
   'VIDEO_LINK_FIELD' => 'Lien vers la vidéo : %{link}',
 
   // handlers/DuplicationHandler.php
+  'AUJ9_DUPLICATE' => 'Dupliquer',
   'AUJ9_DUPLICATION_IN_COURSE' => 'Vous être en train de dupliquer la page \'%{originTag}\' vers \'%{destinationTag}\' !',
   'AUJ9_DUPLICATION_NOT_POSSIBLE_IF_EXISTING' => 'Copie de la page impossible car le nouveau nom choisi est déjà utilisé !',
   'AUJ9_DUPLICATION_NOT_POSSIBLE_IF_NO_NAME' => 'Copie de la page impossible car le nouveau nom choisi est vide !',
