@@ -29,6 +29,16 @@ return [
 
   // fields/video.twig
   'VIDEO_LINK_FIELD' => 'Lien vers la vidéo : %{link}',
+
+  // handlers/DuplicationHandler.php
+  'AUJ9_DUPLICATE' => 'Dupliquer',
+  'AUJ9_DUPLICATION_IN_COURSE' => 'Vous être en train de dupliquer la page \'%{originTag}\' vers \'%{destinationTag}\' !',
+  'AUJ9_DUPLICATION_NOT_POSSIBLE_IF_EXISTING' => 'Copie de la page impossible car le nouveau nom choisi est déjà utilisé !',
+  'AUJ9_DUPLICATION_NOT_POSSIBLE_IF_NO_NAME' => 'Copie de la page impossible car le nouveau nom choisi est vide !',
+  'AUJ9_DUPLICATION_TROUBLE' => 'La duplication de la présente fiche a bien eu lieu mais il n\'a pas été possible de retrouver le lien vers la nouvelle fiche.',
+  'AUJ9_OTHER_ENTRIES_CREATED' => 'D\'autres fiches ont été créées : %{links}',
+  'AUJ9_PAGE_NEW_NAME' => 'Nom de la nouvelle page à créer',
+  'AUJ9_SAVE' => 'Sauver',
   
   // services/ActionsBuilderService.php
   'AUJ9_EDIT_ENTRY_PARTIAL_ACTION_FIELDS_LABEL' => 'Champs à modifier',

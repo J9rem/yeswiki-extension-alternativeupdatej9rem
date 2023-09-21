@@ -56,3 +56,6 @@ services:
   YesWiki\Alternativeupdatej9rem\Service\DateService:
     tags:
       - { name: yeswiki.event_subscriber }
+  YesWiki\Alternativeupdatej9rem\Service\DuplicationFollower:
+    tags:
+      - { name: yeswiki.event_subscriber }
