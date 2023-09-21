@@ -190,6 +190,6 @@ class DuplicateHandler extends YesWikiHandler
 
     protected function isInIframe()
     {
-        return preg_match('/duplicateiframe$/Ui', getAbsoluteUrl());
+        return preg_match('/(?:duplicateiframe|iframe))$/Ui', getAbsoluteUrl());
     }
 }

@@ -17,6 +17,8 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
    - `choice-display-hidden` permet d'avoir une zone qui se déplie/replie lors de l'affichage d'une fiche. Pour l'utiliser, il faut encapsuler la zone concernée (une seule zone par fiche) dans `<div class="hidden-field-specific">/<div>` (ceci se fait à l'aide des champs `labelhtml`)
  - Retrouver le **handler `/diff`** bien pratique pour comparer rapidement les changements dans une fiche ou une page
  - Un **nouveau template dynamique** `{{bazarliste template="video"}}` qui permet d'afficher les fiches en vignettes comme pour le template dynamique `card` mais en affichant les vidéos des fiches.
+ - **Possibilité de dupliquer une fiche ou une page** (handler `/duplicate`)
+   - pour fonctionner parfaitement, il faudrait penser à ajouter `duplicateiframe` pour le paramètre `allowed_methods_in_iframe` dans la page [`GererConfig`](?GererConfig ':ignore')
  - **La possibilité de gérer des évènements récurrents**
 
 !> la gestion des évènements récurrents est temporairement désativée.
