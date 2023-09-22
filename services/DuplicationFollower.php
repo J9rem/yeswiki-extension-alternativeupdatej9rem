@@ -27,7 +27,7 @@ class DuplicationFollower implements EventSubscriberInterface
     }
 
     public function __construct(
-        Wiki $wiki,
+        Wiki $wiki
     ) {
         $this->wiki = $wiki;
     }
