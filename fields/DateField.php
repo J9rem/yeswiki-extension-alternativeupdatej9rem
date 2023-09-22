@@ -15,7 +15,7 @@ use YesWiki\Alternativeupdatej9rem\Service\DateService;
 use YesWiki\Bazar\Field\DateField as CoreDateField;
 
 /**
- * changes only for `doryphore 4.4.1`
+ * changes only for `doryphore 4.4.1` or recurrent events
  */
 
 /**
@@ -31,9 +31,11 @@ class DateField extends CoreDateField
         $hasTime = false;
         $value = $this->getValue($entry);
 
+        $dateService = $this->getService(DateService::class);
+
         if (!empty($value)) {
             // Default value when entry exist
-            $day = $this->getService(DateService::class)->getDateTimeWithRightTimeZone($value)->format('Y-m-d H:i');
+            $day = $dateService->getDateTimeWithRightTimeZone($value)->format('Y-m-d H:i');
             $hasTime = (strlen($value) > 10);
             if ($hasTime) {
                 $result = explode(' ', $day);
@@ -58,7 +60,8 @@ class DateField extends CoreDateField
             'minute' => $minute,
             'hasTime' => $hasTime,
             'value' => $value,
-            'data' => $entry["{$this->getPropertyName()}_data"] ?? []
+            'data' => $entry["{$this->getPropertyName()}_data"] ?? [],
+            'canRegisterMultipleEntries' => $dateService->canRegisterMultipleEntries($entry)
         ]);
     }
 
@@ -70,7 +73,10 @@ class DateField extends CoreDateField
                     && is_string($entry['id_fiche'])){
                 $this->getService(DateService::class)->followId($entry['id_fiche']);
             }
-            if (!empty($entry['bf_date_fin_evenement_data']['other'])){
+            if (!$this->getService(DateService::class)->canRegisterMultipleEntries($entry)){
+                // clean data from entry because not possible to create repetition
+                unset($entry['bf_date_fin_evenement_data']);
+            } elseif (!empty($entry['bf_date_fin_evenement_data']['other'])){
                 unset($entry['bf_date_fin_evenement_data']['other']);
                 if (!empty($entry['bf_date_fin_evenement_data'])){
                     $return['bf_date_fin_evenement_data'] = $entry['bf_date_fin_evenement_data'];
@@ -125,6 +131,10 @@ class DateField extends CoreDateField
             'data' => $data
         ]);
     }
+
+    /** 
+     * changes for duplicateHandler
+     */
 
     protected function getValue($entry)
     {
