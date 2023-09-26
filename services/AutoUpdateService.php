@@ -61,6 +61,16 @@ class AutoUpdateService
 
     private $cacheRepo ;
 
+    private const FUNCTIONS_NAMES = [
+        'themes' => [
+            'function' => 'getThemesPackages',
+            'altFunction' => 'getAlternativeThemesPackages'],
+        'tools' => [
+            'function' => 'getToolsPackages',
+            'altFunction' => 'getAlternativeToolsPackages'
+        ]
+    ];
+
     public function __construct(
         ParameterBagInterface $params,
         Wiki $wiki
@@ -328,21 +338,10 @@ class AutoUpdateService
      */
     protected function getAffectedToolsNames(Repository $repository): array
     {
-        $corePackages = $repository->getToolsPackages();
-        $packagesNames = [];
-        foreach ($corePackages as $package) {
-            $packagesNames[] = strtolower($package->name);
-        }
-        $alternativePackages = $repository->getAlternativeToolsPackages();
-        foreach ($alternativePackages as $key => $packages) {
-            foreach ($packages as $package) {
-                if (!in_array(strtolower($package->name), $packagesNames)) {
-                    $packagesNames[] = strtolower($package->name);
-                }
-            }
-        }
+        
+        list('packagesNames'=>$packagesNames) = $this->getReposRaw(['tools'],$repository);
 
-        return $packagesNames;
+        return array_map('strtolower',$packagesNames);
     }
 
     /**
@@ -352,21 +351,9 @@ class AutoUpdateService
      */
     protected function getAffectedThemesNames(Repository $repository): array
     {
-        $corePackages = $repository->getThemesPackages();
-        $packagesNames = [];
-        foreach ($corePackages as $package) {
-            $packagesNames[] = strtolower($package->name);
-        }
-        $alternativePackages = $repository->getAlternativeThemesPackages();
-        foreach ($alternativePackages as $key => $packages) {
-            foreach ($packages as $package) {
-                if (!in_array(strtolower($package->name), $packagesNames)) {
-                    $packagesNames[] = strtolower($package->name);
-                }
-            }
-        }
+        list('packagesNames'=>$packagesNames) = $this->getReposRaw(['themes'],$repository);
 
-        return $packagesNames;
+        return array_map('strtolower',$packagesNames);
     }
 
     /**
@@ -560,38 +547,55 @@ class AutoUpdateService
 
     /**
      * @param Repository $repository
+     * @param null|callable $callable
      * @return array $repos
      */
-    public function getReposForAlternative(Repository $repository): array
+    public function getReposForAlternative(Repository $repository, $callable = null): array
+    {
+        list('repos'=>$repos) = $this->getReposRaw(['themes','tools'],$repository,$callable);
+        return $repos;
+    }
+
+    
+    /**
+     * @param array $types
+     * @param Repository $repository
+     * @param null|callable $callable
+     * @return array [$repos,$packagesNames]
+     */
+    public function getReposRaw(array $types,Repository $repository, $callable = null): array
     {
         $repos = [];
-        foreach ([
-            'themes' => ['function' => 'getThemesPackages','altFunction' => 'getAlternativeThemesPackages'],
-            'tools' => ['function' => 'getToolsPackages','altFunction' => 'getAlternativeToolsPackages'],
-            ] as $type => $info) {
-            $corePackages = $repository->{$info['function']}();
-            $packagesNames = [];
-            foreach ($corePackages as $package) {
-                if (!in_array($package->name,$this->updatablePackagesViaAlternative)){
-                    $packagesNames[] = $package->name;
-                }
-            }
-            $alternativePackages = $repository->{$info['altFunction']}();
-            foreach ($alternativePackages as $key => $packages) {
-                foreach ($packages as $package) {
-                    if (!in_array($package->name, $packagesNames)) {
-                        if (!isset($repos[$key])) {
-                            $repos[$key] = [];
-                        }
-                        if (!isset($repos[$key][$type])) {
-                            $repos[$key][$type] = [];
-                        }
-                        $repos[$key][$type][$package->name] = $package;
+        $packagesNames = [];
+        foreach ($types as $type) {
+            if (!empty(self::FUNCTIONS_NAMES[$type])){
+                $info = self::FUNCTIONS_NAMES[$type];
+                $corePackages = $repository->{$info['function']}();
+                $packagesNames = [];
+                foreach ($corePackages as $package) {
+                    if (!in_array($package->name,$this->updatablePackagesViaAlternative)){
                         $packagesNames[] = $package->name;
+                    }
+                }
+                $alternativePackages = $repository->{$info['altFunction']}();
+                foreach ($alternativePackages as $key => $packages) {
+                    foreach ($packages as $package) {
+                        if (!in_array($package->name, $packagesNames)) {
+                            if (!isset($repos[$key])) {
+                                $repos[$key] = [];
+                            }
+                            if (!isset($repos[$key][$type])) {
+                                $repos[$key][$type] = [];
+                            }
+                            $repos[$key][$type][$package->name] = is_callable($callable)
+                                ? $callable($package)
+                                : $package;
+                            $packagesNames[] = $package->name;
+                        }
                     }
                 }
             }
         }
-        return $repos;
+        return compact(['repos','packagesNames']);
     }
 }

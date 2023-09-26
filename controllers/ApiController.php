@@ -138,33 +138,10 @@ class ApiController extends YesWikiController
                         if (!empty($version) && is_string($version)) {
                             $repository = $autoUpdateService->initRepository($version, $_POST['packages']);
                             
-                            $repos = [];
+                            $repos = $autoUpdateService->getReposForAlternative($repository,function($package){
+                                return $this->toArray($package);
+                            });
 
-                            foreach ([
-                                'themes' => ['function' => 'getThemesPackages','altFunction' => 'getAlternativeThemesPackages'],
-                                'tools' => ['function' => 'getToolsPackages','altFunction' => 'getAlternativeToolsPackages'],
-                                ] as $type => $info) {
-                                $corePackages = $repository->{$info['function']}();
-                                $packagesNames = [];
-                                foreach ($corePackages as $package) {
-                                    $packagesNames[] = $package->name;
-                                }
-                                $alternativePackages = $repository->{$info['altFunction']}();
-                                foreach ($alternativePackages as $key => $packages) {
-                                    foreach ($packages as $package) {
-                                        if (!in_array($package->name, $packagesNames)) {
-                                            if (!isset($repos[$key])) {
-                                                $repos[$key] = [];
-                                            }
-                                            if (!isset($repos[$key][$type])) {
-                                                $repos[$key][$type] = [];
-                                            }
-                                            $repos[$key][$type][$package->name] = $this->toArray($package);
-                                            $packagesNames[] = $package->name;
-                                        }
-                                    }
-                                }
-                            }
                             $data['versions'][$version] = [
                                 'repos' => $repos,
                             ];
