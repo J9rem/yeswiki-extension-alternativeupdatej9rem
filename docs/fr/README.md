@@ -19,6 +19,7 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
  - Un **nouveau template dynamique** `{{bazarliste template="video"}}` qui permet d'afficher les fiches en vignettes comme pour le template dynamique `card` mais en affichant les vidéos des fiches.
  - **Possibilité de dupliquer une fiche ou une page** (handler `/duplicate`)
    - pour fonctionner parfaitement, il faudrait penser à ajouter `duplicateiframe` pour le paramètre `allowed_methods_in_iframe` dans la page [`GererConfig`](?GererConfig ':ignore')
+   - de plus, pour pouvoir dupliquer des fiches même si l'utilisateur n'a pas les droits de création d'un page, il faut modifier à `true` le paramètre `canDuplicateEntryIfNotRightToWrite` dans la page [GererConfig](?GererConfig ':ignore'), partie `ALTERNATIVEUPDATEJ9REM`
  - **La possibilité de gérer des évènements récurrents**
 
 !> la gestion des évènements récurrents est temporairement désativée.
