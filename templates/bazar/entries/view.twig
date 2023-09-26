@@ -3,14 +3,19 @@
 # For the full copyright and license information, please view the LICENSE
 # file that was distributed with this source code. #}
 
-{% set anchor = '<div class="BAZ_actions_fiche">' %}
-{% set button = '<a class="btn btn-entry-action btn-sm btn-default" title="' ~ _t('AUJ9_DUPLICATE') ~ '" href="' ~ url({handler:isInIframe ? 'duplicateiframe' : 'duplicate'}) ~ '"><i class="fas fa-copy"></i></a>'%}
-{{ include([
+{% set listOfTemplates = [
     "tools/twolevels/templates/bazar/entries/view.twig",
     "tools/stats/templates/bazar/entries/view.twig",
     "tools/publication/templates/bazar/entries/view.twig",
     "tools/maintenance/templates/bazar/entries/view.twig",
     "tools/bazar/templates/entries/view.twig",
-    ])|replace({(anchor):anchor ~ button})|raw }}
-
-
+    ] %}
+{% if config.default_read_acl is not empty
+    and hasAcl(config.default_read_acl)
+    and hasAcl(config.default_write_acl) %}
+  {% set anchor = '<div class="BAZ_actions_fiche">' %}
+  {% set button = '<a class="btn btn-entry-action btn-sm btn-default" title="' ~ _t('AUJ9_DUPLICATE') ~ '" href="' ~ url({handler:isInIframe ? 'duplicateiframe' : 'duplicate'}) ~ '"><i class="fas fa-copy"></i></a>'%}
+  {{ include(listOfTemplates)|replace({(anchor):anchor ~ button})|raw }}
+{% else %}
+  {{ include(listOfTemplates) }}
+{% endif %}
