@@ -85,7 +85,7 @@ return [
   'EVENT_SECOND_Y_OF_MONTH' => 'Le second Y du mois',
   'EVENT_THIRD_Y_OF_MONTH' => 'Le troisième Y du mois',
   'EVENT_UP_TO_DATE' => 'Jusqu\'au :',
-  'EVENT_WARNING_MESSAGE' => 'Il semble que vous ne soyez pas connecté en tant qu\'administrateur du site ou propriétaire de cette fiche. Toute modification ou suppression des répétitions pourraient ne pas mettre à jour les fiches liées ! Veuillez vous connecter avec le bon compte.',
+  'EVENT_WARNING_MESSAGE' => 'Il semble que vous ne soyez pas connecté en tant qu\'administrateur du site ou propriétaire de cette fiche. Toute modification ou suppression des répétitions pourrait ne pas mettre à jour les fiches liées ! Veuillez vous connecter avec le bon compte.',
   'EVENTS_WHEN_IN_MONTH' => 'A quel moment du mois ?',
 
   // templates/edit-entry-partial-action.twig
