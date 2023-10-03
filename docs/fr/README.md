@@ -43,6 +43,7 @@ Ajout des champs:
  - un système de cache local
  - **La possibilité de gérer des évènements récurrents**
  - possibilité de supprimer toutes les pages et fiches possédées par un utilisateur lors de la suppression de cet utilisateur (à activer dans [GererConfig](?GererConfig ':ignore'))
+ - **La possibilité de connecter un formulaire à [Open Agenda](https://openagenda.com)** (cf. documentation [ci-dessous](#documentation-open-agenda))
 
 #### Évènements récurrents
 
@@ -77,6 +78,7 @@ Ajout des champs:
 |Handler|`/diff`|[`auj9-diff`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-diff&type=code)|
 ||`/duplicate`|[`auj9-duplicate`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-duplicate&type=code)|
 |Nouvelles fonctionnalités|évènements récurrents|[`auj9-recurrent-events`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-recurrent-events&type=code)|
+||connection à OpenAgenda|[`auj9-open-agenda-connect`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-open-agenda-connect&type=code)|
 ||personnalisations propres à cette extension|[`auj9-custom-changes`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-custom-changes&type=code)|
 ||système de mises à jour|[`auj9-autoupdate-system`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-autoupdate-system&type=code)|
 ||système de cache local des requêtes SQL|[`auj9-local-cache`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-local-cache&type=code)|
@@ -104,6 +106,29 @@ Ajout des champs:
 
  - La configuration de cette action se fait en passant par le bouton composants lors de l'édition d'un page
  - Bien penser à attendre l'icône "✔" qui confirme que la modification a été validée puis mettre à jour le code (sinon la modification sera bien enregistrée dans la page mais elle ne sera pas active)
+
+### Documentation Open Agenda
+
+!> par défaut, la fonctionnalité de connexion automatique à un calendrier Open Agenda est désactivée.
+
+>Pour l'activer
+>  - se rendre dans [GererConfig](?GererConfig ':ignore')
+>  - dans la partie `ALTERNATIVEUPDATEJ9REM`, mettre `true` pour la variable `openAgenda[isActivated]`
+
+#### Pré-requis
+
+Pour pouvoir synchroniser automiquement les données d'un YesWiki vers un open agenda, vous devez:
+ - disposer d'un compte Open Agenda : https://openagenda.com/
+ - connaître l'identifiant unique de l'agenda à connecter
+ - disposer des droits d'écriture sur cette agenda avec votre compte Open Agenda
+ - disposer d'une clé secrète associée à votre compte Open Agenda:
+   - elle est visible par ce lien si vous êtes connecté : https://openagenda.com/settings/apiKey
+   - si vous n'en disposez pas, vous devez faire la demande de votre clé secrète en écrivant un mmessage à l'adresse e-mail indiquée dans ce paragraphe d'aide : https://developers.openagenda.com/00-introduction/#utilisation-en-criture
+   - _la documentation associée est disponible ici : https://developers.openagenda.com/ (pour les développeurs)_
+
+#### Réglages
+
+La configuration la connexion à Open Agenda se fait via cette adresse sur votre wiki : [?api/openagenda/config/html](?api/openagenda/config/html ':ignore').
 
 ### Création automatique des formulaires départements et régions
 

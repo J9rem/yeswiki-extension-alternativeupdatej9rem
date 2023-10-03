@@ -687,4 +687,31 @@ class ApiController extends YesWikiController
     {
         return $this->getService(BazarSendMailController::class)->getCurrentUserEmail();
     }
+    /**
+     * @Route("/api/openagenda/config/html", methods={"GET"}, options={"acl":{"public"}})
+     * Feature UUID : auj9-open-agenda-connect
+     */
+    public function configOpenAgendaHTML()
+    {
+        if (!$this->wiki->UserIsAdmin()){
+            return new Response(
+                $this->renderInSquelette('@templates/alert-message.twig',[
+                    'type' => 'danger',
+                    'message' => _t('DENY_READ')
+                ]),
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
+        $this->wiki->page = [
+            'body' => '======'._t('AUJ9_OPEN_AGENDA_CONFIG_TITLE').'======',
+            'tag' => 'api'
+        ];
+        $content = $this->renderInSquelette('@alternativeupdatej9rem/open-agenda-config.twig',[
+        ]);
+        $this->wiki->page = null;
+        return new Response(
+            $content,
+            Response::HTTP_OK
+        );
+    }
 }

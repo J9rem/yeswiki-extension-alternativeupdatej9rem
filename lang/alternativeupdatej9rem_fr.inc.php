@@ -188,4 +188,8 @@ return [
   'AUJ9_SEND_MAIL_TEMPLATE_SINGULAR_NB_DEST_TEXT' => 'Actuellement {nb} destinataire',
   'AUJ9_SEND_MAIL_TEMPLATE_SIZE' => 'Taille :',
   'AUJ9_SEND_MAIL_TEMPLATE_UNCHECKALL' => 'Décocher tout ce qui est visible',
+
+  // templates/open-agenda-config.twig
+  // Feature UUID : auj9-open-agenda-connect
+  'AUJ9_OPEN_AGENDA_CONFIG_TITLE' => 'Configuration de la connexion à Open Agenda',
 ];
