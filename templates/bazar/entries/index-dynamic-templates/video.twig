@@ -7,6 +7,7 @@
 
 {% block assets %}
   {{ include_css('tools/bazar/presentation/styles/card.css') }}
+  {{ include_css('tools/alternativeupdatej9rem/styles/list-video-dyn.css') }}
 {% endblock %}
 
 {% block display_entries %}
@@ -30,7 +31,7 @@
     </div>
 
     {% if isLink %}<a{% else %}<div{% endif %} v-for="entry in entriesToDisplay" :key="entry.id_fiche" 
-        class="bazar-entry bazar-card{{ isModal ? ' modalbox' : ''}}"
+        class="bazar-entry bazar-card{{ isModal ? ' modalbox' : ''}} bazar-video"
         {% if not isLink %}@click="openEntry(entry)"{% endif %} 
         :class="{'with-image': Object.keys(entry).includes('imagefieldname')}"
         {% if isModal %}
