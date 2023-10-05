@@ -55,11 +55,11 @@ class DuplicateHandler extends YesWikiHandler
         $isEntry = $this->entryManager->isEntry($tag);
 
         $canDuplicateEntryIfNotRightToWrite = $this->params->has('canDuplicateEntryIfNotRightToWrite')
-            ? $this->formatBoolean($this->params->has('canDuplicateEntryIfNotRightToWrite'),false)
+            ? $this->formatBoolean($this->params->get('canDuplicateEntryIfNotRightToWrite'),false)
             : false;
 
         // check current user can write for new entry/page
-        if ((!$canDuplicateEntryIfNotRightToWrite || !$isEntry) && !$this->aclService->hasAccess('write','--unknown-tag--')){
+        if (!$this->aclService->hasAccess('write','--unknown-tag--') && (!$isEntry || !$canDuplicateEntryIfNotRightToWrite)){
             return $this->finalRender($this->render('@templates/alert-message.twig',[
                 'type' => 'danger',
                 'message' => _t('EDIT_NO_WRITE_ACCESS')
