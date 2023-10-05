@@ -10,7 +10,18 @@
     "tools/maintenance/templates/bazar/entries/view.twig",
     "tools/bazar/templates/entries/view.twig",
     ] %}
-{% if config.default_read_acl is not empty
+{% set revision = config.yeswiki_version %}
+{% set release = config.yeswiki_release|split('.') %}
+{% if 
+    revision == "doryphore"
+    and release|length > 1
+    and (
+      release[0] == 4
+      and release[1] == 4
+      and 
+      release[2] < 3
+    )
+    and config.default_read_acl is not empty
     and hasAcl(config.default_read_acl)
     and (
         config.canDuplicateEntryIfNotRightToWrite is same as true
