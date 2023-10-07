@@ -59,6 +59,7 @@ class UpdateHandler__ extends YesWikiHandler
             'geolocater' => false,
             'securitypatch422' => true,
             'tabimprovementmay' => true,
+            'dkim' => true,
             'featexternalbazarservicecorrespondancefor431' => true
         ];
         if (preg_match('/^([5-9]\.[0-9]+\.[0-9]+|4\.[3-9]+\.[0-9]+)$/',$this->params->get('yeswiki_release'))){
@@ -151,7 +152,7 @@ class UpdateHandler__ extends YesWikiHandler
         $xmlPath = "tools/$dirName/desc.xml";
         if (is_file($xmlPath)) {
             $xml = file_get_contents($xmlPath);
-            $newXml = preg_replace("/(active=)\"([^\"]+)\"/", "$1\"".($status ? "1" : "0")."\"", $xml);
+            $newXml = preg_replace("/(active=)\"([^\"]+)\"/", "$1\"0\"", $xml);
             if (!empty($newXml) && $newXml != $xml) {
                 file_put_contents($xmlPath, $newXml);
                 return !$this->isActive($dirName);
