@@ -52,19 +52,19 @@ Ajout des champs:
 |**Type**|**Nom**|**Identifiant**|
 |:-|:-|:-|
 |Action|`{{editentrypartial}}`|[`auj9-editentrypartial-action`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-editentrypartial-action&type=code)|
-||`{{listformmeta}}`|`auj9-listformmeta-action`|
-|Champ bazar|`customsendmail`|`auj9-custom-sendmail`|
-||`choice-display-hidden`|`auj9-choice-display-hidden-field`|
-||`video`|`auj9-video-field`|
-||`sendmailselector`|`auj9-send-mail-selector-field`|
-|Correctifs|pour `doryphore 4.4.1` et avant|`auj9-fix-4-4-1`|
-||pour `doryphore 4.4.2`|`auj9-fix-4-4-2`|
-|Handler|`/diff`|`auj9-diff`|
-||`/duplicate`|`auj9-duplicate`|
+||`{{listformmeta}}`|[`auj9-listformmeta-action`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-listformmeta-action&type=code)|
+|Champ bazar|`customsendmail`|[`auj9-custom-sendmail`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-custom-sendmail&type=code)|
+||`choice-display-hidden`|[`auj9-choice-display-hidden-field`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-choice-display-hidden-field&type=code)|
+||`video`|[`auj9-video-field`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-video-field&type=code)|
+||`sendmailselector`|[`auj9-send-mail-selector-field`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-send-mail-selector-field&type=code)|
+|Correctifs|pour `doryphore 4.4.1` et avant|[`auj9-fix-4-4-1`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-1&type=code)|
+||pour `doryphore 4.4.2`|[`auj9-fix-4-4-2`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-2&type=code)|
+|Handler|`/diff`|[`auj9-diff`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-diff&type=code)|
+||`/duplicate`|[`auj9-duplicate`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-duplicate&type=code)|
 |Nouvelles fonctionnalités|évènements récurrents|[`auj9-recurrent-events`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-recurrent-events&type=code)|
-||personnalisations propres à cette extension|`auj9-custom-changes`|
-||système de mises à jour|`auj9-autoupdate-system`|
-|Template Bazar|`video.twig`|`auj9-bazar-list-video-dynamic`|
+||personnalisations propres à cette extension|[`auj9-custom-changes`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-custom-changes&type=code)|
+||système de mises à jour|[`auj9-autoupdate-system`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-autoupdate-system&type=code)|
+|Template Bazar|`video.twig`|[`auj9-bazar-list-video-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-video-dynamic&type=code)|
 
 ----
 
