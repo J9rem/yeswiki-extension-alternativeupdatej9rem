@@ -15,6 +15,7 @@ Quelques actions sympathiques indépendantes comme :
  - `{{listformmeta}}` qui permet d'afficher la liste des formulaires du site en les reliant aux pages qui les utilisent et en idenfiant les formulaires vides ou reliées entre eux. _C'est pratique pour faire le tri dans les formulaires devenus inutiles._
  - `{{editentrypartial}}` qui permet d'avoir un formulaire pour modifier des fiches sur certains champs sélectionnées. _C'est utile pour envoyer un lien aux usagers pour mettre à jour une information sans les noyer dans la relecture de leur fiche en entier (cas des formulaires longs)._
  - Amélioration de l'**action `{{video}}`** pour permettre une syntaxe plus simple ``{{video url="..."}}` (configurable via composants)
+ - `{{autoupdateareas}}` qui permet de générer automatiquement une liste des départements et régions français. _C'est pratique pourl'extension `twolevels` (cf. documentation ci-dessous)_
 
 ### Champs bazar
 
@@ -51,7 +52,8 @@ Ajout des champs:
 
 |**Type**|**Nom**|**Identifiant**|
 |:-|:-|:-|
-|Action|`{{editentrypartial}}`|[`auj9-editentrypartial-action`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-editentrypartial-action&type=code)|
+|Action|`{{autoupdateareas}}`|[`auj9-autoupdateareas-action`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-autoupdateareas-action&type=code)|
+||`{{editentrypartial}}`|[`auj9-editentrypartial-action`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-editentrypartial-action&type=code)|
 ||`{{listformmeta}}`|[`auj9-listformmeta-action`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-listformmeta-action&type=code)|
 |Champ bazar|`customsendmail`|[`auj9-custom-sendmail`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-custom-sendmail&type=code)|
 ||`choice-display-hidden`|[`auj9-choice-display-hidden-field`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-choice-display-hidden-field&type=code)|
@@ -75,3 +77,36 @@ Ajout des champs:
 **Vous pouvez y accéder** :
  - si la version de votre wiki est au minimum `doryphore 4.4.2`, [Accéder à la documentation du web sémantique en local](/docs/fr/semantic.md)
  - si votre version est plus ancienne : vous pouvez [trouver le texte en ligne](https://github.com/YesWiki/yeswiki/blob/doryphore/docs/fr/semantic.md)
+
+----
+
+## Documentation
+
+### Création automatique des formulaires départements et régions
+
+Il est possible de créer automatiquement les formulaires départements et régions, très pratiques pour l'usage de l'extension `twolevels`.
+
+#### Création automatique de la liste des départements français
+
+Il est possible d'automatiquement créer la liste des départements français en cliquant sur le bouton ci-dessous en tant qu'administrateur du wiki. Il n'y aura plus qu'à sélectionner cette liste dans le menu déroulant du constructeur graphique de formulaire. (_Attention, si la liste existe déjà, elle n'est pas mise à jour. Il faut la supprimer au préalable._)
+
+```yeswiki preview=100px
+{{autoupdateareas type="departments"}}
+```
+
+#### Création automatique de la liste des régions françaises
+
+Il est possible d'automatiquement créer la liste des régions françaises en cliquant sur le bouton ci-dessous en tant qu'administrateur du wiki. Il n'y aura plus qu'à sélectionner cette liste dans le menu déroulant du constructeur graphique de formulaire. (_Attention, si la liste existe déjà, elle n'est pas mise à jour. Il faut la supprimer au préalable._)
+
+```yeswiki preview=100px
+{{autoupdateareas type="areas"}}
+```
+
+#### Création automatique des fiches associant régions et département
+
+Il est possible d'automatiquement créer le formulaire et les fiches pour associer les régions et les départements en cliquant sur le bouton ci-dessous en tant qu'administrateur du wiki. (_Attention, si le formulaire existe déjà, il n'est pas mis à jour. Il faut le supprimer au préalable._)
+
+```yeswiki preview=100px
+{{autoupdateareas type="form"}}
+```
+Le numéro du formulaire est stocké dans le paramètre `formIdAreaToDepartment` dans la page `GererConfig`

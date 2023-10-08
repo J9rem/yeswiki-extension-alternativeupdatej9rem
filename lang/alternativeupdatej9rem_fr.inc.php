@@ -21,6 +21,14 @@ return [
   'ALTERNATIVEUPDATEJ9REM_SHOW_FIELDS' => 'Afficher les champs masqués',
   'ALTERNATIVEUPDATEJ9REM_HIDE_FIELDS' => 'Masquer les champs masqués',
 
+  // actions/AutoUpdateAreasAction.php
+  // Feature UUID : auj9-autoupdateareas-action
+  'AUJ9_AUTOUPDATE_AREAS_RESERVED_TO_ADMIN' => 'Lien de mise à jour uniquement accessible aux administrateurs connectés',
+  'AUJ9_AUTOUPDATE_AREAS_TEXT' => 'Créer automatiquement la liste %{listName}',
+  'AUJ9_AUTOUPDATE_AREAS_OF_DEPARTEMENTS' => 'des départements français',
+  'AUJ9_AUTOUPDATE_AREAS_OF_AREAS' => 'des régions françaises',
+  'AUJ9_AUTOUPDATE_AREAS_FORM' => ', le formulaire et les fiches associant régions et départements français',
+
   // actions/EditEntryPartialAction.php
   // Feature UUID : auj9-editentrypartial-action
   'AUJ9_EDIT_PARTIAL_ENTRY_ERROR_REGISTER' => 'Une erreur est survenue lors de l\'enregistrement de la fiche',
