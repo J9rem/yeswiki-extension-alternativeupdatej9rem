@@ -3,6 +3,7 @@ import SpinnerLoader from '../../bazar/presentation/javascripts/components/Spinn
 
 /**
  * not needed since 4.4.1
+ * Feature UUID : auj9-fix-4-4-1
  */
 
 // allow usage of wiki in templates

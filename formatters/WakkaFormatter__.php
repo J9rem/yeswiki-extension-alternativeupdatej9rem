@@ -6,6 +6,7 @@ use YesWiki\Core\YesWikiFormatter;
 
 /**
  * not needed since 4.4.3
+ * Feature UUID : auj9-fix-4-4-2
  */
 class WakkaFormatter__ extends YesWikiFormatter
 {

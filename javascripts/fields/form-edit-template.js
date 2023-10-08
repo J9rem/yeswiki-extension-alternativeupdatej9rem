@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+// Feature UUID : auj9-send-mail-selector-field
 registerFieldAUJ9rem(getSendMailSelectorField({
   formAndListIds,
   listAndFormUserValues,
@@ -17,6 +18,7 @@ registerFieldAUJ9rem(getSendMailSelectorField({
   renderHelper: templateHelper,
   linkedLabelAUJ9remConf
 }))
+// Feature UUID : auj9-custom-sendmail
 registerFieldAUJ9rem(getCustomSendMailField({
   defaultMapping,
   readConf,
@@ -25,6 +27,7 @@ registerFieldAUJ9rem(getCustomSendMailField({
   renderHelper: templateHelper,
   linkedLabelAUJ9remConf
 }))
+// Feature UUID : auj9-video-field
 registerFieldAUJ9rem(getVideoField({
   defaultMapping,
   readConf,

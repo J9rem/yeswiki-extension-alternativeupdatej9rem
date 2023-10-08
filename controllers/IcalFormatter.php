@@ -7,6 +7,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
+ * Feature UUID : auj9-fix-4-4-2
  */
 
 // specification to follow : https://icalendar.org/RFC-Specifications/iCalendar-RFC-5545/
@@ -28,7 +29,7 @@ use YesWiki\Core\Service\Performer;
 use YesWiki\Core\YesWikiController;
 
 /**
- * not needed since 4.4.2
+ * not needed since 4.4.3
  */
 class IcalFormatter extends YesWikiController
 {

@@ -7,6 +7,7 @@ use YesWiki\Core\YesWikiHandler;
 
 /**
  * not needed since 4.4.1
+ * Feature UUID : auj9-fix-4-4-1
  */
 class EditHandler__ extends YesWikiHandler
 {

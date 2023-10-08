@@ -9,6 +9,7 @@ use YesWiki\Tags\Service\TagsManager;
 
 /**
  * not needed since 4.4.1
+ * Feature UUID : auj9-fix-4-4-1
  */
 class __EditHandler extends YesWikiHandler
 {

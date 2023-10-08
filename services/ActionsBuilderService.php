@@ -54,6 +54,7 @@ trait ActionsBuilderServiceCommon
                 $this->data = $this->previousData;
             }
             
+            /* === Feature UUID : auj9-video-field === */
             if (isset($this->data['action_groups']['video']['actions']['video']['properties'])) {
                 $this->data['action_groups']['video']['actions']['video']['properties'] = 
                     array_merge(
@@ -71,7 +72,9 @@ trait ActionsBuilderServiceCommon
                     $this->data['action_groups']['video']['actions']['video']['properties']['id']['advanced'] = true;
                     unset($this->data['action_groups']['video']['actions']['video']['properties']['id']['value']);
             }
+            /* === end of Feature UUID : auj9-video-field === */
             
+            /* === Feature UUID : auj9-bazar-list-video-dynamic === */
             if (isset($this->data['action_groups']['bazarliste']['actions'])) {
                 if (!isset($this->data['action_groups']['bazarliste']['actions']['bazarvideo'])){
                     $this->data['action_groups']['bazarliste']['actions']['bazarvideo'] = [];
@@ -118,6 +121,7 @@ trait ActionsBuilderServiceCommon
                         ]
                     );
             }
+            /* === end of Feature UUID : auj9-bazar-list-video-dynamic === */
         }
         return $this->data;
     }

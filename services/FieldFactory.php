@@ -13,6 +13,7 @@ use YesWiki\Wiki;
 
 /**
  * not needed since 4.4.1 ??? needed to force rewrite field
+ * Feature UUID : auj9-fix-4-4-1
  */
 
 class FieldFactory extends BazarFieldFactory

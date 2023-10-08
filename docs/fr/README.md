@@ -4,29 +4,67 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
 
 ## Contenu de l'extension
 
- - l'extension contient de **multiples correctifs** dédiés aux versions `doryphore 4.3.1` et `doryphore 4.4.0`, correctifs présents dans cette extension en vue de la sortie de `dorypphre 4.4.1`. Cette version étant sortie, les correctifs seront **retirés** en octobre 2023. **Pensez à passer en `doryphore 4.4.1`**.
+### Correctifs
+
+ - l'extension contient de **multiples correctifs** dédiés aux versions `doryphore 4.3.1` et `doryphore 4.4.0`, correctifs présents dans cette extension en vue de la sortie de `doryphore 4.4.1`. Cette version étant sortie, les correctifs seront **retirés** en octobre 2023. **Pensez à passer en `doryphore 4.4.1`**.
  - l'extension corrige aussi des soucis pouvant aussi survenir dans l'enregistrement des dates et leur affichage via `{{bazarliste template="calendar"}}` ou via l'export `ICAL` pour `doryphore 4.4.1` (ainsi qu'une amélioration de la stabilité du champ `image`)
- - **Quelques actions sympathiques** indépendantes comme :
-   - `{{listformmeta}}` qui permet d'afficher la liste des formulaires du site en les reliant aux pages qui les utilisent et en idenfiant les formulaires vides ou reliées entre eux. _C'est pratique pour faire le tri dans les formulaires devenus inutiles._
-   - `{{editentrypartial}}` qui permet d'avoir un formulaire pour modifier des fiches sur certains champs sélectionnées. _C'est utile pour envoyer un lien aux usagers pour mettre à jour une information sans les noyer dans la relecture de leur fiche en entier (cas des formulaires longs)._
+
+### Actions
+
+Quelques actions sympathiques indépendantes comme :
+ - `{{listformmeta}}` qui permet d'afficher la liste des formulaires du site en les reliant aux pages qui les utilisent et en idenfiant les formulaires vides ou reliées entre eux. _C'est pratique pour faire le tri dans les formulaires devenus inutiles._
+ - `{{editentrypartial}}` qui permet d'avoir un formulaire pour modifier des fiches sur certains champs sélectionnées. _C'est utile pour envoyer un lien aux usagers pour mettre à jour une information sans les noyer dans la relecture de leur fiche en entier (cas des formulaires longs)._
  - Amélioration de l'**action `{{video}}`** pour permettre une syntaxe plus simple ``{{video url="..."}}` (configurable via composants)
- - **Ajout des champs**:
-   - `video` pour permettre l'affichage direct d'une video dans une fiche
-   - `sendmailselector` pour permettre de choisir à qui envoyer une copie de la fiche, choix parmi une liste. _Pratique pour que la copie de la fiche soit envoyé au bon référent local_
-   - `customsendmail` permet d'offrir à l'usager la possibilité de recevoir ou non une copie de sa fiche à chaque modification. _Pratique pour éviter l'infobésité des e-mails tout en laissant le choix à l'usager_
-   - `choice-display-hidden` permet d'avoir une zone qui se déplie/replie lors de l'affichage d'une fiche. Pour l'utiliser, il faut encapsuler la zone concernée (une seule zone par fiche) dans `<div class="hidden-field-specific">/<div>` (ceci se fait à l'aide des champs `labelhtml`)
+
+### Champs bazar
+
+Ajout des champs:
+  - `video` pour permettre l'affichage direct d'une video dans une fiche
+  - `sendmailselector` pour permettre de choisir à qui envoyer une copie de la fiche, choix parmi une liste. _Pratique pour que la copie de la fiche soit envoyé au bon référent local_
+  - `customsendmail` permet d'offrir à l'usager la possibilité de recevoir ou non une copie de sa fiche à chaque modification. _Pratique pour éviter l'infobésité des e-mails tout en laissant le choix à l'usager_
+  - `choice-display-hidden` permet d'avoir une zone qui se déplie/replie lors de l'affichage d'une fiche. Pour l'utiliser, il faut encapsuler la zone concernée (une seule zone par fiche) dans `<div class="hidden-field-specific">/<div>` (ceci se fait à l'aide des champs `labelhtml`)
+
+### Handlers
+
  - Retrouver le **handler `/diff`** bien pratique pour comparer rapidement les changements dans une fiche ou une page
- - Un **nouveau template dynamique** `{{bazarliste template="video"}}` qui permet d'afficher les fiches en vignettes comme pour le template dynamique `card` mais en affichant les vidéos des fiches.
  - **Possibilité de dupliquer une fiche ou une page** (handler `/duplicate`)
    - pour fonctionner parfaitement, il faudrait penser à ajouter `duplicateiframe` pour le paramètre `allowed_methods_in_iframe` dans la page [`GererConfig`](?GererConfig ':ignore')
    - de plus, pour pouvoir dupliquer des fiches même si l'utilisateur n'a pas les droits de création d'un page, il faut modifier à `true` le paramètre `canDuplicateEntryIfNotRightToWrite` dans la page [GererConfig](?GererConfig ':ignore'), partie `ALTERNATIVEUPDATEJ9REM`
+
+### Templates bazar
+ 
+ - Un **nouveau template dynamique** `{{bazarliste template="video"}}` qui permet d'afficher les fiches en vignettes comme pour le template dynamique `card` mais en affichant les vidéos des fiches.
+
+
+### Nouvelles fonctionnalités
+
  - **La possibilité de gérer des évènements récurrents**
 
-!> la gestion des évènements récurrents est temporairement désativée.
+!> la gestion des évènements récurrents est temporairement désativée pa défaut.
 
 >Pour l'activer:
 >  - se rendre dans [GererConfig](?GererConfig ':ignore')
 >  - dans la partie `ALTERNATIVEUPDATEJ9REM`, mettre `true` pour la variable `activateEventRepetition`
+
+----
+**Identification des fonctionnalités dans le code source**
+
+|**Type**|**Nom**|**Identifiant**|
+|:-|:-|:-|
+|Action|`{{editentrypartial}}`|[`auj9-editentrypartial-action`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-editentrypartial-action&type=code)|
+||`{{listformmeta}}`|`auj9-listformmeta-action`|
+|Champ bazar|`customsendmail`|`auj9-custom-sendmail`|
+||`choice-display-hidden`|`auj9-choice-display-hidden-field`|
+||`video`|`auj9-video-field`|
+||`sendmailselector`|`auj9-send-mail-selector-field`|
+|Correctifs|pour `doryphore 4.4.1` et avant|`auj9-fix-4-4-1`|
+||pour `doryphore 4.4.2`|`auj9-fix-4-4-2`|
+|Handler|`/diff`|`auj9-diff`|
+||`/duplicate`|`auj9-duplicate`|
+|Nouvelles fonctionnalités|évènements récurrents|[`auj9-recurrent-events`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-recurrent-events&type=code)|
+||personnalisations propres à cette extension|`auj9-custom-changes`|
+||système de mises à jour|`auj9-autoupdate-system`|
+|Template Bazar|`video.twig`|`auj9-bazar-list-video-dynamic`|
 
 ----
 

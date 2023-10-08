@@ -18,6 +18,7 @@ import {
 } from '../../../bazar/presentation/javascripts/form-edit-template/fields/commons/attributes.js'
 import renderHelper from '../../../bazar/presentation/javascripts/form-edit-template/fields/commons/render-helper.js'
 
+// Feature UUID : auj9-send-mail-selector-field
 registerFieldAsModuleAUJ9rem(getSendMailSelectorField({
     formAndListIds,
     listAndFormUserValues,
@@ -28,6 +29,7 @@ registerFieldAsModuleAUJ9rem(getSendMailSelectorField({
     renderHelper,
     linkedLabelAUJ9remConf
   }))
+// Feature UUID : auj9-custom-sendmail
 registerFieldAsModuleAUJ9rem(getCustomSendMailField({
     defaultMapping,
     readConf,
@@ -36,6 +38,7 @@ registerFieldAsModuleAUJ9rem(getCustomSendMailField({
     renderHelper,
     linkedLabelAUJ9remConf
 }))
+// Feature UUID : auj9-video-field
 registerFieldAsModuleAUJ9rem(getVideoField({
     defaultMapping,
     readConf,

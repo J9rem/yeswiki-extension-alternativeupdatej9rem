@@ -16,10 +16,12 @@ class __BazarListeAction extends YesWikiAction
     {
         $newArgs = [];
 
+        // Feature UUID : auj9-bazar-list-video-dynamic
         if (($arg['template'] ?? '') === 'video'){
             $newArgs['dynamic'] = true;
         }
 
+        /* === Feature UUID : auj9-fix-4-4-1 === */
         $release = $this->params->get('yeswiki_release');
         if (is_string($release)
             && !preg_match('/^4\.(?:[0-3]\.[0-9]|4\.0)$/',$release)){
@@ -89,7 +91,10 @@ class __BazarListeAction extends YesWikiAction
         $this->arguments['icon'] = $icon;
         $this->arguments['color'] = $color;
 
-        return array_merge($newArgs,compact(['icon','color']));
+        $newArgs['icon'] = $icon;
+        $newArgs['color'] = $color;
+        /* === END OF Feature UUID : auj9-fix-4-4-1 === */
+        return $newArgs;
     }
 
     public function run(){

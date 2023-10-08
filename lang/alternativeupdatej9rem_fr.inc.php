@@ -9,6 +9,7 @@
  * file that was distributed with this source code.
  */
 return [
+  // Feature UUID : auj9-autoupdate-system
   'ALTERNATIVEUPDATE_ACTIVATE_EXT' => 'Activer',
   'ALTERNATIVEUPDATE_DEACTIVATE_EXT' => 'Désactiver',
   'ALTERNATIVEUPDATE_REINSTALL' => 'Réinstaller',
@@ -16,10 +17,12 @@ return [
   'ALTERNATIVEUPDATE_CONFIRM_PASSWORD' => 'Confirmez votre mot de passe',
   'ALTERNATIVEUPDATE_OTHER_UPDATE_METHOD' => 'Mettre à jour par l\'autre méthode',
   'ALTERNATIVEUPDATE_FINISH_UPDATE' => 'Terminer la mise à jour',
+  // Feature UUID : auj9-choice-display-hidden-field
   'ALTERNATIVEUPDATEJ9REM_SHOW_FIELDS' => 'Afficher les champs masqués',
   'ALTERNATIVEUPDATEJ9REM_HIDE_FIELDS' => 'Masquer les champs masqués',
 
   // actions/EditEntryPartialAction.php
+  // Feature UUID : auj9-editentrypartial-action
   'AUJ9_EDIT_PARTIAL_ENTRY_ERROR_REGISTER' => 'Une erreur est survenue lors de l\'enregistrement de la fiche',
   'AUJ9_EDIT_ENTRY_PARTIAL_WRONG_PARAMS' => 'Les paramètres de l\'action {{editentrypartials}} semblent avoir été modifiés par un compte non administrateur ou sans passer par le bouton \'composants\'. L\'action est donc désactivée !',
   'AUJ9_ID_PARAM_NOT_EMPTY' => 'le paramètre \'id\' ne doit pas être vide',
@@ -28,9 +31,11 @@ return [
   'AUJ9_FIELDS_PARAM_NOT_EMPTY' => 'le paramètre \'fields\' ne doit pas être vide',
 
   // fields/video.twig
+  // Feature UUID : auj9-video-field
   'VIDEO_LINK_FIELD' => 'Lien vers la vidéo : %{link}',
 
   // handlers/DuplicationHandler.php
+  // Feature UUID : auj9-duplicate
   'AUJ9_DUPLICATE' => 'Dupliquer',
   'AUJ9_DUPLICATION_IN_COURSE' => 'Vous être en train de dupliquer la page \'%{originTag}\' vers \'%{destinationTag}\' !',
   'AUJ9_DUPLICATION_NOT_POSSIBLE_IF_EXISTING' => 'Copie de la page impossible car le nouveau nom choisi est déjà utilisé !',
@@ -41,8 +46,10 @@ return [
   'AUJ9_SAVE' => 'Sauver',
   
   // services/ActionsBuilderService.php
+  // Feature UUID : auj9-editentrypartial-action
   'AUJ9_EDIT_ENTRY_PARTIAL_ACTION_FIELDS_LABEL' => 'Champs à modifier',
   'AUJ9_EDIT_ENTRY_PARTIAL_ACTION_LABEL' => 'Modifier partiellement une fiche',
+  // Feature UUID : auj9-bazar-list-video-dynamic
   'AUJ9_BAZARVIDEO_ACTION_LABEL' => 'Affichage des vidéos par bloc',
   'AUJ9_BAZARVIDEO_ACTION_VIDEO_FIELDNAME_LABEL' => 'Champ vidéo',
   'AUJ9_BAZARVIDEO_ACTION_VIDEO_LINK_LABEL' => 'Champ lien',
@@ -89,6 +96,7 @@ return [
   'EVENTS_WHEN_IN_MONTH' => 'A quel moment du mois ?',
 
   // templates/edit-entry-partial-action.twig
+  // Feature UUID : auj9-editentrypartial-action
   'AUJ9_EDIT_PARTIAL_NO_ENTRY' => 'Aucune fiche du formulaire <code>%{form}</code> n\'est modifiable pour votre compte utilisateur',
   'AUJ9_EDIT_PARTIAL_SELECT_ENTRY' => 'Fiche sélectionée',
 ];

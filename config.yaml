@@ -3,19 +3,19 @@
 # For the full copyright and license information, please view the LICENSE
 # file that was distributed with this source code.
 parameters:
-  comments_handler: yeswiki
-  alternative_yeswiki_repository:
+  comments_handler: yeswiki # Feature UUID : auj9-fix-4-4-1
+  alternative_yeswiki_repository: # auj9-autoupdate-system
     J9rem: "https://repository.oui-wiki.pro/"
-  activateEventRepetition: false
-  canDuplicateEntryIfNotRightToWrite: false
-  updatablePackagesViaAlternative:
+  activateEventRepetition: false # Feature UUID : auj9-recurrent-events
+  canDuplicateEntryIfNotRightToWrite: false # Feature UUID : auj9-duplicate
+  updatablePackagesViaAlternative: # auj9-autoupdate-system
     - 'advancedsearch'
     - 'nextcloudconnector'
     - 'stats'
     - 'twolevels'
   alternativeupdatej9rem_editable_config_params:
-    - 'activateEventRepetition'
-    - 'canDuplicateEntryIfNotRightToWrite'
+    - 'activateEventRepetition' # Feature UUID : auj9-recurrent-events
+    - 'canDuplicateEntryIfNotRightToWrite' # Feature UUID : auj9-duplicate
 
 services:
   _defaults:
@@ -26,38 +26,50 @@ services:
     resource: 'services/*'
   YesWiki\Alternativeupdatej9rem\Controller\:
     resource: 'controllers/*'
+  # Feature UUID : auj9-fix-4-4-1
   YesWiki\Alternativeupdatej9rem\Service\ArchiveService:
     decorates: YesWiki\Core\Service\ArchiveService
     decoration_on_invalid: null
+  # Feature UUID : auj9-fix-4-4-1
   YesWiki\Alternativeupdatej9rem\Service\AssetsManager:
     decorates: YesWiki\Core\Service\AssetsManager
     decoration_on_invalid: null
+  # Feature UUID : auj9-fix-4-4-1
   YesWiki\Alternativeupdatej9rem\Service\TabsService:
     decorates: YesWiki\Templates\Service\TabsService
     decoration_on_invalid: null
+  # Feature UUID : auj9-fix-4-4-1
   YesWiki\Alternativeupdatej9rem\Service\FieldFactory:
     decorates: YesWiki\Bazar\Service\FieldFactory
     decoration_on_invalid: null
+  # Feature UUID : auj9-fix-4-4-1
   YesWiki\Alternativeupdatej9rem\Controller\ArchiveController:
     decorates: YesWiki\Core\Controller\ArchiveController
     decoration_on_invalid: null
+  # Feature UUID : auj9-fix-4-4-2
   YesWiki\Alternativeupdatej9rem\Controller\IcalFormatter:
     decorates: YesWiki\Bazar\Controller\IcalFormatter
     decoration_on_invalid: null
+  # Feature UUID : auj9-fix-4-4-1
   YesWiki\Alternativeupdatej9rem\Controller\TabsController:
     decorates: YesWiki\Templates\Controller\TabsController
     decoration_on_invalid: null
+  # Feature UUID : auj9-fix-4-4-1
   YesWiki\Alternativeupdatej9rem\Controller\AuthController:
     decorates: YesWiki\Core\Controller\AuthController
     decoration_on_invalid: null
+  # Feature UUID : auj9-video-field
+  # Feature UUID : auj9-bazar-list-video-dynamic
   YesWiki\Alternativeupdatej9rem\Service\ActionsBuilderService:
     decorates: YesWiki\Aceditor\Service\ActionsBuilderService
     decoration_on_invalid: null
     arguments:
       $parentActionsBuilderService: '@.inner'
+  # Feature UUID : auj9-recurrent-events
   YesWiki\Alternativeupdatej9rem\Service\DateService:
     tags:
       - { name: yeswiki.event_subscriber }
+  # Feature UUID : auj9-duplicate
   YesWiki\Alternativeupdatej9rem\Service\DuplicationFollower:
     tags:
       - { name: yeswiki.event_subscriber }

@@ -33,6 +33,7 @@ class ApiController extends YesWikiController
 
     /**
      * @Route("/api/alternativeupdatej9rem", methods={"POST"}, options={"acl":{"public", "@admins"}})
+     * Feature UUID : auj9-autoupdate-system
      */
     public function manageAction()
     {
@@ -358,6 +359,9 @@ class ApiController extends YesWikiController
         }
     }
 
+    /**
+     * Feature UUID : auj9-autoupdate-system
+     */
     private function executeInSecureContext($callback): ApiResponse
     {
         $autoUpdateService = $this->getService(AutoUpdateService::class);
@@ -390,6 +394,9 @@ class ApiController extends YesWikiController
         }
     }
 
+    /**
+     * Feature UUID : auj9-autoupdate-system
+     */
     protected function toArray(Package $package): array
     {
         return [
@@ -411,6 +418,7 @@ class ApiController extends YesWikiController
 
     /**
      * @Route("/api/alternativeupdatej9rem/set-edit-entry-partial-params/{resource}/{id}/{fields}", methods={"POST"}, options={"acl":{"public", "@admins"}})
+     * Feature UUID : auj9-editentrypartial-action
      */
     public function setEditEntryPartialParams($resource,$id,$fields)
     {
@@ -476,6 +484,9 @@ class ApiController extends YesWikiController
         );
     }
 
+    /**
+     * Feature UUID : auj9-editentrypartial-action
+     */
     protected function formatEditEntryPartialValue($id,$fields): string
     {
         return json_encode([
@@ -485,6 +496,7 @@ class ApiController extends YesWikiController
 
     /**
      * @Route("/api/alternativeupdatej9rem/getToken", methods={"POST"}, options={"acl":{"public", "@admins"}})
+     * Feature UUID : auj9-editentrypartial-action
      */
     public function getToken()
     {

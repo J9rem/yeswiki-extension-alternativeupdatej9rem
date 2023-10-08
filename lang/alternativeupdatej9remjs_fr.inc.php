@@ -9,6 +9,7 @@
  * file that was distributed with this source code.
  */
 return [
+  // Feature UUID : auj9-autoupdate-system
   'ALTERNATIVEUPDATE_ABSENT' => 'Non installé',
   'ALTERNATIVEUPDATE_ACTIVATE' => 'Activer',
   'ALTERNATIVEUPDATE_ACTIVATED' => '{name} a été activée',
@@ -47,6 +48,7 @@ return [
   'ALTERNATIVEUPDATE_WRONG_PASSWORD' => "Mauvais mot de passe",
 
   // custom sendmail
+  // Feature UUID : auj9-custom-sendmail
   'ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_LABEL' => "E-mail avec choix si envoyer",
   'ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_ASK_FOR_CURRENT_SAVE' => "Demander pour envoyer un message à chaque sauvegarde",
   'ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_ASK_FOR_CURRENT_SAVE_HINT' => "Concerne l'envoi d'un e-mail lors de la sauvegarde courante de la fiche",
@@ -55,15 +57,19 @@ return [
   'ALTERNATIVEUPDATE_CUSTOM_SENDMAIL_HINT' => 'Ce champ vient compléter le champ e-mail de la fiche mais ne le remplace pas.<br/>'.
     'Il permet à l\'utilsateur de choisir s\'il veut recevoir une copie de sa fiche à chaque modification (alors que sinon ce comportement est figée par le formulaire).',
   // send mail selector
+  // Feature UUID : auj9-send-mail-selector-field
   'ALTERNATIVEUPDATE_SENDMAIL_SELECTOR_LABEL' => "Sélecteur d'e-mails",
   'ALTERNATIVEUPDATE_SENDMAIL_SELECTOR_HINT' => 'Ce champ peut remplacer le champ e-mail de la fiche ou se rajouter à côté.<br/>'.
     'Il permet de choisir l\'adresse e-mail parmi une liste. Ceci peut être pratique s\'il faut envoyer une '.
     'copie de la fiche à chaque modification à une adresse différente selon la zone géographique concernée.',
   // fields
+  // Feature UUID : auj9-send-mail-selector-field
+  // Feature UUID : auj9-custom-sendmail
   'ALTERNATIVEUPDATE_FIELD_FORM' => 'Champ fourni par l\'extension "alternativeupdatej9rem"',
   'ALTERNATIVEUPDATE_FIELD_LINKEDLABEL' => 'Champ e-mail dans la fiche courante',
   'ALTERNATIVEUPDATE_FIELD_LINKEDLABEL_HINT' => 'Laisser vide pour ne pas utiliser la fiche courante',
   // javascripts/fields/videofield.js
+  // Feature UUID : auj9-video-field
   'ALTERNATIVEUPDATE_VIDEO_MAXHEIGHT_LABEL' => 'Hauteur maximal de la vidéo',
   'ALTERNATIVEUPDATE_VIDEO_MAXWIDTH_LABEL' => 'Largeur maximal de la vidéo',
   'ALTERNATIVEUPDATE_VIDEO_MAX_HINT' => 'Uniquement un nombre positif de pixels sans l\'unité ; ex: 200',
@@ -71,7 +77,6 @@ return [
   'ALTERNATIVEUPDATE_VIDEO_POSITION_LABEL' => 'Position de la vidéo',
   'ALTERNATIVEUPDATE_VIDEO_POSITION_LEFT' => 'Alignée à gauche',
   'ALTERNATIVEUPDATE_VIDEO_POSITION_RIGHT' => 'Alignée à droite',
-  // vidéo
   'ALTERNATIVEUPDATE_VIDEO_LABEL' => 'vidéo',
 
   
