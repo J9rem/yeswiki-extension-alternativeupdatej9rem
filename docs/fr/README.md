@@ -39,7 +39,7 @@ Ajout des champs:
 
 ### Nouvelles fonctionnalités
 
- - un système de cache local (à activer manuellement dans [GererConfig](?GererConfig ':ignore'))
+ - un système de cache local
  - **La possibilité de gérer des évènements récurrents**
 
 #### Évènements récurrents
@@ -49,6 +49,15 @@ Ajout des champs:
 >Pour l'activer:
 >  - se rendre dans [GererConfig](?GererConfig ':ignore')
 >  - dans la partie `ALTERNATIVEUPDATEJ9REM`, mettre `true` pour la variable `activateEventRepetition`
+
+#### cache local 
+
+ - La fonctionnalité de cache local est désativée par défaut. Il faut l'activer manuellement dans [GererConfig](?GererConfig ':ignore')
+ - **ATTENTION, cette fonctionnalité est encore expérimentale**. Il est possible que le rafraîchissement trop tardif du cache epêche la bonne mise à jour des données affichées.
+ - Le cache peut être effacé pour forcer un rafraîchissement de celui-ci en cliquant sur le lien ci-dessous
+```yeswiki preview=100px
+{{clearlocalcache}}
+```
 
 ----
 **Identification des fonctionnalités dans le code source**

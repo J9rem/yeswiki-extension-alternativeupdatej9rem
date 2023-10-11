@@ -29,6 +29,12 @@ return [
   'AUJ9_AUTOUPDATE_AREAS_OF_AREAS' => 'des régions françaises',
   'AUJ9_AUTOUPDATE_AREAS_FORM' => ', le formulaire et les fiches associant régions et départements français',
 
+  // actions/ClearLocalCacheAction.php
+  // Feature UUID : auj9-local-cache
+  'AUJ9_CLEAR_LOCAL_CACHE_RESERVED_TO_ADMIN' => 'Lien de suppression du cache local uniquement accessible aux administrateurs connectés',
+  'AUJ9_CLEAR_LOCAL_CACHE_TEXT' => 'Supprimer le cache local',
+  'AUJ9_CLEARING_LOCAL_CACHE_TEXT' => 'Suppression du cache local',
+
   // actions/EditEntryPartialAction.php
   // Feature UUID : auj9-editentrypartial-action
   'AUJ9_EDIT_PARTIAL_ENTRY_ERROR_REGISTER' => 'Une erreur est survenue lors de l\'enregistrement de la fiche',

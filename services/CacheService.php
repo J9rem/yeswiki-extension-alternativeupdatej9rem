@@ -14,6 +14,8 @@ namespace YesWiki\Alternativeupdatej9rem\Service;
 
 use Doctrine\Common\Cache\PhpFileCache;
 use Exception;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Throwable;
@@ -104,6 +106,30 @@ class CacheService implements EventSubscriberInterface
             }
         }
     }
+
+    /**
+     * clear cache
+     * @param string $folderName
+     */
+    public function clear(string $folderName)
+    {
+        if(is_dir(self::DB_CACHE_DIRECTORY)){
+            $directory = $this->constructFolderPath($folderName);
+            if (is_dir($directory)){
+                $it = new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS);
+                $files = new RecursiveIteratorIterator($it,
+                            RecursiveIteratorIterator::CHILD_FIRST);
+                foreach($files as $file) {
+                    if ($file->isDir()){
+                        rmdir($file->getRealPath());
+                    } else {
+                        unlink($file->getRealPath());
+                    }
+                }
+                rmdir($directory);
+            }
+        }
+    }
     
     /**
      * @param Event $event
@@ -136,11 +162,7 @@ class CacheService implements EventSubscriberInterface
             if (empty($this->phpFileCacheArray[$folderName])){
                 $this->phpFileCacheArray[$folderName] = [];
             }
-            $directory = self::DB_CACHE_DIRECTORY;
-            if (substr(self::DB_CACHE_DIRECTORY,-1) != '/'){
-                $directory .= '/';
-            }
-            $directory .= $folderName;
+            $directory = $this->constructFolderPath($folderName);
             if (!is_dir($directory)){
                 mkdir($directory,0777,true);
             }
@@ -154,6 +176,21 @@ class CacheService implements EventSubscriberInterface
             ;
         }
         return $this->phpFileCacheArray[$folderName][$key];
+    }
+
+    /**
+     * construct directory path
+     * @param string $folderName
+     * @return string
+     */
+    protected function constructFolderPath(string $folderName):string
+    {
+        $directory = self::DB_CACHE_DIRECTORY;
+        if (substr(self::DB_CACHE_DIRECTORY,-1) != '/'){
+            $directory .= '/';
+        }
+        $directory .= $folderName;
+        return $directory;
     }
 
     /**
