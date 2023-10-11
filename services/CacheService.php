@@ -12,11 +12,11 @@
 
 namespace YesWiki\Alternativeupdatej9rem\Service;
 
+use Doctrine\Common\Cache\PhpFileCache;
 use Exception;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Throwable;
-use YesWiki\Alternativeupdatej9rem\Service\PhpFileCache;
 use YesWiki\Security\Controller\SecurityController;
 use YesWiki\Core\Controller\AuthController;
 use YesWiki\Core\Entity\Event;
@@ -137,7 +137,7 @@ class CacheService implements EventSubscriberInterface
                 $this->phpFileCacheArray[$folderName] = [];
             }
             $directory = self::DB_CACHE_DIRECTORY;
-            if (substr(self::DB_CACHE_DIRECTORY) != '/'){
+            if (substr(self::DB_CACHE_DIRECTORY,-1) != '/'){
                 $directory .= '/';
             }
             $directory .= $folderName;
@@ -149,8 +149,8 @@ class CacheService implements EventSubscriberInterface
                 file_put_contents($htaccessFilePath,"DENY FROM ALL\n");
             }
             $this->phpFileCacheArray[$folderName][$key] = $getDataCache
-                ? new PhpFileCache($directory)
-                : new PhpFileCache($directory,'.docdatacache.php')
+                ? new PhpFileCache($directory,'.docdatacache.php')
+                : new PhpFileCache($directory)
             ;
         }
         return $this->phpFileCacheArray[$folderName][$key];
@@ -199,9 +199,9 @@ class CacheService implements EventSubscriberInterface
                     if ($disconnectDB){
                         $this->disconnectDb();
                     }
-                    $eTag = $this->generateEtag($localId, $cacheService);
+                    $eTag = $this->generateEtag($localId, $cachedData);
                     if ($gzResult && function_exists('gzinflate') && function_exists('gzdeflate')){
-                        $data = gzinflate($data);
+                        $data = json_decode(gzinflate($data),true);
                     }
                     return compact(['eTag','data']);
                 }
@@ -224,23 +224,23 @@ class CacheService implements EventSubscriberInterface
         if ($toSave){
             $dataToSave = $data;
             if ($gzResult && function_exists('gzinflate') && function_exists('gzdeflate')){
-                $dataToSave = gzdeflate($dataToSave);
+                $dataToSave = gzdeflate(json_encode($dataToSave));
             }
             $cacheService->save($localId,$dataToSave);
-            $this->saveCachedData($localId,$dataForCacheService,$formsIdsToFollow,$followWakkaConfigTimestamp);
-            $eTag = $this->generateEtag($localId, $cacheService);
+            $newCachedData = $this->saveCachedData($localId,$dataForCacheService,$formsIdsToFollow,$followWakkaConfigTimestamp);
+            $eTag = $this->generateEtag($localId, $newCachedData);
         }
         return compact(['eTag','data']);
     }
 
     /**
      * conpare data to current resources
-     * @param string $data
+     * @param array $data
      * @param array $formsIdsToFollow
      * @param bool $followWakkaConfigTimestamp
      * @return bool
      */
-    protected function needRefresh(string $data, array $formsIdsToFollow, bool $followWakkaConfigTimestamp): bool
+    protected function needRefresh(array $data, array $formsIdsToFollow, bool $followWakkaConfigTimestamp): bool
     {
         if (!empty($formsIdsToFollow)){
             foreach ($formsIdsToFollow as $id) {
@@ -298,12 +298,12 @@ class CacheService implements EventSubscriberInterface
     /**
      * generate ETAG
      * @param string $localId
-     * @param PhPFileCache $cacheService
+     * @param array $data
      * @return string
      */
-    protected function generateEtag(string $localId, PhPFileCache $cacheService): string
+    protected function generateEtag(string $localId, array $data): string
     {
-        return md5($localId.$cacheService->publicGetFiletime($localId));
+        return md5($localId.($data['time'] ?? time()));
     }
 
     /**
@@ -325,8 +325,10 @@ class CacheService implements EventSubscriberInterface
         if (empty($localId)){
             return '';
         }
-        $cacheService = $this->getPhpFileCache($folderName,false);
-        return $this->generateEtag($localId, $cacheService);
+        $dataForCacheService = $this->getPhpFileCache($folderName,true);
+        
+        $cachedData = $dataForCacheService->fetch($localId);
+        return $this->generateEtag($localId, $cachedData);
     }
 
     /**
@@ -378,12 +380,13 @@ class CacheService implements EventSubscriberInterface
      * @param PhpFileCache $dataForCacheService
      * @param array $formsIdsToFollow 
      * @param bool $followWakkaConfigTimestamp 
+     * @return array $data
      */
     protected function saveCachedData(
         string $localId,
         PhpFileCache $dataForCacheService,
         array $formsIdsToFollow,
-        bool $followWakkaConfigTimestamp)
+        bool $followWakkaConfigTimestamp): array
     {
         $data = [
             'acls' => []
@@ -411,6 +414,8 @@ class CacheService implements EventSubscriberInterface
                 $data['configFileTime'] = $fileTime;
             }
         }
+        $data['time'] = time();
         $dataForCacheService->save($localId,$data);
+        return $data;
     }
 }

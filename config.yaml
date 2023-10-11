@@ -28,7 +28,6 @@ services:
 
   YesWiki\Alternativeupdatej9rem\Service\:
     resource: 'services/*'
-    exclude: 'services/PhpFileCache.php' # Feature UUID : auj9-local-cache
   YesWiki\Alternativeupdatej9rem\Controller\:
     resource: 'controllers/*'
   # Feature UUID : auj9-fix-4-4-1

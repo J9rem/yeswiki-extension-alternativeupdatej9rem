@@ -13,18 +13,22 @@ namespace YesWiki\Alternativeupdatej9rem\Controller;
 use AutoUpdate\Package;
 use AutoUpdate\Repository;
 use Throwable;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface; # Feature UUID : auj9-local-cache
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\Exception\TokenNotFoundException;
 use YesWiki\Alternativeupdatej9rem\Service\AutoUpdateService;
+use YesWiki\Alternativeupdatej9rem\Service\CacheService; # Feature UUID : auj9-local-cache
+use YesWiki\Bazar\Controller\ApiController as BazarApiController; # Feature UUID : auj9-local-cache
 use YesWiki\Core\ApiResponse;
 use YesWiki\Core\Controller\AuthController;
 use YesWiki\Core\Controller\CsrfTokenController;
 use YesWiki\Core\Service\TripleStore;
 use YesWiki\Core\Service\UserManager;
 use YesWiki\Core\YesWikiController;
+use YesWiki\Groupmanagement\Controller\ApiController as GroupmanagementApiController; # Feature UUID : auj9-local-cache
 use YesWiki\Security\Controller\SecurityController;
 
 class ApiController extends YesWikiController
@@ -504,5 +508,45 @@ class ApiController extends YesWikiController
             ['token' => $this->wiki->services->get(CsrfTokenManager::class)->refreshToken('admin-token')->getValue()],
             Response::HTTP_OK
         );
+    }
+
+    /**
+     * @Route("/api/entries/bazarlist", methods={"GET"}, options={"acl":{"public"}},priority=5)
+     * Feature UUID : auj9-local-cache
+     */
+    public function getBazarListData()
+    {
+        $params = $this->getService(ParameterBagInterface::class);
+        $bazarApiController = $this->wiki->services->has(GroupmanagementApiController::class)
+            ? $this->getService(GroupmanagementApiController::class)
+            : $this->getService(BazarApiController::class);
+        $localCacheParam = $params->get('localCache');
+        if (!empty($_GET) & !empty($localCacheParam['activated']) && in_array($localCacheParam['activated'],[1,'1',true,'true'])){
+            $cacheService = $this->getService(CacheService::class);
+            $fomsIds = [];
+            if (!empty($_GET['idtypeannonce']) && is_array($_GET['idtypeannonce'])){
+                $fomsIds = $_GET['idtypeannonce'];
+            }
+
+            list('data'=>$data,'eTag'=>$eTag) = $cacheService->getFromCache(
+                'bazarlist',
+                json_encode($_GET),
+                function() use ($bazarApiController){
+                    $response = $bazarApiController->getBazarListData();
+                    return json_decode($response->getContent(),true);
+                },
+                $fomsIds,
+                false, // $followWakkaConfigTimestamp
+                true, //$disconnectDB
+                true // $gzResult
+            );
+            // TODO manage eTAG
+            return new ApiResponse(
+                is_array($data) ? $data : [],
+                Response::HTTP_OK
+            );
+        } else {
+            return $bazarApiController->getBazarListData();
+        }
     }
 }
