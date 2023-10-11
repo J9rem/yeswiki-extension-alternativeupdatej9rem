@@ -106,5 +106,5 @@ return [
   // templates/edit-entry-partial-action.twig
   // Feature UUID : auj9-editentrypartial-action
   'AUJ9_EDIT_PARTIAL_NO_ENTRY' => 'Aucune fiche du formulaire <code>%{form}</code> n\'est modifiable pour votre compte utilisateur',
-  'AUJ9_EDIT_PARTIAL_SELECT_ENTRY' => 'Fiche sélectionée',
+  'AUJ9_EDIT_PARTIAL_SELECT_ENTRY' => 'Fiche sélectionnée',
 ];
