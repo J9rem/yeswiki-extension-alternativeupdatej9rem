@@ -357,7 +357,7 @@ class CacheService implements EventSubscriberInterface
         string $folderName,
         string $key,
         array $formsIdsToFollow = [],
-        bool $followWakkaConfigTimestamp = false,
+        bool $followWakkaConfigTimestamp = false
     ): string
     {
         $localId = $this->getLocalCacheId($key);
