@@ -39,6 +39,7 @@ Ajout des champs:
 
 ### Nouvelles fonctionnalités
 
+ - un système de cache local
  - **La possibilité de gérer des évènements récurrents**
 
 #### Évènements récurrents
@@ -48,6 +49,15 @@ Ajout des champs:
 >Pour l'activer:
 >  - se rendre dans [GererConfig](?GererConfig ':ignore')
 >  - dans la partie `ALTERNATIVEUPDATEJ9REM`, mettre `true` pour la variable `activateEventRepetition`
+
+#### cache local 
+
+ - La fonctionnalité de cache local est désativée par défaut. Il faut l'activer manuellement dans [GererConfig](?GererConfig ':ignore')
+ - **ATTENTION, cette fonctionnalité est encore expérimentale**. Il est possible que le rafraîchissement trop tardif du cache epêche la bonne mise à jour des données affichées.
+ - Le cache peut être effacé pour forcer un rafraîchissement de celui-ci en cliquant sur le lien ci-dessous
+```yeswiki preview=100px
+{{clearlocalcache}}
+```
 
 ----
 **Identification des fonctionnalités dans le code source**
@@ -68,6 +78,7 @@ Ajout des champs:
 |Nouvelles fonctionnalités|évènements récurrents|[`auj9-recurrent-events`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-recurrent-events&type=code)|
 ||personnalisations propres à cette extension|[`auj9-custom-changes`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-custom-changes&type=code)|
 ||système de mises à jour|[`auj9-autoupdate-system`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-autoupdate-system&type=code)|
+||système de cache local des requêtes SQL|[`auj9-local-cache`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-local-cache&type=code)|
 |Template Bazar|`video.twig`|[`auj9-bazar-list-video-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-video-dynamic&type=code)|
 
 ----
