@@ -13,7 +13,7 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
 
 Quelques actions sympathiques indépendantes comme :
  - `{{listformmeta}}` qui permet d'afficher la liste des formulaires du site en les reliant aux pages qui les utilisent et en idenfiant les formulaires vides ou reliées entre eux. _C'est pratique pour faire le tri dans les formulaires devenus inutiles._
- - `{{editentrypartial}}` qui permet d'avoir un formulaire pour modifier des fiches sur certains champs sélectionnées. _C'est utile pour envoyer un lien aux usagers pour mettre à jour une information sans les noyer dans la relecture de leur fiche en entier (cas des formulaires longs)._
+ - `{{editentrypartial}}` qui permet d'avoir un formulaire pour modifier des fiches sur certains champs sélectionnées. _C'est utile pour envoyer un lien aux usagers pour mettre à jour une information sans les noyer dans la relecture de leur fiche en entier (cas des formulaires longs)._ Aide détaillée [ci-dessous](#aide-pour-l39action-editentrypartial)
  - Amélioration de l'**action `{{video}}`** pour permettre une syntaxe plus simple ``{{video url="..."}}` (configurable via composants)
  - `{{autoupdateareas}}` qui permet de générer automatiquement une liste des départements et régions français. _C'est pratique pourl'extension `twolevels` (cf. documentation ci-dessous)_
 
@@ -40,6 +40,8 @@ Ajout des champs:
 ### Nouvelles fonctionnalités
 
  - **La possibilité de gérer des évènements récurrents**
+
+#### Évènements récurrents
 
 !> la gestion des évènements récurrents est temporairement désativée pa défaut.
 
@@ -81,6 +83,11 @@ Ajout des champs:
 ----
 
 ## Documentation
+
+### Aide pour l'action editentrypartial
+
+ - La configuration de cette action se fait en passant par le bouton composants lors de l'édition d'un page
+ - Bien penser à attendre l'icône "✔" qui confirme que la modification a été validée puis mettre à jour le code (sinon la modification sera bien enregistrée dans la page mais elle ne sera pas active)
 
 ### Création automatique des formulaires départements et régions
 
