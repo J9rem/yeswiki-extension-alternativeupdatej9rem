@@ -13,9 +13,13 @@ parameters:
     - 'nextcloudconnector'
     - 'stats'
     - 'twolevels'
+  localCache:
+    activated: false # Feature UUID : auj9-local-cache
   alternativeupdatej9rem_editable_config_params:
     - 'activateEventRepetition' # Feature UUID : auj9-recurrent-events
     - 'canDuplicateEntryIfNotRightToWrite' # Feature UUID : auj9-duplicate
+    - localCache: # Feature UUID : auj9-local-cache
+      - 'activated'
 
 services:
   _defaults:
@@ -24,6 +28,7 @@ services:
 
   YesWiki\Alternativeupdatej9rem\Service\:
     resource: 'services/*'
+    exclude: 'services/PhpFileCache.php' # Feature UUID : auj9-local-cache
   YesWiki\Alternativeupdatej9rem\Controller\:
     resource: 'controllers/*'
   # Feature UUID : auj9-fix-4-4-1
@@ -71,5 +76,9 @@ services:
       - { name: yeswiki.event_subscriber }
   # Feature UUID : auj9-duplicate
   YesWiki\Alternativeupdatej9rem\Service\DuplicationFollower:
+    tags:
+      - { name: yeswiki.event_subscriber }
+  # Feature UUID : auj9-local-cache
+  YesWiki\Alternativeupdatej9rem\Service\CacheService:
     tags:
       - { name: yeswiki.event_subscriber }

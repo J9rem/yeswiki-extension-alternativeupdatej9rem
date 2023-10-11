@@ -39,6 +39,7 @@ Ajout des champs:
 
 ### Nouvelles fonctionnalités
 
+ - un système de cache local (à activer manuellement dans [GererConfig](?GererConfig ':ignore'))
  - **La possibilité de gérer des évènements récurrents**
 
 #### Évènements récurrents
@@ -68,6 +69,7 @@ Ajout des champs:
 |Nouvelles fonctionnalités|évènements récurrents|[`auj9-recurrent-events`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-recurrent-events&type=code)|
 ||personnalisations propres à cette extension|[`auj9-custom-changes`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-custom-changes&type=code)|
 ||système de mises à jour|[`auj9-autoupdate-system`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-autoupdate-system&type=code)|
+||système de cache local des requêtes SQL|[`auj9-local-cache`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-local-cache&type=code)|
 |Template Bazar|`video.twig`|[`auj9-bazar-list-video-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-video-dynamic&type=code)|
 
 ----
