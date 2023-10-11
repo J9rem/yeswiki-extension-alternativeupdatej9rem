@@ -200,8 +200,8 @@ class CacheService implements EventSubscriberInterface
                         $this->disconnectDb();
                     }
                     $eTag = $this->generateEtag($localId, $cachedData);
-                    if ($gzResult && function_exists('gzinflate') && function_exists('gzdeflate')){
-                        $data = json_decode(gzinflate($data),true);
+                    if (($cachedData['compressed'] ?? false) && function_exists('gzinflate') && function_exists('gzdeflate')){
+                        $data = json_decode(gzinflate(base64_decode($data)),true);
                     }
                     return compact(['eTag','data']);
                 }
@@ -223,11 +223,13 @@ class CacheService implements EventSubscriberInterface
 
         if ($toSave){
             $dataToSave = $data;
+            $compressed= false;
             if ($gzResult && function_exists('gzinflate') && function_exists('gzdeflate')){
-                $dataToSave = gzdeflate(json_encode($dataToSave));
+                $dataToSave = base64_encode(gzdeflate(json_encode($dataToSave),2)); // level 2; faster
+                $compressed= true;
             }
             $cacheService->save($localId,$dataToSave);
-            $newCachedData = $this->saveCachedData($localId,$dataForCacheService,$formsIdsToFollow,$followWakkaConfigTimestamp);
+            $newCachedData = $this->saveCachedData($localId,$dataForCacheService,$formsIdsToFollow,$followWakkaConfigTimestamp,$compressed);
             $eTag = $this->generateEtag($localId, $newCachedData);
         }
         return compact(['eTag','data']);
@@ -379,17 +381,21 @@ class CacheService implements EventSubscriberInterface
      * @param string $localId
      * @param PhpFileCache $dataForCacheService
      * @param array $formsIdsToFollow 
-     * @param bool $followWakkaConfigTimestamp 
+     * @param bool $followWakkaConfigTimestamp
+     * @param bool $compressed
      * @return array $data
      */
     protected function saveCachedData(
         string $localId,
         PhpFileCache $dataForCacheService,
         array $formsIdsToFollow,
-        bool $followWakkaConfigTimestamp): array
+        bool $followWakkaConfigTimestamp,
+        bool $compressed
+    ): array
     {
         $data = [
-            'acls' => []
+            'acls' => [],
+            'compressed' => $compressed
         ];
         if (!empty($formsIdsToFollow)){
             foreach ($formsIdsToFollow as $id) {
