@@ -537,13 +537,24 @@ class ApiController extends YesWikiController
                 },
                 $fomsIds,
                 false, // $followWakkaConfigTimestamp
-                true, //$disconnectDB
+                true, // $disconnectDB
                 true // $gzResult
             );
-            // TODO manage eTAG
+            $headers = [];
+            if (!empty($eTag)){
+                // configured BUT $.getJSON does not sent If-Not-Match header
+                header_remove('Cache-Control');
+                header_remove('Expires');
+                header_remove('Pragma');
+                $headers = [
+                    'ETag'=>"W/\"$eTag\"",
+                    'Cache-Control' => 'no-cache',
+                ];
+            }
             return new ApiResponse(
                 is_array($data) ? $data : [],
-                Response::HTTP_OK
+                Response::HTTP_OK,
+                $headers
             );
         } else {
             return $bazarApiController->getBazarListData();
