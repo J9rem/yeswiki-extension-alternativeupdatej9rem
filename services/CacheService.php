@@ -33,6 +33,7 @@ class CacheService implements EventSubscriberInterface
     public const DB_CACHE_DIRECTORY = 'cache';
     public const TRIPLE_KEY_FOR_FORM_ID = 'https://yeswiki.net/cache-timestamp-form-id';
     public const CONFIG_FILE = 'wakka.config.php';
+    public const MINIMUM_SPACE_MB = 100; // 'bytes'
 
     protected $authController;
     protected $configurationService;
@@ -245,10 +246,18 @@ class CacheService implements EventSubscriberInterface
             }
 
             // if cache to refresh
+            // check free space
+            $curDir = getcwd();
+            $curDir = $curDir === false ? '.' : $curDir;
+            $curPath = realpath($curDir);
+            if (disk_free_space($curPath) < (self::MINIMUM_SPACE_MB * 1024 * 1024)){
+                // by security keep more than 100 MB of free space
+                throw new Exception('Not enough place for cache');
+            }
             if (empty($cachedData) || !$this->isAlreadyRunning($cachedData)){
                 $cachedData = $this->setAlreadyRunning($localId,$dataForCacheService,true);
             }
-        } catch (Throwble $th){
+        } catch (Throwable $th){
             $toSave = false;
         }
 
