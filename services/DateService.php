@@ -21,18 +21,27 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Throwable;
 use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Bazar\Service\FormManager;
+use YesWiki\Core\Controller\AuthController;
 use YesWiki\Core\Entity\Event;
 use YesWiki\Core\Service\PageManager;
+use YesWiki\Core\Service\TripleStore;
+use YesWiki\Security\Controller\SecurityController;
+use YesWiki\Wiki;
 
 class DateService implements EventSubscriberInterface
 {
     protected const MAXIMUM_REPETITION = 300;
 
+    protected $authController;
     protected $entryManager;
     protected $formManager;
     protected $followedIds;
     protected $isActivated;
+    protected $pageManager;
     protected $params;
+    protected $securityController;
+    protected $tripleStore;
+    protected $wiki;
     
     public static function getSubscribedEvents()
     {
@@ -44,15 +53,25 @@ class DateService implements EventSubscriberInterface
     }
 
     public function __construct(
+        AuthController $authController,
         EntryManager $entryManager,
         FormManager $formManager,
-        ParameterBagInterface $params
+        PageManager $pageManager,
+        ParameterBagInterface $params,
+        SecurityController $securityController,
+        TripleStore $tripleStore,
+        Wiki $wiki
     ) {
+        $this->authController = $authController;
         $this->entryManager = $entryManager;
         $this->formManager = $formManager;
         $this->followedIds = [];
+        $this->pageManager = $pageManager;
         $this->params = $params;
         $this->isActivated = $this->params->get('activateEventRepetition') === true;
+        $this->securityController = $securityController;
+        $this->tripleStore = $tripleStore;
+        $this->wiki = $wiki;
     }
 
     /**
@@ -418,17 +437,43 @@ class DateService implements EventSubscriberInterface
                         'bf_date_fin_evenement_data' => "{\"recurrentParentId\":\"$entryId\"}"
                     ]
                 ],
-                true, // filter on read Acl
-                false
+                false, // filter on read Acl
+                false // useGuard 
             );
             foreach($entriesToDelete as $entryToDelete){
                 try {
-                    $this->entryManager->delete($entryToDelete['id_fiche']);
+                    // $this->entryManager->delete($entryToDelete['id_fiche']);
+                    $this->forceDeleteEvenIfNotAdmin($entryToDelete['id_fiche']);
                 } catch (Throwable $th) {
                     // do nothing
                 }
             }
         }
+    }
+
+    /**
+     * force entry delete even if not admin
+     * @param $tag
+     * @throws Exception
+     */
+    protected function forceDeleteEvenIfNotAdmin($tag)
+    {
+        if ($this->securityController->isWikiHibernated()) {
+            throw new Exception(_t('WIKI_IN_HIBERNATION'));
+        }
+
+        $fiche = $this->entryManager->getOne($tag,false,null,false,true); // by pass acls
+        if (empty($fiche)){
+            throw new Exception("Not existing entry : $tag");
+        }
+
+        $this->pageManager->deleteOrphaned($tag);
+        $this->tripleStore->delete($tag, TripleStore::TYPE_URI, null, '', '');
+        $this->tripleStore->delete($tag, TripleStore::SOURCE_URL_URI, null, '', '');
+        $this->wiki->LogAdministrativeAction(
+            $this->authController->getLoggedUserName(),
+            "Suppression de la page ->\"\"" . $tag . "\"\""
+        );
     }
 
     /**

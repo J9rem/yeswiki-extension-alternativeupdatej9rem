@@ -27,7 +27,6 @@ let appParams = {
             nbmax:maxForNbMax,
             nth:'',
             recurrenceBaseId: '',
-            registeredParams: '',
             repetitionInternal: '',
             showRange: false,
             startDateInputInternal : null,
@@ -81,20 +80,6 @@ let appParams = {
                 default:
                     return ''
             }
-        },
-        showWarningMessage(){
-            return this.registeredParams === ''
-                ? false
-                : this.registeredParams !== JSON.stringify({
-                    repetitionInternal:this.repetitionInternal,
-                    stepInternal:this.stepInternal,
-                    days:this.days,
-                    month:this.month,
-                    nbmax:this.nbmax,
-                    nth:this.nth,
-                    whenInMonth:this.whenInMonth,
-                    limitDate:this.datePickerForLimit?.value
-                })
         },
         startDateInput(){
             if (this.startDateInputInternal === null){
@@ -214,18 +199,6 @@ let appParams = {
             ? data.days
             : ['mon']
         this.month = data?.month ?? ''
-        this.registeredParams = data?.isRecurrent === '1'
-            ? JSON.stringify({
-                repetitionInternal:this.repetitionInternal,
-                stepInternal:this.stepInternal,
-                days:this.days,
-                month:this.month,
-                nbmax:this.nbmax,
-                nth:this.nth,
-                whenInMonth:this.whenInMonth,
-                limitDate:this.datePickerForLimit?.value
-            })
-            : ''
         this.registerChangeOnStartDateInput()
     },
     watch: {
