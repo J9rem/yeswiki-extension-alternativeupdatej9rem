@@ -113,4 +113,8 @@ return [
   // Feature UUID : auj9-editentrypartial-action
   'AUJ9_EDIT_PARTIAL_NO_ENTRY' => 'Aucune fiche du formulaire <code>%{form}</code> n\'est modifiable pour votre compte utilisateur',
   'AUJ9_EDIT_PARTIAL_SELECT_ENTRY' => 'Fiche sélectionnée',
+
+  // EditConfig
+  // Feature UUID : auj9-local-cache
+  'EDIT_CONFIG_HINT_LOCALCACHE[LIMITEDGROUPS]' => 'Liste des groupes autorisés au cache séparées par des virgules (vide = tout le monde, "!+" = non connecté)',
 ];

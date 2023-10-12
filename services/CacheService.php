@@ -22,6 +22,7 @@ use Throwable;
 use YesWiki\Security\Controller\SecurityController;
 use YesWiki\Core\Controller\AuthController;
 use YesWiki\Core\Entity\Event;
+use YesWiki\Core\Service\AclService;
 use YesWiki\Core\Service\ConfigurationService;
 use YesWiki\Core\Service\ConsoleService;
 use YesWiki\Core\Service\DbService;
@@ -33,11 +34,14 @@ class CacheService implements EventSubscriberInterface
     public const DB_CACHE_DIRECTORY = 'cache';
     public const TRIPLE_KEY_FOR_FORM_ID = 'https://yeswiki.net/cache-timestamp-form-id';
     public const CONFIG_FILE = 'wakka.config.php';
+    public const MINIMUM_SPACE_MB = 100; // 'bytes'
 
+    protected $aclService;
     protected $authController;
     protected $configurationService;
     protected $consoleService;
     protected $dbService;
+    protected $limitedGroups;
     protected $params;
     protected $phpFileCacheArray;
     protected $dbPhpFileCacheService;
@@ -56,6 +60,7 @@ class CacheService implements EventSubscriberInterface
     }
 
     public function __construct(
+        AclService $aclService,
         AuthController $authController,
         ConfigurationService $configurationService,
         ConsoleService $consoleService,
@@ -65,6 +70,7 @@ class CacheService implements EventSubscriberInterface
         TripleStore $tripleStore,
         Wiki $wiki
     ) {
+        $this->aclService = $aclService;
         $this->authController = $authController;
         $this->configurationService = $configurationService;
         $this->consoleService = $consoleService;
@@ -77,6 +83,12 @@ class CacheService implements EventSubscriberInterface
         $this->securityController = $securityController;
         $this->tripleStore = $tripleStore;
         $this->wiki = $wiki;
+        $this->limitedGroups = $this->params->has('localCache')
+            ? ($this->params->get('localCache')['limitedGroups'] ?? '')
+            : '';
+        $this->limitedGroups = !is_string($this->limitedGroups)
+            ? ''
+            : str_replace(',',"\n",$this->limitedGroups);
     }
 
     /**
@@ -245,10 +257,25 @@ class CacheService implements EventSubscriberInterface
             }
 
             // if cache to refresh
+
+            // check free space
+            $curDir = getcwd();
+            $curDir = $curDir === false ? '.' : $curDir;
+            $curPath = realpath($curDir);
+            if (disk_free_space($curPath) < (self::MINIMUM_SPACE_MB * 1024 * 1024)){
+                // by security keep more than 100 MB of free space
+                throw new Exception('Not enough place for cache');
+            }
+
+            // authorized to create cache
+            if (!empty($this->limitedGroups) && !$this->aclService->check($this->limitedGroups,null,false)){
+                throw new Exception('Not authorized to create cache');
+            }
+
             if (empty($cachedData) || !$this->isAlreadyRunning($cachedData)){
                 $cachedData = $this->setAlreadyRunning($localId,$dataForCacheService,true);
             }
-        } catch (Throwble $th){
+        } catch (Throwable $th){
             $toSave = false;
         }
 
