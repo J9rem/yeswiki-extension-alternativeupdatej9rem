@@ -85,12 +85,9 @@ return [
   'EVENT_EVERY_DAYS' => 'Tous les jours',
   'EVENT_EVERY_X_DAYS' => 'Tous les X jours',
   'EVENT_EVERY_WEEKS' => 'Toutes les semaines',
-  'EVENT_EVERY_2_WEEKS' => 'Bi-mensuel',
   'EVENT_EVERY_X_WEEKS' => 'Toutes les X semaines',
   'EVENT_EVERY_MONTHS' => 'Tous les mois',
   'EVENT_EVERY_X_MONTHS' => 'Tous les X mois',
-  'EVENT_EVERY_2_MONTHS' => 'Bimestriel',
-  'EVENT_EVERY_3_MONTHS' => 'Trimestriel',
   'EVENT_EVERY_X_MONTHS' => 'Tous les X mois',
   'EVENT_EVERY_YEARS' => 'Tous les ans',
   'EVENT_EVERY_X_YEARS' => 'Toutes les X années',
@@ -106,7 +103,6 @@ return [
   'EVENT_SECOND_Y_OF_MONTH' => 'Le second Y du mois',
   'EVENT_THIRD_Y_OF_MONTH' => 'Le troisième Y du mois',
   'EVENT_UP_TO_DATE' => 'Jusqu\'au :',
-  'EVENT_WARNING_MESSAGE' => 'Il semble que vous ne soyez pas connecté en tant qu\'administrateur du site ou propriétaire de cette fiche. Toute modification ou suppression des répétitions pourrait ne pas mettre à jour les fiches liées ! Veuillez vous connecter avec le bon compte.',
   'EVENTS_WHEN_IN_MONTH' => 'A quel moment du mois ?',
 
   // templates/edit-entry-partial-action.twig

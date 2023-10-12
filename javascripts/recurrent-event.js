@@ -27,7 +27,6 @@ let appParams = {
             nbmax:maxForNbMax,
             nth:'',
             recurrenceBaseId: '',
-            registeredParams: '',
             repetitionInternal: '',
             showRange: false,
             startDateInputInternal : null,
@@ -70,12 +69,9 @@ let appParams = {
                 case 'xd':
                     return 'd'
                 case 'w':
-                case '2w':
                 case 'xw':
                     return 'w'
                 case 'm':
-                case '2m':
-                case '3m':
                 case 'xm':
                     return 'm'
                 case 'y':
@@ -84,20 +80,6 @@ let appParams = {
                 default:
                     return ''
             }
-        },
-        showWarningMessage(){
-            return this.registeredParams === ''
-                ? false
-                : this.registeredParams !== JSON.stringify({
-                    repetitionInternal:this.repetitionInternal,
-                    stepInternal:this.stepInternal,
-                    days:this.days,
-                    month:this.month,
-                    nbmax:this.nbmax,
-                    nth:this.nth,
-                    whenInMonth:this.whenInMonth,
-                    limitDate:this.datePickerForLimit?.value
-                })
         },
         startDateInput(){
             if (this.startDateInputInternal === null){
@@ -112,11 +94,6 @@ let appParams = {
                 case 'm':
                 case 'y':
                     return 1
-                case '2w':
-                case '2m':
-                    return 2
-                case '3m':
-                    return 3
                 case 'xd':
                 case 'xw':
                 case 'xm':
@@ -168,7 +145,11 @@ let appParams = {
             if (this.repetitionInternal?.match(/w$/)){
                 const day = this.getCurrentStartDay()
                 if (day !== '' && !this.days.includes(day)){
-                    this.days.push(day)
+                    if (day !== 'mon' && this.days.length === 1 && this.days.includes('mon')){
+                        this.days = [day]
+                    } else {
+                        this.days.push(day)
+                    }
                 }
             }
         },
@@ -202,27 +183,13 @@ let appParams = {
         this.stepInternal = step
         const repetition = data?.repetition ?? ''
         this.repetitionInternal = 
-            (data?.isRecurrent === '1' && ['d','y'].includes(repetition))
+            (data?.isRecurrent === '1' && ['d','y','w','m'].includes(repetition))
             ? (
                 Number(step) === 1
                 ? repetition
                 : `x${repetition}`
             )
-            : (
-                ['w','m'].includes(repetition)
-                ? (
-                    Number(step) === 1
-                    ? repetition
-                    : ( Number(step) === 2
-                        ? `2${repetition}`
-                        : ((repetition === 'm' && Number(step) === 3)
-                            ? '3m'
-                            : `x${repetition}`
-                        )
-                    )
-                )
-                : ''
-            )
+            : ''
         this.whenInMonth =  data?.whenInMonth ?? ''
         this.month =  data?.month ?? ''
         this.nth =  data?.nth ?? ''
@@ -232,18 +199,6 @@ let appParams = {
             ? data.days
             : ['mon']
         this.month = data?.month ?? ''
-        this.registeredParams = data?.isRecurrent === '1'
-            ? JSON.stringify({
-                repetitionInternal:this.repetitionInternal,
-                stepInternal:this.stepInternal,
-                days:this.days,
-                month:this.month,
-                nbmax:this.nbmax,
-                nth:this.nth,
-                whenInMonth:this.whenInMonth,
-                limitDate:this.datePickerForLimit?.value
-            })
-            : ''
         this.registerChangeOnStartDateInput()
     },
     watch: {
