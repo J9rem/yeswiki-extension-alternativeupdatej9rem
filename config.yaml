@@ -13,13 +13,15 @@ parameters:
     - 'nextcloudconnector'
     - 'stats'
     - 'twolevels'
-  localCache:
-    activated: false # Feature UUID : auj9-local-cache
+  localCache: # Feature UUID : auj9-local-cache
+    activated: false
+    limitedGroups: # coma separated
   alternativeupdatej9rem_editable_config_params:
     - 'activateEventRepetition' # Feature UUID : auj9-recurrent-events
     - 'canDuplicateEntryIfNotRightToWrite' # Feature UUID : auj9-duplicate
     - localCache: # Feature UUID : auj9-local-cache
       - 'activated'
+      - 'limitedGroups'
 
 services:
   _defaults:
