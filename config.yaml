@@ -3,7 +3,6 @@
 # For the full copyright and license information, please view the LICENSE
 # file that was distributed with this source code.
 parameters:
-  comments_handler: yeswiki # Feature UUID : auj9-fix-4-4-1
   alternative_yeswiki_repository: # auj9-autoupdate-system
     J9rem: "https://repository.oui-wiki.pro/"
   activateEventRepetition: false # Feature UUID : auj9-recurrent-events
@@ -32,37 +31,13 @@ services:
     resource: 'services/*'
   YesWiki\Alternativeupdatej9rem\Controller\:
     resource: 'controllers/*'
-  # Feature UUID : auj9-fix-4-4-1
-  YesWiki\Alternativeupdatej9rem\Service\ArchiveService:
-    decorates: YesWiki\Core\Service\ArchiveService
-    decoration_on_invalid: null
-  # Feature UUID : auj9-fix-4-4-1
-  YesWiki\Alternativeupdatej9rem\Service\AssetsManager:
-    decorates: YesWiki\Core\Service\AssetsManager
-    decoration_on_invalid: null
-  # Feature UUID : auj9-fix-4-4-1
-  YesWiki\Alternativeupdatej9rem\Service\TabsService:
-    decorates: YesWiki\Templates\Service\TabsService
-    decoration_on_invalid: null
-  # Feature UUID : auj9-fix-4-4-1
+  # Feature UUID : auj9-custom-changes
   YesWiki\Alternativeupdatej9rem\Service\FieldFactory:
     decorates: YesWiki\Bazar\Service\FieldFactory
-    decoration_on_invalid: null
-  # Feature UUID : auj9-fix-4-4-1
-  YesWiki\Alternativeupdatej9rem\Controller\ArchiveController:
-    decorates: YesWiki\Core\Controller\ArchiveController
     decoration_on_invalid: null
   # Feature UUID : auj9-fix-4-4-2
   YesWiki\Alternativeupdatej9rem\Controller\IcalFormatter:
     decorates: YesWiki\Bazar\Controller\IcalFormatter
-    decoration_on_invalid: null
-  # Feature UUID : auj9-fix-4-4-1
-  YesWiki\Alternativeupdatej9rem\Controller\TabsController:
-    decorates: YesWiki\Templates\Controller\TabsController
-    decoration_on_invalid: null
-  # Feature UUID : auj9-fix-4-4-1
-  YesWiki\Alternativeupdatej9rem\Controller\AuthController:
-    decorates: YesWiki\Core\Controller\AuthController
     decoration_on_invalid: null
   # Feature UUID : auj9-video-field
   # Feature UUID : auj9-bazar-list-video-dynamic

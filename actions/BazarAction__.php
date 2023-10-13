@@ -39,13 +39,6 @@ class BazarAction__ extends YesWikiAction
             } else {
                 $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/form-edit-template.js');
             }
-            
-            /* === Feature UUID : auj9-fix-4-4-1 === */
-            $release = $this->params->get('yeswiki_release');
-            if ($release === '4.4.0'){
-                $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/linkedentryfield-for-4-4-0.js');
-            }
-            /* === end of Feature UUID : auj9-fix-4-4-1 === */
         }
     }
 }

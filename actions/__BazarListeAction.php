@@ -8,7 +8,7 @@ use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Core\YesWikiAction;
 
 /**
- * not needed since 4.4.1 for second part
+ * Feature UUID : auj9-bazar-list-video-dynamic
  */
 class __BazarListeAction extends YesWikiAction
 {
@@ -20,80 +20,6 @@ class __BazarListeAction extends YesWikiAction
         if (($arg['template'] ?? '') === 'video'){
             $newArgs['dynamic'] = true;
         }
-
-        /* === Feature UUID : auj9-fix-4-4-1 === */
-        $release = $this->params->get('yeswiki_release');
-        if (is_string($release)
-            && !preg_match('/^4\.(?:[0-3]\.[0-9]|4\.0)$/',$release)){
-            // do nothing since `doryphore 4.4.1` or for `doryphoore-dev`
-            return $newArgs;
-        }
-
-        $entryManager = $this->getService(EntryManager::class);
-
-        // ICONS FIELD
-        $iconField = $_GET['iconfield'] ?? $arg['iconfield'] ?? null ;
-
-        // ICONS
-        $icon = $_GET['icon'] ?? $arg['icon'] ??  null;
-        $iconAlreadyDefined = ($icon == $this->params->get('baz_marker_icon') || is_array($icon)) ;
-        if (!$iconAlreadyDefined) {
-            if (!empty($icon)) {
-                try {
-                    if (method_exists($entryManager,'getMultipleParameters')){
-                        $tabparam = $entryManager->getMultipleParameters($icon, ',', '=');
-                        if (count($tabparam) > 0 && !empty($iconField)) {
-                            // on inverse cle et valeur, pour pouvoir les reprendre facilement dans la carto
-                            foreach ($tabparam as $key=>$data) {
-                                $tabparam[$data] = $key;
-                            }
-                            $icon = $tabparam;
-                        } else {
-                            $icon = trim(array_values($tabparam)[0]);
-                        }
-                    }
-                } catch (ParsingMultipleException $th) {
-                    throw new Exception('action bazarliste : le paramètre icon est mal rempli.<br />Il doit être de la forme icon="nomIcone1=valeur1, nomIcone2=valeur2"<br/>('.$th->getMessage().')');
-                }
-            } else {
-                $icon = $this->params->get('baz_marker_icon');
-            }
-        }
-
-        // COLORS FIELD
-        $colorField = $_GET['colorfield'] ?? $arg['colorfield'] ?? null ;
-
-        // COLORS
-        $color = $_GET['color'] ?? $arg['color'] ?? null ;
-        $colorAlreadyDefined = ($color == $this->params->get('baz_marker_color') || is_array($color)) ;
-        if (!$colorAlreadyDefined) {
-            if (!empty($color)) {
-                try {
-                    if (method_exists($entryManager,'getMultipleParameters')){
-                        $tabparam = $entryManager->getMultipleParameters($color, ',', '=');
-                        if (count($tabparam) > 0 && !empty($colorField)) {
-                            // on inverse cle et valeur, pour pouvoir les reprendre facilement dans la carto
-                            foreach ($tabparam as $key=>$data) {
-                                $tabparam[$data] = $key;
-                            }
-                            $color = $tabparam;
-                        } else {
-                            $color = trim(array_values($tabparam)[0]);
-                        }
-                    }
-                } catch (ParsingMultipleException $th) {
-                    throw new Exception('action bazarliste : le paramètre color est mal rempli.<br />Il doit être de la forme color="couleur1=valeur1, couleur2=valeur2"<br/>('.$th->getMessage().')');
-                }
-            } else {
-                $color = $this->params->get('baz_marker_color');
-            }
-        }
-        $this->arguments['icon'] = $icon;
-        $this->arguments['color'] = $color;
-
-        $newArgs['icon'] = $icon;
-        $newArgs['color'] = $color;
-        /* === END OF Feature UUID : auj9-fix-4-4-1 === */
         return $newArgs;
     }
 

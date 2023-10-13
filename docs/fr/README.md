@@ -6,7 +6,6 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
 
 ### Correctifs
 
- - l'extension contient de **multiples correctifs** dédiés aux versions `doryphore 4.3.1` et `doryphore 4.4.0`, correctifs présents dans cette extension en vue de la sortie de `doryphore 4.4.1`. Cette version étant sortie, les correctifs seront **retirés** en octobre 2023. **Pensez à passer en `doryphore 4.4.1`**.
  - l'extension corrige aussi des soucis pouvant aussi survenir dans l'enregistrement des dates et leur affichage via `{{bazarliste template="calendar"}}` ou via l'export `ICAL` pour `doryphore 4.4.1` (ainsi qu'une amélioration de la stabilité du champ `image`)
 
 ### Actions
@@ -71,7 +70,6 @@ Ajout des champs:
 ||`choice-display-hidden`|[`auj9-choice-display-hidden-field`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-choice-display-hidden-field&type=code)|
 ||`video`|[`auj9-video-field`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-video-field&type=code)|
 ||`sendmailselector`|[`auj9-send-mail-selector-field`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-send-mail-selector-field&type=code)|
-|Correctifs|pour `doryphore 4.4.1` et avant|[`auj9-fix-4-4-1`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-1&type=code)|
 ||pour `doryphore 4.4.2`|[`auj9-fix-4-4-2`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-2&type=code)|
 |Handler|`/diff`|[`auj9-diff`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-diff&type=code)|
 ||`/duplicate`|[`auj9-duplicate`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-duplicate&type=code)|

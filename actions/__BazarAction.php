@@ -17,8 +17,8 @@ use YesWiki\Core\YesWikiAction;
 class __BazarAction extends YesWikiAction
 {
     /**
-     * security (could be remove since doryphore 4.4.1)
-     * Feature UUID : auj9-fix-4-4-1
+     * security (could be remove since doryphore 4.4.1 but kept to be sure)
+     * Feature UUID : auj9-custom-changes
      */
     public function formatArguments($arg)
     {

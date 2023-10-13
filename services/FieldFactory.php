@@ -12,8 +12,8 @@ use YesWiki\Wiki;
 
 
 /**
- * not needed since 4.4.1 ??? needed to force rewrite field
- * Feature UUID : auj9-fix-4-4-1
+ * needed to force rewrite field on bazarfield
+ * Feature UUID : auj9-custom-changes
  */
 
 class FieldFactory extends BazarFieldFactory
@@ -77,10 +77,11 @@ class FieldFactory extends BazarFieldFactory
                     if ($annotation) {
                         // Add all listed keywords
                         foreach ($annotation->keywords as $keyword) {
-                            // === CHANGE HERE ===
+                            /* === Feature UUID : auj9-custom-changes === */
                             if (!isset($this->availableFields[$keyword])) {
                                 $this->availableFields[$keyword] = $fieldClass->name;
                             }
+                            /* === end of Feature UUID : auj9-custom-changes === */
                         }
 
                         // Also use the field name as a possible keyword
