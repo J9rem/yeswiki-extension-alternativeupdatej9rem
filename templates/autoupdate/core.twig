@@ -15,3 +15,10 @@
         <br>et la disparition de ce message avant de faire la mise à jour de <code>YesWiki doryphore</code>.</b>
     </div>
 {% endif %}
+{% if core.requestedVersion == "doryphore" and (locRev[0] == 4 and locRev[1] < 4  or (locRev[1] == 4 and locRev[2] < 2)) %}
+    <div class="alert alert-danger">
+        Attention : la version <code>doryphore {{ locRev[0] }}.{{ locRev[1] }}.{{ locRev[2] }}</code> est ancienne est possède des instabilités ou des soucis de sécurité.
+        <br/>La version actuelle de l'extension <code>alternativeupdatej9rem</code> ne corrige plus ses instabilités !
+        <br>Veuillez faire la mise à jour de <code>YesWiki doryphore</code>.
+    </div>
+{% endif %}
