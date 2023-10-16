@@ -30,4 +30,14 @@ class PageManager extends CorePageManager
 
         return parent::setMetadata($tag, $metadata);
     }
+
+    public function deleteOrphaned($tag)
+    {
+        parent::deleteOrphaned($tag);
+        $this->dbService->query(<<<SQL
+        DELETE FROM {$this->dbService->prefixTable('triples')}
+          WHERE `resource`='{$this->dbService->escape($tag)}'
+            and `property`='http://outils-reseaux.org/_vocabulary/metadata';
+        SQL);
+    }
 }
