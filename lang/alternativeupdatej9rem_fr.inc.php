@@ -44,6 +44,13 @@ return [
   'AUJ9_ID_PARAM_SHOULD_BE_NUMBER' => 'le paramètre \'id\' devrait être un nombre positif',
   'AUJ9_FIELDS_PARAM_NOT_EMPTY' => 'le paramètre \'fields\' ne doit pas être vide',
 
+  // controllers/ApiContoller.php
+  'AUJ9_SEND_MAIL_TEMPLATE_CONTACTEMAIL' => 'Destinataire(s)',
+  'AUJ9_SEND_MAIL_TEMPLATE_ONEEMAIL' => 'en un seul e-mail groupé',
+  'AUJ9_SEND_MAIL_TEMPLATE_ONEBYONE' => 'un envoi d\'email par destinataire',
+  'AUJ9_SEND_MAIL_TEMPLATE_REPLYTO' => 'Répondre à',
+  'AUJ9_SEND_MAIL_TEMPLATE_HIDDENCOPY' => 'Copie cachée à',
+
   // fields/video.twig
   // Feature UUID : auj9-video-field
   'VIDEO_LINK_FIELD' => 'Lien vers la vidéo : %{link}',
@@ -113,6 +120,66 @@ return [
   // EditConfig
   // Feature UUID : auj9-local-cache
   'EDIT_CONFIG_HINT_LOCALCACHE[LIMITEDGROUPS]' => 'Liste des groupes autorisés au cache séparées par des virgules (vide = tout le monde, "!+" = non connecté)',
-  // Feature UUID :  auj9-fix-edit-metadata
+  // Feature UUID : auj9-fix-edit-metadata
   'EDIT_CONFIG_HINT_CLEANUNUSEDMETADATA' => 'Nettoyer les metadonnées non utilisées (true/false)',
+  // Feature UUID : auj9-bazar-list-send-mail-dynamic
+  'EDIT_CONFIG_HINT_DEFAULT-SENDER-EMAIL' => 'E-mail par défaut pour le template "send-mail.twig"',
+
+  // docs/actions/bazarliste.yaml via templates/aceditor/actions-builder.tpl.html
+  // Feature UUID : auj9-bazar-list-send-mail-dynamic
+  'AUJ9_SEND_MAIL_TEMPLATE_DEFAULTCONTENT' => 'Bonjour,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----Complétez votre message ici----<br/>',
+  'AUJ9_SEND_MAIL_TEMPLATE_DEFAULTCONTENT_LABEL' => 'Contenu par défaut',
+  'AUJ9_SEND_MAIL_TEMPLATE_DEFAULT_SENDERNAME_LABEL' => 'Nom d\'expéditeur par défaut',
+  'AUJ9_SEND_MAIL_TEMPLATE_DEFAULT_SUBJECT_LABEL' => 'Sujet par défaut',
+  'AUJ9_SEND_MAIL_TEMPLATE_DESCRIPTION' => 'Permet d\'envoyer des e-mails à un groupe de personnes',
+  'AUJ9_SEND_MAIL_TEMPLATE_EMAILFIELDNAME_LABEL' => 'Champ pour l\'email',
+  'AUJ9_SEND_MAIL_TEMPLATE_GROUP_IN_HIDDIN_COPY_LABEL' => 'Par défaut, envoyer en copie caché si envoi non groupé',
+  'AUJ9_SEND_MAIL_TEMPLATE_LABEL' => 'Envoyer des e-mails',
+  'AUJ9_SEND_MAIL_TEMPLATE_SENDTOGROUPDEFAULT_LABEL' => 'Par défaut, envoyer à tous',
+  'AUJ9_SEND_MAIL_TEMPLATE_TITLE_EMPTY_LABEL' => 'Vide = \'%{emptyVal}\'',
+  'AUJ9_SEND_MAIL_TEMPLATE_TITLE_LABEL' => 'Titre',
+  
+  // templates/bazar/send-mail.twig
+  // Feature UUID : auj9-bazar-list-send-mail-dynamic
+  'AUJ9_SEND_MAIL_TEMPLATE_ADDCONTACTSTOREPLYTO' => 'Forcer "Répondre à tous" (uniquement pour les envois groupés)',
+  'AUJ9_SEND_MAIL_TEMPLATE_ADDSENDERTOCONTACT' => 'Ajouter l\'expéditeur dans les destinataires',
+  'AUJ9_SEND_MAIL_TEMPLATE_ADDSENDERTOREPLYTO' => 'Ajouter l\'expéditeur dans "Répondre à"',
+  'AUJ9_SEND_MAIL_TEMPLATE_ADMINPART' => 'Visible uniquement par les administrateurices du site',
+  'AUJ9_SEND_MAIL_TEMPLATE_CHECKALL' => 'Cocher tout ce qui est visible',
+  'AUJ9_SEND_MAIL_TEMPLATE_DEFAULT_TITLE' => 'Envoyer un e-mail à :',
+  'AUJ9_SEND_MAIL_TEMPLATE_DONE_FOR' => 'Envoyé pour',
+  'AUJ9_SEND_MAIL_TEMPLATE_GROUP_IN_HIDDEN_COPY' => 'Envoyer en copie cachée',
+  'AUJ9_SEND_MAIL_TEMPLATE_GROUP_IN_HIDDEN_COPY_HELP' => 'Option uniquement disponible si moins de {nb} fiches sélectionnées',
+  'AUJ9_SEND_MAIL_TEMPLATE_HASCONTACTFROM' => "Attention, ce wiki force l'expéditeur des e-mails à %{forcedFrom}\n".
+      "(l'e-mail de l'expéditeur est déplacé dans \"Répondre à\")",
+  'AUJ9_SEND_MAIL_TEMPLATE_HELP' => "Pour les envois non groupés :\n".
+      "[text](lien) => lien href\n".
+      "{baseUrl} => lien de base du wiki\n".
+      "{entryId} => entryId\n".
+      "{entryLink} => lien vers la fiche brut\n".
+      "{entryLinkWithTitle} => lien vers la fiche avec son titre\n".
+      "{entryLinkWithText} => lien vers la fiche avec le texte \"Voir la fiche xxx\"\n".
+      "{entryEditLink} => lien vers la modification de la fiche (brut)\n".
+      "{entryEditLinkWithText} => lien vers la modification de la fiche (avec le titre \"Modifier la fiche\")\n",
+  'AUJ9_SEND_MAIL_TEMPLATE_HIDE' => 'Masquer les paramètres avancés',
+  'AUJ9_SEND_MAIL_TEMPLATE_HIDE_DONE_FOR_ALL' => 'Réduire la liste',
+  'AUJ9_SEND_MAIL_TEMPLATE_LAST_UPDATE' => 'Dernière maj : %{date}',
+  'AUJ9_SEND_MAIL_TEMPLATE_MESSAGE' => 'Message',
+  'AUJ9_SEND_MAIL_TEMPLATE_MESSAGE_SUBJECT' => 'Sujet du message',
+  'AUJ9_SEND_MAIL_TEMPLATE_MESSAGE_SUBJECT_PLACEHOLDER' => 'Indiquez l\'objet de l\'e-mail',
+  'AUJ9_SEND_MAIL_TEMPLATE_PLURAL_NB_DEST_TEXT' => 'Actuellement {nb} destinataires',
+  'AUJ9_SEND_MAIL_TEMPLATE_PREVIEW' => 'Aperçu',
+  'AUJ9_SEND_MAIL_TEMPLATE_RECEIVEHIDDENCOPY' => 'Recevoir une copie cachée',
+  'AUJ9_SEND_MAIL_TEMPLATE_RETURN_PARAM' => 'Retourner aux paramètres',
+  'AUJ9_SEND_MAIL_TEMPLATE_SECURITY_HIDDEN' => 'masqué par sécurité',
+  'AUJ9_SEND_MAIL_TEMPLATE_SEE' => 'Voir les paramètres avancés',
+  'AUJ9_SEND_MAIL_TEMPLATE_SEE_DRAFT' => 'Voir le brouillon',
+  'AUJ9_SEND_MAIL_TEMPLATE_SENDEREMAIL' => 'E-mail de l\'expéditeur',
+  'AUJ9_SEND_MAIL_TEMPLATE_SENDERNAME' => 'Nom de l\'expéditeur',
+  'AUJ9_SEND_MAIL_TEMPLATE_SENDMAIL' => 'Envoyer le(s) mail(s)',
+  'AUJ9_SEND_MAIL_TEMPLATE_SENDTOGROUP' => 'Faire un envoi groupé (tout le monde voit la liste de destinataires)',
+  'AUJ9_SEND_MAIL_TEMPLATE_SHOW_DONE_FOR_ALL' => 'Montrer toute la liste',
+  'AUJ9_SEND_MAIL_TEMPLATE_SINGULAR_NB_DEST_TEXT' => 'Actuellement {nb} destinataire',
+  'AUJ9_SEND_MAIL_TEMPLATE_SIZE' => 'Taille :',
+  'AUJ9_SEND_MAIL_TEMPLATE_UNCHECKALL' => 'Décocher tout ce qui est visible',
 ];

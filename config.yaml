@@ -7,22 +7,30 @@ parameters:
     J9rem: "https://repository.oui-wiki.pro/"
   activateEventRepetition: false # Feature UUID : auj9-recurrent-events
   canDuplicateEntryIfNotRightToWrite: false # Feature UUID : auj9-duplicate
-  updatablePackagesViaAlternative: # auj9-autoupdate-system
+  sendMail:
+    activated: false            # Feature UUID : auj9-bazar-list-send-mail-dynamic
+  formIdAreaToDepartment: ''    # Feature UUID : auj9-autoupdateareas-action
+  updatablePackagesViaAlternative: # Feature UUID : auj9-autoupdate-system
     - 'advancedsearch'
     - 'nextcloudconnector'
     - 'stats'
     - 'twolevels'
-  localCache: # Feature UUID : auj9-local-cache
+  localCache:                   # Feature UUID : auj9-local-cache
     activated: false
     limitedGroups: # coma separated
-  cleanUnusedMetadata: false # auj9-fix-edit-metadata
+  cleanUnusedMetadata: false    # auj9-fix-edit-metadata
+  default-sender-email: ''      # Feature UUID : auj9-bazar-list-send-mail-dynamic
   alternativeupdatej9rem_editable_config_params:
     - 'activateEventRepetition' # Feature UUID : auj9-recurrent-events
     - 'canDuplicateEntryIfNotRightToWrite' # Feature UUID : auj9-duplicate
-    - localCache: # Feature UUID : auj9-local-cache
+    - localCache:               # Feature UUID : auj9-local-cache
       - 'activated'
       - 'limitedGroups'
-    - 'cleanUnusedMetadata' # auj9-fix-edit-metadata
+    - 'cleanUnusedMetadata'     # auj9-fix-edit-metadata
+    - sendMail:                 # Feature UUID : auj9-bazar-list-send-mail-dynamic
+      - 'activated'
+    - 'formIdAreaToDepartment'  # Feature UUID : auj9-autoupdateareas-action
+    - 'default-sender-email'    # Feature UUID : auj9-bazar-list-send-mail-dynamic
 
 services:
   _defaults:

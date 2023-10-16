@@ -35,7 +35,7 @@ Ajout des champs:
 ### Templates bazar
  
  - Un **nouveau template dynamique** `{{bazarliste template="video"}}` qui permet d'afficher les fiches en vignettes comme pour le template dynamique `card` mais en affichant les vidéos des fiches.
-
+ - Un **template dynamique** `{{bazarliste template="send-mail"}}` qui permet d'afficher d'envoyer des e-mails de façon groupée. _Cette fonctionnalité est désactivée par défaut. Il faut se rendre dans [GererConfig](?GererConfig ':ignore'), dans la partie `ALTERNATIVEUPDATEJ9REM`, et mettre `true` pour la variable `sendMail[activated]` pour l'activer._
 
 ### Nouvelles fonctionnalités
 
@@ -80,6 +80,7 @@ Ajout des champs:
 ||système de cache local des requêtes SQL|[`auj9-local-cache`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-local-cache&type=code)|
 ||corrections concernant les metadonnées|[`auj9-fix-edit-metadata`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-edit-metadata&type=code)|
 |Template Bazar|`video.twig`|[`auj9-bazar-list-video-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-video-dynamic&type=code)|
+||`send-mail.twig`|[`auj9-bazar-list-send-mail-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-send-mail-dynamic&type=code)|
 
 ----
 

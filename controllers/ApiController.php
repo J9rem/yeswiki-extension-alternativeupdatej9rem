@@ -12,16 +12,17 @@ namespace YesWiki\Alternativeupdatej9rem\Controller;
 
 use AutoUpdate\Package;
 use AutoUpdate\Repository;
-use Throwable;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface; # Feature UUID : auj9-local-cache
+// Feature UUID : auj9-local-cache
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\Exception\TokenNotFoundException;
+use YesWiki\Alternativeupdatej9rem\Controller\BazarSendMailController; // Feature UUID : auj9-bazar-list-send-mail-dynamic
 use YesWiki\Alternativeupdatej9rem\Service\AutoUpdateService;
-use YesWiki\Alternativeupdatej9rem\Service\CacheService; # Feature UUID : auj9-local-cache
-use YesWiki\Bazar\Controller\ApiController as BazarApiController; # Feature UUID : auj9-local-cache
+use YesWiki\Alternativeupdatej9rem\Service\CacheService; // Feature UUID : auj9-local-cache
+use YesWiki\Bazar\Controller\ApiController as BazarApiController; // Feature UUID : auj9-local-cache
 use YesWiki\Core\ApiResponse;
 use YesWiki\Core\Controller\AuthController;
 use YesWiki\Core\Controller\CsrfTokenController;
@@ -559,5 +560,42 @@ class ApiController extends YesWikiController
         } else {
             return $bazarApiController->getBazarListData();
         }
+    }
+
+    /**
+     * @Route("/api/auj9/send-mail/preview", methods={"POST"},options={"acl":{"public","+"}})
+     * Feature UUID : auj9-bazar-list-send-mail-dynamic
+     */
+    public function previewEmail()
+    {
+        return $this->getService(BazarSendMailController::class)->previewEmail();
+    }
+
+    
+    /**
+     * @Route("/api/api/auj9/send-mail/sendmail", methods={"POST"},options={"acl":{"public","+"}})
+     * Feature UUID : auj9-bazar-list-send-mail-dynamic
+     */
+    public function sendmailApi()
+    {
+        return $this->getService(BazarSendMailController::class)->sendmailApi();
+    }
+    
+    /**
+     * @Route("/api/api/auj9/send-mail/filterentries", methods={"POST"},options={"acl":{"public","+"}})
+     * Feature UUID : auj9-bazar-list-send-mail-dynamic
+     */
+    public function filterAuthorizedEntries()
+    {
+        return $this->getService(BazarSendMailController::class)->filterAuthorizedEntries();
+    }
+
+    /**
+     * @Route("/api/api/auj9/send-mail/currentuseremail", methods={"GET"},options={"acl":{"public","+"}})
+     * Feature UUID : auj9-bazar-list-send-mail-dynamic
+     */
+    public function getCurrentUserEmail()
+    {
+        return $this->getService(BazarSendMailController::class)->filterAuthorizedgetCurrentUserEmailEntries();
     }
 }
