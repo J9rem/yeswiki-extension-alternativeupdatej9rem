@@ -31,6 +31,10 @@ services:
     resource: 'services/*'
   YesWiki\Alternativeupdatej9rem\Controller\:
     resource: 'controllers/*'
+  # Feature UUID : auj9-fix-edit-metadata
+  YesWiki\Alternativeupdatej9rem\Service\PageManager:
+    decorates: YesWiki\Core\Service\PageManager
+    decoration_on_invalid: null
   # Feature UUID : auj9-custom-changes
   YesWiki\Alternativeupdatej9rem\Service\FieldFactory:
     decorates: YesWiki\Bazar\Service\FieldFactory
