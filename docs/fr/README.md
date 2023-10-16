@@ -7,6 +7,7 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
 ### Correctifs
 
  - l'extension corrige aussi des soucis pouvant aussi survenir dans l'enregistrement des dates et leur affichage via `{{bazarliste template="calendar"}}` ou via l'export `ICAL` pour `doryphore 4.4.1` (ainsi qu'une amélioration de la stabilité du champ `image`)
+ - l'extension corrige un souci sur les metadonnées des pages qui peuvent être créées en base de données, même si l'utilisateur n'est pas connecté.
 
 ### Actions
 
@@ -77,6 +78,7 @@ Ajout des champs:
 ||personnalisations propres à cette extension|[`auj9-custom-changes`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-custom-changes&type=code)|
 ||système de mises à jour|[`auj9-autoupdate-system`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-autoupdate-system&type=code)|
 ||système de cache local des requêtes SQL|[`auj9-local-cache`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-local-cache&type=code)|
+||corrections concernant les metadonnées|[`auj9-fix-edit-metadata`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-edit-metadata&type=code)|
 |Template Bazar|`video.twig`|[`auj9-bazar-list-video-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-video-dynamic&type=code)|
 
 ----

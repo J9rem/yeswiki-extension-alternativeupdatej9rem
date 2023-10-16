@@ -13,8 +13,10 @@
 namespace YesWiki\Alternativeupdatej9rem;
 
 use Exception;
+use Throwable;
 use YesWiki\Core\YesWikiHandler;
 use YesWiki\Core\Service\AclService;
+use YesWiki\Core\Service\DbService;
 use YesWiki\Core\Service\PageManager;
 use YesWiki\Plugins;
 use YesWiki\Security\Controller\SecurityController;
@@ -34,6 +36,7 @@ class UpdateHandler__ extends YesWikiHandler
 
         $aclService = $this->wiki->services->get(AclService::class);
         $pageManager = $this->wiki->services->get(PageManager::class);
+        $dbService = $this->wiki->services->get(DbService::class);
         
         $messages = [];
         if (!$pageManager->getOne(self::SPECIFIC_PAGE_NAME)) {
@@ -99,6 +102,58 @@ class UpdateHandler__ extends YesWikiHandler
                 }
             }
         }
+
+        /* === Feature UUID : auj9-fix-edit-metadata === */
+        /* Clean unused metadata */
+        if (in_array($this->params->get('cleanUnusedMetadata'),[true,'true'],true)){
+            $messages[] = 'ℹ️ Clean unused metadata';
+            $selectSQL = <<<SQL
+            SELECT `id`,`resource` FROM {$dbService->prefixTable('triples')}
+                WHERE `property`='http://outils-reseaux.org/_vocabulary/metadata'
+                  AND NOT (`resource` IN (
+                    SELECT `tag` FROM {$dbService->prefixTable('pages')}
+                  ))
+            SQL;
+            $triples = $dbService->loadAll($selectSQL);
+            if (empty($triples)){
+                $messages[] = '✅ No triple to delete !';
+            } else {
+                $messages[] = '&nbsp;&nbsp;ℹ️ '.count($triples).' triples to delete !';
+                $message = '';
+                for ($i=0; $i < count($triples) && $i <= 10; $i++) { 
+                    if ($i == 10){
+                        $message .= <<<HTML
+                        <li>...</li>
+                        HTML;
+                    } else {
+                        $values = $triples[$i];
+                        $message .= <<<HTML
+                        <li>{$values['resource']} ({$values['id']})</li>
+                        HTML;
+                    }
+                }
+                $messages[] = "<ul>$message</ul>";
+                $deleteSQL = <<<SQL
+                DELETE FROM {$dbService->prefixTable('triples')}
+                    WHERE `property`='http://outils-reseaux.org/_vocabulary/metadata'
+                      AND NOT (`resource` IN (
+                        SELECT `tag` FROM {$dbService->prefixTable('pages')}
+                      ))
+                SQL;
+                try {
+                    $dbService->query($deleteSQL);
+                } catch (Throwable $th) {
+                    //throw $th;
+                }
+                $triples = $dbService->loadAll($selectSQL);
+                if (empty($triples)){
+                    $messages[] = '&nbsp;&nbsp;✅ All triples deleted !';
+                } else {
+                    $messages[] = '&nbsp;&nbsp;❌ Error : '.count($riples).' triples are not deleted !';
+                }
+            }
+        }
+        /* === end of Feature UUID : auj9-fix-edit-metadata === */
         
         if (!empty($messages)){
             $message = implode('<br/>',$messages);
