@@ -103,6 +103,7 @@ class UpdateHandler__ extends YesWikiHandler
             }
         }
 
+        /* === Feature UUID : auj9-fix-edit-metadata === */
         /* Clean unused metadata */
         if (in_array($this->params->get('cleanUnusedMetadata'),[true,'true'],true)){
             $messages[] = 'ℹ️ Clean unused metadata';
@@ -119,10 +120,17 @@ class UpdateHandler__ extends YesWikiHandler
             } else {
                 $messages[] = '&nbsp;&nbsp;ℹ️ '.count($triples).' triples to delete !';
                 $message = '';
-                foreach ($triples as $values) {
-                    $message .= <<<HTML
-                    <li>{$values['resource']} ({$values['id']})</li>
-                    HTML;
+                for ($i=0; $i < count($triples) && $i <= 10; $i++) { 
+                    if ($i == 10){
+                        $message .= <<<HTML
+                        <li>...</li>
+                        HTML;
+                    } else {
+                        $values = $triples[$i];
+                        $message .= <<<HTML
+                        <li>{$values['resource']} ({$values['id']})</li>
+                        HTML;
+                    }
                 }
                 $messages[] = "<ul>$message</ul>";
                 $deleteSQL = <<<SQL
@@ -145,6 +153,7 @@ class UpdateHandler__ extends YesWikiHandler
                 }
             }
         }
+        /* === end of Feature UUID : auj9-fix-edit-metadata === */
         
         if (!empty($messages)){
             $message = implode('<br/>',$messages);
