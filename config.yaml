@@ -15,12 +15,14 @@ parameters:
   localCache: # Feature UUID : auj9-local-cache
     activated: false
     limitedGroups: # coma separated
+  cleanUnusedMetadata: false # auj9-fix-edit-metadata
   alternativeupdatej9rem_editable_config_params:
     - 'activateEventRepetition' # Feature UUID : auj9-recurrent-events
     - 'canDuplicateEntryIfNotRightToWrite' # Feature UUID : auj9-duplicate
     - localCache: # Feature UUID : auj9-local-cache
       - 'activated'
       - 'limitedGroups'
+    - 'cleanUnusedMetadata' # auj9-fix-edit-metadata
 
 services:
   _defaults:

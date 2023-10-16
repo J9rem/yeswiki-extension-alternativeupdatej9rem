@@ -113,4 +113,6 @@ return [
   // EditConfig
   // Feature UUID : auj9-local-cache
   'EDIT_CONFIG_HINT_LOCALCACHE[LIMITEDGROUPS]' => 'Liste des groupes autorisés au cache séparées par des virgules (vide = tout le monde, "!+" = non connecté)',
+  // Feature UUID :  auj9-fix-edit-metadata
+  'EDIT_CONFIG_HINT_CLEANUNUSEDMETADATA' => 'Nettoyer les metadonnées non utilisées (true/false)',
 ];
