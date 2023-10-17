@@ -79,5 +79,9 @@ return [
   'ALTERNATIVEUPDATE_VIDEO_POSITION_RIGHT' => 'Alignée à droite',
   'ALTERNATIVEUPDATE_VIDEO_LABEL' => 'vidéo',
 
-  
+  // javascripts/components/BazarSendMail.js
+  // Feature UUID : auj9-bazar-list-send-mail-dynamic
+  'AUJ9_SEND_MAIL_TEMPLATE_SENT' => 'Emails(s) envoyés (pour {details})',
+  'AUJ9_SEND_MAIL_TEMPLATE_NOT_SENT' => 'Emails(s) non envoyés {errorMsg}',
+  'AUJ9_SEND_MAIL_TEMPLATE_SEND' => 'Envoyer le message ?',
 ];

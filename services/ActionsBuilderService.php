@@ -11,6 +11,7 @@
 
 namespace YesWiki\Alternativeupdatej9rem\Service;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface; // Feature UUID : auj9-bazar-list-send-mail-dynamic
 use YesWiki\Aceditor\Service\ActionsBuilderService as AceditorActionsBuilderService;
 use YesWiki\Core\Service\TemplateEngine;
 use YesWiki\Wiki;
@@ -20,6 +21,7 @@ trait ActionsBuilderServiceCommon
     protected $previousData;
     protected $data;
     protected $parentActionsBuilderService;
+    protected $params; // Feature UUID : auj9-bazar-list-send-mail-dynamic
     protected $renderer;
     protected $wiki;
 
@@ -30,6 +32,7 @@ trait ActionsBuilderServiceCommon
         $this->parentActionsBuilderService = $parentActionsBuilderService;
         $this->renderer = $renderer;
         $this->wiki = $wiki;
+        $this->params = $this->wiki->services->get(ParameterBagInterface::class); // Feature UUID : auj9-bazar-list-send-mail-dynamic
     }
 
     public function setPreviousData(?array $data)
@@ -122,6 +125,72 @@ trait ActionsBuilderServiceCommon
                     );
             }
             /* === end of Feature UUID : auj9-bazar-list-video-dynamic === */
+            
+            /* === Feature UUID : auj9-bazar-list-send-mail-dynamic === */
+            if ($this->params->has('sendMail')){
+                $sendMailParam = $this->params->get('sendMail');
+                if (!empty($sendMailParam['activated']) && $sendMailParam['activated'] === true){
+                    if (isset($this->data['action_groups']['bazarliste']['actions'])
+                        && !isset($this->data['action_groups']['bazarliste']['actions']['bazarsendmail'])) {
+                        $this->data['action_groups']['bazarliste']['actions']['bazarsendmail'] = [
+                            'label' => _t('AUJ9_SEND_MAIL_TEMPLATE_LABEL'),
+                            'description' => _t('AUJ9_SEND_MAIL_TEMPLATE_DESCRIPTION'),
+                            'width' => '35%',
+                            'properties' => [
+                                'template' => [
+                                    'value' => 'send-mail',
+                                ],
+                                'title' => [
+                                    'label' => _t('AUJ9_SEND_MAIL_TEMPLATE_TITLE_LABEL'),
+                                    'hint' => _t('AUJ9_SEND_MAIL_TEMPLATE_TITLE_EMPTY_LABEL', ['emptyVal' => _t('AUJ9_SEND_MAIL_TEMPLATE_DEFAULT_TITLE')]),
+                                    'type' => 'text',
+                                    'default' => _t('AUJ9_SEND_MAIL_TEMPLATE_DEFAULT_TITLE'),
+                                ],
+                                'defaultsendername' => [
+                                    'label' => _t('AUJ9_SEND_MAIL_TEMPLATE_DEFAULT_SENDERNAME_LABEL'),
+                                    'type' => 'text',
+                                    'default' => _t('AUJ9_SEND_MAIL_TEMPLATE_SENDERNAME'),
+                                ],
+                                'defaultsubject' => [
+                                    'label' => _t('AUJ9_SEND_MAIL_TEMPLATE_DEFAULT_SUBJECT_LABEL'),
+                                    'type' => 'text',
+                                    'default' => '',
+                                ],
+                                'emailfieldname' => [
+                                    'label' => _t('AUJ9_SEND_MAIL_TEMPLATE_EMAILFIELDNAME_LABEL'),
+                                    'type' => 'form-field',
+                                    'default' => 'bf_mail',
+                                ],
+                                'defaultcontent' => [
+                                    'label' => _t('AUJ9_SEND_MAIL_TEMPLATE_DEFAULTCONTENT_LABEL'),
+                                    'type' => 'text',
+                                    'default' => _t('AUJ9_SEND_MAIL_TEMPLATE_DEFAULTCONTENT'),
+                                ],
+                                'sendtogroupdefault' => [
+                                    'label' => _t('AUJ9_SEND_MAIL_TEMPLATE_SENDTOGROUPDEFAULT_LABEL'),
+                                    'type' => 'checkbox',
+                                    'default' => 'false'
+                                ],
+                                'groupinhiddencopydefault' => [
+                                    'label' => _t('AUJ9_SEND_MAIL_TEMPLATE_GROUP_IN_HIDDIN_COPY_LABEL'),
+                                    'type' => 'checkbox',
+                                    'default' => 'true',
+                                    'showif' => [
+                                        'sendtogroupdefault' => false
+                                    ]
+                                ]
+                            ],
+                        ];
+                    }
+                    
+                    if (isset($this->data['action_groups']['bazarliste']['actions']['commons']['properties']['showexportbuttons']['showExceptFor'])
+                        && !in_array('bazarsendmail', $this->data['action_groups']['bazarliste']['actions']['commons']['properties']['showexportbuttons']['showExceptFor'])) {
+                        $this->data['action_groups']['bazarliste']['actions']['commons']['properties']['showexportbuttons']['showExceptFor'][] =  'bazarsendmail';
+                    }
+                    $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/actions-builder-post-update.js',true);
+                }
+            }
+            /* === end of Feature UUID : auj9-bazar-list-send-mail-dynamic === */
         }
         return $this->data;
     }

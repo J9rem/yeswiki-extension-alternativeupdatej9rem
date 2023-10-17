@@ -1,0 +1,80 @@
+{#
+ * This file is part of the YesWiki Extension alternativeupdatej9rem.
+ *
+ * Authors : see README.md file that was distributed with this source code.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ * Feature UUID : auj9-bazar-list-send-mail-dynamic
+ *#}
+
+{% extends "@bazar/entries/index-dynamic.twig" %}
+
+{% set necessary_fields = [] %}
+
+{% block assets %}
+  {{ include_css('tools/bazar/libs/vendor/summernote/summernote.css') }}
+  {{ include_css('tools/alternativeupdatej9rem/styles/send-mail.css') }} 
+  {{ include_javascript('tools/bazar/libs/vendor/summernote/summernote.min.js') }}
+  {{ include_javascript('tools/alternativeupdatej9rem/javascripts/components/BazarSendMail.js', false, true) }} 
+{% endblock %}
+
+{% block display_entries %}
+  {% if not hasAcl("+") %}
+    {{ include("@templates/alert-message.twig",{type:"danger",message:"Template '#{_self}': " ~ _t('BAZ_NEED_ADMIN_RIGHTS')})}}
+  {% elseif config.sendMail.activated is not same as true %}
+    {{ include("@templates/alert-message.twig",{type:"danger",message:'Send Mail is not activated !'})}}
+  {% else %}
+    <Bazar-Send-Mail :params="params" :entries="entriesToDisplay" :ready="ready" :hascontactfrom="{{ (config.contact_from is not empty)|json_encode }}" :root="$root" :isadmin="{{ hasAcl("@admins")|json_encode }}">
+      <template #addcontactstoreplyto>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_ADDCONTACTSTOREPLYTO') }}</template>
+      <template #addsendertocontact>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_ADDSENDERTOCONTACT') }}</template>
+      <template #addsendertoreplyto>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_ADDSENDERTOREPLYTO') }}</template>
+      <template #adminpart>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_ADMINPART') }}</template>
+      <template #checkall>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_CHECKALL') }}</template>
+      <template #defaultsenderemail>{{ (hasAcl("@admins") and config['default-sender-email'])? config['default-sender-email'] : "" }}</template>
+      <template #defaultsubject>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_MESSAGE_SUBJECT') }}</template>
+      <template #donefor>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_DONE_FOR') }}</template>
+      <template #hascontactfrom>
+        {% if config.contact_from is not empty %}
+          <div class="form-group">
+            {{ include('@templates/alert-message.twig',{type:'info',message:_t('AUJ9_SEND_MAIL_TEMPLATE_HASCONTACTFROM',{'forcedFrom':hasAcl("@admins") ? config.contact_from : "***.***@***.*** (#{_t('AUJ9_SEND_MAIL_TEMPLATE_SECURITY_HIDDEN')})"})|nl2br}) }}
+          </div>
+        {% endif %}
+      </template>
+      <template #groupinhiddencopy>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_GROUP_IN_HIDDEN_COPY') }}</template>
+      <template #groupinhiddencopylimited="{nb}">&nbsp;<i>({{ ('{{ '~_t('AUJ9_SEND_MAIL_TEMPLATE_GROUP_IN_HIDDEN_COPY_HELP')|json_encode ~ '.replace("{nb}",nb) }}')|raw }})</i></template>
+      <template #help>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_HELP')|nl2br }}</template>
+      <template #hide><span class="fas fa-angle-up"></span> {{ _t('AUJ9_SEND_MAIL_TEMPLATE_HIDE') }}</template>
+      <template #hidedoneforall>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_HIDE_DONE_FOR_ALL') }}</template>
+      <template #pluralnbdesttext>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_PLURAL_NB_DEST_TEXT') }}</template>
+      <template #preview>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_PREVIEW') }}</template>
+      <template #previewsize>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_SIZE') }}</template>
+      <template #receivehiddencopy>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_RECEIVEHIDDENCOPY') }}</template>
+      <template #returnparam>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_RETURN_PARAM') }}</template>
+      <template #see><span class="fas fa-angle-down"></span> {{ _t('AUJ9_SEND_MAIL_TEMPLATE_SEE') }}</template>
+      <template #seedraft>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_SEE_DRAFT') }}</template>
+      <template #senderemail>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_SENDEREMAIL') }}</template>
+      <template #sendername>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_SENDERNAME') }}</template>
+      <template #sendmail>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_SENDMAIL') }}</template>
+      <template #sendtogroup>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_SENDTOGROUP') }}</template>
+      <template #showdoneforall>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_SHOW_DONE_FOR_ALL') }}</template>
+      <template #singularnbdesttext>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_SINGULAR_NB_DEST_TEXT') }}</template>
+      <template #subjectplaceholder>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_MESSAGE_SUBJECT_PLACEHOLDER') }}</template>
+      <template #textarea>{{ include("@bazar/inputs/textarea.twig",{
+            field: {
+              label: _t('AUJ9_SEND_MAIL_TEMPLATE_MESSAGE'),
+              name: "message",
+              syntax: "html",
+              numRows: 10,
+              type: "textarea"
+            },
+            value: (params.defaultcontent|trim is not empty 
+              ? params.defaultcontent|striptags('<br><p><hr><i><b><strong><em><div><span>') 
+              :_t('AUJ9_SEND_MAIL_TEMPLATE_DEFAULTCONTENT'))|raw ,
+          }) }}
+      </template>
+      <template #title>{{ params.title|trim is not empty ? params.title : _t('AUJ9_SEND_MAIL_TEMPLATE_DEFAULT_TITLE') }}</template>
+      <template #uncheckall>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_UNCHECKALL') }}</template>
+    </Bazar-Send-Mail>
+  {% endif %}
+{% endblock %}
