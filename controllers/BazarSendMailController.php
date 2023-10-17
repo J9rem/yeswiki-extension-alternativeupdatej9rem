@@ -38,6 +38,11 @@ class BazarSendMailController extends YesWikiController
     public function previewEmail()
     {
         extract($this->getParams());
+        if (empty($contacts) && !$this->wiki->UserIsAdmin()){
+            $html = _t('AUJ9_SEND_MAIL_TEMPLATE_NOCONTACTS');
+            $size = strlen($html);
+            return new ApiResponse(['html' => $html,'size'=>$size]);
+        }
         if ($addsendertocontact) {
             $contacts[] = $senderEmail;
         }
@@ -503,7 +508,7 @@ class BazarSendMailController extends YesWikiController
         ]);
     }
 
-    private function replaceLinksGeneric(string $message, bool $modeTxt = false): string
+    private function replaceLinksGeneric(string $message, ?bool $modeTxt = false): string
     {
         $params = $this->wiki->services->get(ParameterBagInterface::class);
         $output = $message;
@@ -526,7 +531,7 @@ class BazarSendMailController extends YesWikiController
         return $output;
     }
 
-    private function replaceLinks(string $message, bool $sendtogroup, string $entryId, bool $modeTxt = false): string
+    private function replaceLinks(string $message, ?bool $sendtogroup, string $entryId, ?bool $modeTxt = false): string
     {
         $output = $message;
         $entryManager = $this->getService(EntryManager::class);

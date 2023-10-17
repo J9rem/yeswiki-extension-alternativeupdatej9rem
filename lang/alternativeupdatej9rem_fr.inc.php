@@ -167,6 +167,7 @@ return [
   'AUJ9_SEND_MAIL_TEMPLATE_MESSAGE' => 'Message',
   'AUJ9_SEND_MAIL_TEMPLATE_MESSAGE_SUBJECT' => 'Sujet du message',
   'AUJ9_SEND_MAIL_TEMPLATE_MESSAGE_SUBJECT_PLACEHOLDER' => 'Indiquez l\'objet de l\'e-mail',
+  'AUJ9_SEND_MAIL_TEMPLATE_NOCONTACTS' => 'Pas d\'e-mail car pas de destinataires !',
   'AUJ9_SEND_MAIL_TEMPLATE_PLURAL_NB_DEST_TEXT' => 'Actuellement {nb} destinataires',
   'AUJ9_SEND_MAIL_TEMPLATE_PREVIEW' => 'Aperçu',
   'AUJ9_SEND_MAIL_TEMPLATE_RECEIVEHIDDENCOPY' => 'Recevoir une copie cachée',

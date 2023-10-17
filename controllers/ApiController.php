@@ -573,7 +573,7 @@ class ApiController extends YesWikiController
 
     
     /**
-     * @Route("/api/api/auj9/send-mail/sendmail", methods={"POST"},options={"acl":{"public","+"}})
+     * @Route("/api/auj9/send-mail/sendmail", methods={"POST"},options={"acl":{"public","+"}})
      * Feature UUID : auj9-bazar-list-send-mail-dynamic
      */
     public function sendmailApi()
@@ -582,7 +582,7 @@ class ApiController extends YesWikiController
     }
     
     /**
-     * @Route("/api/api/auj9/send-mail/filterentries", methods={"POST"},options={"acl":{"public","+"}})
+     * @Route("/api/auj9/send-mail/filterentries", methods={"POST"},options={"acl":{"public","+"}})
      * Feature UUID : auj9-bazar-list-send-mail-dynamic
      */
     public function filterAuthorizedEntries()
@@ -591,11 +591,11 @@ class ApiController extends YesWikiController
     }
 
     /**
-     * @Route("/api/api/auj9/send-mail/currentuseremail", methods={"GET"},options={"acl":{"public","+"}})
+     * @Route("/api/auj9/send-mail/currentuseremail", methods={"GET"},options={"acl":{"public","+"}})
      * Feature UUID : auj9-bazar-list-send-mail-dynamic
      */
     public function getCurrentUserEmail()
     {
-        return $this->getService(BazarSendMailController::class)->filterAuthorizedgetCurrentUserEmailEntries();
+        return $this->getService(BazarSendMailController::class)->getCurrentUserEmail();
     }
 }

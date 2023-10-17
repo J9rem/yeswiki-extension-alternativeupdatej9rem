@@ -215,6 +215,12 @@ let componentParams = {
                 this.loadSummernote({lang:langName});
             }
         },
+        manageError(error){
+            if (wiki.isDebugEnabled){
+                console.error(error)
+            }
+            return null
+        },
         async post(url,dataToSend){
             return await fetch(url,
                 {
@@ -403,7 +409,11 @@ let componentParams = {
                         [key]:thing
                     };
                 case 'object':
-                    if (Object.keys(thing).length > 0){
+                    if (thing === null) {
+                        return {
+                            [key]:null
+                        };
+                    } else if (Object.keys(thing).length > 0){
                         let result = {};
                         for (const propkey in thing) {
                             result = {
@@ -415,10 +425,6 @@ let componentParams = {
                             }
                         }
                         return result;
-                    } else if (thing === null) {
-                        return {
-                            [key]:null
-                        };
                     } else {
                         return {
                             [key]: []
@@ -537,7 +543,7 @@ let componentParams = {
                         throw 'entriesIds not found'
                     }
                 })
-                .catch((e)=>{/* do nothing */})
+                .catch(this.manageError)
                 .finally(()=>{
                     this.removeIdsFromUpdating(entriesIds)
                 })

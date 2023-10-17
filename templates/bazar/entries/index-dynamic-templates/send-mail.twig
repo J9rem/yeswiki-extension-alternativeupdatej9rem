@@ -68,7 +68,7 @@
             },
             value: (params.defaultcontent|trim is not empty 
               ? params.defaultcontent|striptags('<br><p><hr><i><b><strong><em><div><span>') 
-              :_t('AUJ9_SEND_MAIL_TEMPLATE_SENDMAIL_DEFAULTCONTENT'))|raw ,
+              :_t('AUJ9_SEND_MAIL_TEMPLATE_DEFAULTCONTENT'))|raw ,
           }) }}
       </template>
       <template #title>{{ params.title|trim is not empty ? params.title : _t('AUJ9_SEND_MAIL_TEMPLATE_DEFAULT_TITLE') }}</template>
