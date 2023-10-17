@@ -22,6 +22,8 @@
 {% block display_entries %}
   {% if not hasAcl("+") %}
     {{ include("@templates/alert-message.twig",{type:"danger",message:"Template '#{_self}': " ~ _t('BAZ_NEED_ADMIN_RIGHTS')})}}
+  {% elseif config.sendMail.activated is not same as true %}
+    {{ include("@templates/alert-message.twig",{type:"danger",message:'Send Mail is not activated !'})}}
   {% else %}
     <Bazar-Send-Mail :params="params" :entries="entriesToDisplay" :ready="ready" :hascontactfrom="{{ (config.contact_from is not empty)|json_encode }}" :root="$root" :isadmin="{{ hasAcl("@admins")|json_encode }}">
       <template #addcontactstoreplyto>{{ _t('AUJ9_SEND_MAIL_TEMPLATE_ADDCONTACTSTOREPLYTO') }}</template>

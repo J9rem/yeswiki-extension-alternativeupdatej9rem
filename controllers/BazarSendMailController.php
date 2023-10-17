@@ -35,8 +35,20 @@ class BazarSendMailController extends YesWikiController
         $this->eventDispatcher = $eventDispatcher;
     }
 
+    public function isActivated():bool
+    {
+        $params = $this->wiki->services->get(ParameterBagInterface::class);
+        $sendMailParams = $params->has('sendMail')
+             ? $params->get('sendMail')
+             : [];
+        return !empty($sendMailParams['activated']) && $sendMailParams['activated'] === true;
+    }
+
     public function previewEmail()
     {
+        if (!$this->isActivated()){
+            throw new Exception("Send mail is not activated");
+        }
         extract($this->getParams());
         if (empty($contacts) && !$this->wiki->UserIsAdmin()){
             $html = _t('AUJ9_SEND_MAIL_TEMPLATE_NOCONTACTS');
@@ -90,6 +102,9 @@ class BazarSendMailController extends YesWikiController
 
     public function sendmailApi()
     {
+        if (!$this->isActivated()){
+            throw new Exception("Send mail is not activated");
+        }
         $isAdmin = $this->wiki->UserIsAdmin();
         $entryManager = $this->getService(EntryManager::class);
         $dataContainer = new DataContainer([
@@ -323,6 +338,9 @@ class BazarSendMailController extends YesWikiController
 
     public function filterAuthorizedEntries()
     {
+        if (!$this->isActivated()){
+            throw new Exception("Send mail is not activated");
+        }
         foreach (['entriesIds','params'] as $key) {
             $tmp = (isset($_POST[$key]) && is_array($_POST[$key])) ? $_POST[$key] : [];
             $tmp = array_filter($tmp, function ($val) {
