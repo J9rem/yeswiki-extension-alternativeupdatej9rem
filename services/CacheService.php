@@ -406,8 +406,8 @@ class CacheService implements EventSubscriberInterface
     protected function getLocalCacheId(string $sqlRequest): string
     {
         // get user
-        $userName = $this->authController->getLoggedUserName();
-        $userName = (empty($userName) || !is_string($userName)) ? '' : $userName;
+        $user = $this->authController->getLoggedUser();
+        $userName = (empty($user) || empty($user['name']) || !is_string($user['name'])) ? '' : $user['name'];
 
         // prepend SQL
         return $userName.$sqlRequest;
