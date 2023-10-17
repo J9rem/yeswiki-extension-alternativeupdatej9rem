@@ -16,16 +16,25 @@ use PHPMailer\PHPMailer\PHPMailer;
 use Throwable;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
-use YesWiki\Alternativeupdatej9rem\Service\SendMailService;
+use YesWiki\Alternativeupdatej9rem\Entity\DataContainer;
 use YesWiki\Bazar\Field\EmailField;
 use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Bazar\Service\FormManager;
 use YesWiki\Core\ApiResponse;
+use YesWiki\Core\Service\EventDispatcher;
 use YesWiki\Core\Service\UserManager;
 use YesWiki\Core\YesWikiController;
 
 class BazarSendMailController extends YesWikiController
 {
+    protected $eventDispatcher;
+
+    public function __construct(
+        EventDispatcher $eventDispatcher
+    ) {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
     public function previewEmail()
     {
         extract($this->getParams());
@@ -77,14 +86,31 @@ class BazarSendMailController extends YesWikiController
     public function sendmailApi()
     {
         $isAdmin = $this->wiki->UserIsAdmin();
-        $sendMailService = $this->getService(SendMailService::class);
         $entryManager = $this->getService(EntryManager::class);
-        if (!$isAdmin) {
-            $suffix = $sendMailService->getAdminSuffix();
-            if (empty($suffix)) {
-                return new ApiResponse(['error' => '(only for admins)'], Response::HTTP_UNAUTHORIZED);
-            }
+        $dataContainer = new DataContainer([
+            'isAdmin' => $isAdmin,
+            'canOverrideAdminRestriction' => true,
+            'errorMessage' => '',
+            'callbackIfNotOverridden' => null
+        ]);
+        $errors = $this->eventDispatcher->yesWikiDispatch('auj9.sendmail.filterentries', compact(['dataContainer']));
+        if (!empty($errors)){
+            return new ApiResponse(
+                [
+                    'error' => true,
+                    'message' => $errors['exception']['message'] ?? '',
+                    'file' => $errors['exception']['file'] ?? '',
+                    'line' => $errors['exception']['line'] ?? ''
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
+        $data = $dataContainer->getData();
+
+        if (!empty($data['errorMessage'])){
+            return new ApiResponse(['error' => $data['errorMessage']], Response::HTTP_UNAUTHORIZED);
+        }
+
         $params = $this->getParams();
 
         // TODO manage type
@@ -92,7 +118,7 @@ class BazarSendMailController extends YesWikiController
         $fieldCache = [];
         $emailfieldname = filter_input(INPUT_POST, 'emailfieldname', FILTER_UNSAFE_RAW);
         $emailfieldname = in_array($emailfieldname, [null,false], true) ? "" : htmlspecialchars(strip_tags($emailfieldname));
-        if (empty($params['selectmembers']) && $isAdmin){
+        if ($data['canOverrideAdminRestriction']){
             $forms = [];
             foreach($params['contacts'] as $entryId){
                 $entry = $entryManager->getOne($entryId, false, null, true, true);
@@ -113,16 +139,12 @@ class BazarSendMailController extends YesWikiController
                     }
                 }
             }
-        } else {
-            $sendMailService->filterEntriesFromParents(
+        } elseif ($data['callbackIfNotOverridden'] !== null && is_callable($data['callbackIfNotOverridden'])){
+            $data['callbackIfNotOverridden'](
                 $params['contacts'],
-                false,
-                $params['selectmembers'],
-                $params['selectmembersparentform'],
-                function ($entry, $form, $suffix, $user) use (&$contacts, &$fieldCache, $emailfieldname, $entryManager) {
-                    $this->updateContactsFromForm($form,$entry,$contacts,$fieldCache,$emailfieldname,$entryManager);
-                }
-            );
+                function ($entry, $form) use (&$contacts, &$fieldCache, $emailfieldname, $entryManager) {
+                $this->updateContactsFromForm($form,$entry,$contacts,$fieldCache,$emailfieldname,$entryManager);
+            });
         }
         unset($fieldCache);
 
@@ -305,21 +327,15 @@ class BazarSendMailController extends YesWikiController
             unset($tmp);
         }
         $isAdmin = $this->wiki->UserIsAdmin();
-        if (!$isAdmin) {
-            if (empty($params['selectmembers']) ||
-                !in_array($params['selectmembers'], ["only_members","members_and_profiles_in_area"])) {
-                $entriesIds = [];
-            } else {
-                $selectmembersparentform = (empty($params['selectmembersparentform']) ||
-                    intval($params['selectmembersparentform']) != $params['selectmembersparentform'] ||
-                    intval($params['selectmembersparentform']) < 0)
-                    ? ""
-                    : $params['selectmembersparentform'];
-                $sendMailService = $this->getService(SendMailService::class);
-                $entries = $sendMailService->filterEntriesFromParents($entriesIds, false, $params['selectmembers'], $selectmembersparentform);
-                $entriesIds = array_keys($entries);
-            }
-        }
+        $dataContainer = new DataContainer([
+            'isAdmin' => $isAdmin,
+            'entriesIds' => $entriesIds,
+            'params' => $params,
+            'filteredEntriesIds' => $isAdmin ? $entriesIds : [] // empty by default
+        ]);
+        $this->eventDispatcher->yesWikiDispatch('auj9.sendmail.filterAuthorizedEntries', compact(['dataContainer']));
+        $data = $dataContainer->getData();
+        $entriesIds = $data['filteredEntriesIds'];
         return new ApiResponse(['entriesIds' => $entriesIds]);
     }
 
@@ -472,11 +488,6 @@ class BazarSendMailController extends YesWikiController
         $addsendertoreplyto = filter_input(INPUT_POST, 'addsendertoreplyto', FILTER_VALIDATE_BOOL);
         $addcontactstoreplyto =  filter_input(INPUT_POST, 'addcontactstoreplyto', FILTER_VALIDATE_BOOL);
         $receivehiddencopy = filter_input(INPUT_POST, 'receivehiddencopy', FILTER_VALIDATE_BOOL);
-        $selectmembers = filter_input(INPUT_POST, 'selectmembers', FILTER_UNSAFE_RAW);
-        $selectmembers = in_array($selectmembers, ["members_and_profiles_in_area","only_members"], true) ? $selectmembers : "";
-        $selectmembersparentform = (!empty($_POST['selectmembersparentform']) && is_scalar($_POST['selectmembersparentform'])
-            && strval($_POST['selectmembersparentform']) == intval($_POST['selectmembersparentform']) && intval($_POST['selectmembersparentform']) > 0)
-            ? strval($_POST['selectmembersparentform']) : "";
         return compact([
             'message',
             'senderName',
@@ -488,9 +499,7 @@ class BazarSendMailController extends YesWikiController
             'groupinhiddencopy',
             'addsendertoreplyto',
             'addcontactstoreplyto',
-            'receivehiddencopy',
-            'selectmembers',
-            'selectmembersparentform'
+            'receivehiddencopy'
         ]);
     }
 
