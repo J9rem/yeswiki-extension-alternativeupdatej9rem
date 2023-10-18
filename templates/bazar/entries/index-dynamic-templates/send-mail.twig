@@ -10,7 +10,10 @@
 
 {% extends "@bazar/entries/index-dynamic.twig" %}
 
-{% set necessary_fields = [] %}
+{% set necessary_fields = necessary_fields is defined ? necessary_fields : [] %}
+{% if params.champ is not empty %}
+  {% set necessary_fields = necessary_fields|merge([params.champ]) %}
+{% endif %}
 
 {% block assets %}
   {{ include_css('tools/bazar/libs/vendor/summernote/summernote.css') }}

@@ -403,12 +403,18 @@ let componentParams = {
                 })
         },
         sortAvailableEntriesCkeckedFirst(){
+            const keyForSorting = this.params?.champ ?? 'id_fiche'
+            const sortAscending = (this.params?.ordre === 'desc') ? false: true
             this.availableEntries.sort((a,b)=>{
                 return (this.isChecked(a) !== this.isChecked(b))
                     ? (
                         this.isChecked(a) ? -1 : 1
                     )
-                    : a.id_fiche.localeCompare(b.id_fiche)
+                    : (
+                        (a?.[keyForSorting] !== undefined && b?.[keyForSorting] !== undefined)
+                        ? a[keyForSorting].localeCompare(b[keyForSorting])
+                        : a.id_fiche.localeCompare(b.id_fiche)
+                    )*(sortAscending ? 1 :-1)
             })
         },
         toogleAddresse(event){
