@@ -178,6 +178,8 @@ return [
   'AUJ9_SEND_MAIL_TEMPLATE_SENDEREMAIL' => 'E-mail de l\'expéditeur',
   'AUJ9_SEND_MAIL_TEMPLATE_SENDERNAME' => 'Nom de l\'expéditeur',
   'AUJ9_SEND_MAIL_TEMPLATE_SENDMAIL' => 'Envoyer le(s) mail(s)',
+  'AUJ9_SEND_MAIL_TEMPLATE_SENDMAIL_CANCEL' => 'Annuler l\'envoi',
+  'AUJ9_SEND_MAIL_TEMPLATE_SENDMAIL_CONFIRMATION' => 'Cliquer pour confirmer l\'envoi',
   'AUJ9_SEND_MAIL_TEMPLATE_SENDTOGROUP' => 'Faire un envoi groupé (tout le monde voit la liste de destinataires)',
   'AUJ9_SEND_MAIL_TEMPLATE_SHOW_DONE_FOR_ALL' => 'Montrer toute la liste',
   'AUJ9_SEND_MAIL_TEMPLATE_SINGULAR_NB_DEST_TEXT' => 'Actuellement {nb} destinataire',

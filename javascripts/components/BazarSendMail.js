@@ -43,10 +43,13 @@ let componentParams = {
             senderEmail: "",
             senderName: "",
             sendingMail: false,
+            sendmailConfirmed: false,
+            showConfirmSendMail: false,
             showDoneForAll: false,
             sizePreview: "",
             subject: "",
             summernoteInit: false,
+            timeout: 0,
             uid: "",
             updatingIds: [],
             updatingPreview: false
@@ -70,6 +73,44 @@ let componentParams = {
             }
             this.$nextTick(()=>this.initBsEvents());
             return Object.keys(entries).length > 0;
+        },
+        async confirmSendMail(){
+            this.sendmailConfirmed = false
+            this.showConfirmSendMail = true
+            let unwatch = ()=>{}
+            let unwatchConfirmed = ()=>{}
+            let unwatchTimeout = ()=>{}
+            const p = new Promise((resolve,reject)=>{
+                unwatch = this.$watch('showConfirmSendMail',(newValue)=>{
+                    resolve(newValue)
+                })
+                unwatchConfirmed = this.$watch('sendmailConfirmed',(newValue)=>{
+                    if (newValue === true){
+                        resolve(true)
+                    }
+                })
+                unwatchTimeout = this.$watch('timeout',(newValue)=>{
+                    if (newValue <= 0){
+                        resolve(false)
+                    }
+                })
+                this.timeout = 7
+                setTimeout(()=>{reject('timeout')},7100) // wait maximum 7 seconds
+            })
+            return await p.then((newValue)=>(newValue === true))
+                .catch((error)=>{
+                    if(error!='timeout'){
+                        this.manageError(error)
+                    };
+                    return Promise.resolve(false)
+                })
+                .finally(()=>{
+                    unwatch();
+                    unwatchConfirmed();
+                    unwatchTimeout()
+                    this.timeout = 0
+                    this.showConfirmSendMail = false
+                })
         },
         async fetch(url,mode = 'get',dataToSend = {}){
             let func = (url,mode,dataToSend)=>{
@@ -286,11 +327,12 @@ let componentParams = {
                 return
             }
             this.sendingMail = true
-            this.doneFor = []
-            if (!confirm(_t('AUJ9_SEND_MAIL_TEMPLATE_SEND'))){
+            this.doneFor = null
+            if (!(await this.confirmSendMail())){
                 this.sendingMail = false
                 return
             }
+            this.doneFor = []
             return await this.sendMailInternal(dataToSend)
             .finally(()=>{
                 this.sendingMail = false
@@ -644,6 +686,13 @@ let componentParams = {
         },
         subject(){
             this.secureUpdatePreview();
+        },
+        timeout(newval){
+            if (newval > 0){
+                setTimeout(()=>{
+                    this.timeout = Math.max(0,this.timeout - 1)
+                },1000)
+            }
         }
     },
     template: `
@@ -787,6 +836,13 @@ let componentParams = {
                         <button src="#" class="btn btn-xl btn-primary" @click.prevent.stop="sendmail" :disabled="sendingMail" :style="sendingMail ? {cursor:'wait'} : false">
                             <slot name="sendmail"/>
                         </button>
+                        <button v-if="showConfirmSendMail" src="#" class="btn btn-xl btn-warning" @click.prevent.stop="sendmailConfirmed=true">
+                            <slot name="sendmailconfirmation"/>
+                        </button>
+                        <button v-if="showConfirmSendMail" src="#" class="btn btn-xl btn-danger" @click.prevent.stop="showConfirmSendMail=false">
+                            <slot name="sendmailcancel"/>
+                        </button>
+                        <span v-if="showConfirmSendMail && timeout > 0"> {{ timeout }}</span>
                         <br/>
                         <slot name="hascontactfrom"/>
                         <div id="draft-part" class="form-group well" style="min-height:300px;width:100%;">
