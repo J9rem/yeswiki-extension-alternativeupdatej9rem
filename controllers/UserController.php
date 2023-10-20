@@ -13,6 +13,8 @@
 namespace YesWiki\Alternativeupdatej9rem\Controller;
 
 use Exception;
+use YesWiki\Bazar\Controller\EntryController;
+use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Core\Controller\UserController as CoreUserController;
 use YesWiki\Core\Entity\User;
 use YesWiki\Core\Exception\DeleteUserException;
@@ -39,7 +41,7 @@ class UserController extends CoreUserController
         }
         $this->checkIfUserIsNotAloneInEachGroup($user);
         $this->deleteUserFromEveryGroup($user);
-        $this->removeOwnership($user);
+        $this->removeOwnershipOrDelete($user);
         $this->userManager->delete($user);
     }
     
@@ -119,7 +121,7 @@ class UserController extends CoreUserController
      * @param User $user
      * @throws Exception
      */
-    private function removeOwnership(User $user)
+    private function removeOwnershipOrDelete(User $user)
     {
         $pagesWhereOwner = $this->dbService->loadAll("
             SELECT `tag` FROM {$this->dbService->prefixTable('pages')} 
@@ -131,6 +133,62 @@ class UserController extends CoreUserController
         }, $pagesWhereOwner);
 
         $firstAdmin = $this->getFirstAdmin();
+
+        if ($this->params->get('deletePagesAndEntriesWithUser') === true){
+            // imported from tools/templates/actions/GerereDroitsAction.php::getFilterAndSearch
+            $specialsPagesNames = [
+                'BazaR',
+                'GererSite',
+                'GererDroits',
+                'GererThemes',
+                'GererMisesAJour',
+                'GererUtilisateurs',
+                'GererDroitsActions',
+                'GererDroitsHandlers',
+                'TableauDeBord',
+                'PageTitre',
+                'PageMenuHaut',
+                'PageRapideHaut',
+                'PageHeader',
+                'PageFooter',
+                'PageCSS',
+                'PageMenu',
+                'PageColonneDroite',
+                'MotDePassePerdu',
+                'ParametresUtilisateur',
+                'GererConfig',
+                'ActuYeswiki',
+                'LookWiki'
+            ];
+            $specialsPagesNames[] = $this->params->get('root_page');
+            $pagesToDelete = array_filter(
+                $pagesWhereOwner,
+                function ($tag) use ($specialsPagesNames){
+                    return !in_array($tag,$specialsPagesNames);
+                }
+            );
+            $entryController = $this->getService(EntryController::class);
+            $entryManager = $this->getService(EntryManager::class);
+            foreach ($pagesToDelete as $tag) {
+                // check if not already deleted while deleting other entry
+                $page = $this->pageManager->getOne($tag,null,false); // no cache
+                $deleted = empty($page)
+                    ? true
+                    : (
+                        $entryManager->isEntry($tag)
+                        ? $entryController->delete($tag)
+                        : $this->pageManager->deleteOrphaned($tag)
+                    );
+                if ($deteled){
+                    $pagesWhereOwner = array_filter(
+                        $pagesWhereOwner,
+                        function($tagToFilter) use($tag){
+                            return $tagToFilter != $tag;
+                        }
+                    );
+                }
+            }
+        }
         foreach ($pagesWhereOwner as $tag) {
             $this->pageManager->setOwner($tag, $firstAdmin);
         }
