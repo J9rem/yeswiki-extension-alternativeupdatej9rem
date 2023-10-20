@@ -15,6 +15,7 @@ for (let index = 0; index < rootsElementsRaw.length; index++) {
 }
 let isVueJS3 = (typeof Vue.createApp == "function");
 
+const defaultNbMax = 50
 const maxForNbMax = 300
 
 let appParams = {
@@ -24,7 +25,7 @@ let appParams = {
             datePickerForLimitInternal:null,
             days:['mon'],
             month:'',
-            nbmax:maxForNbMax,
+            nbmax:defaultNbMax,
             nth:'',
             recurrenceBaseId: '',
             repetitionInternal: '',
@@ -193,8 +194,8 @@ let appParams = {
         this.whenInMonth =  data?.whenInMonth ?? ''
         this.month =  data?.month ?? ''
         this.nth =  data?.nth ?? ''
-        const nbmax =  Number(data?.nbmax ?? maxForNbMax)
-        this.nbmax = (nbmax && nbmax > 0 && nbmax <= maxForNbMax) ? nbmax : maxForNbMax
+        const nbmax =  Number(data?.nbmax ?? defaultNbMax)
+        this.nbmax = (nbmax && nbmax > 0 && nbmax <= maxForNbMax) ? nbmax : defaultNbMax
         this.days = Array.isArray(data?.days)
             ? data.days
             : ['mon']
