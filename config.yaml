@@ -53,6 +53,10 @@ services:
   YesWiki\Alternativeupdatej9rem\Controller\IcalFormatter:
     decorates: YesWiki\Bazar\Controller\IcalFormatter
     decoration_on_invalid: null
+  # Feature UUID : auj9-feat-user-controller-delete-own-pages
+  YesWiki\Alternativeupdatej9rem\Controller\UserController:
+    decorates: YesWiki\Core\Controller\UserController
+    decoration_on_invalid: null
   # Feature UUID : auj9-video-field
   # Feature UUID : auj9-bazar-list-video-dynamic
   YesWiki\Alternativeupdatej9rem\Service\ActionsBuilderService:
