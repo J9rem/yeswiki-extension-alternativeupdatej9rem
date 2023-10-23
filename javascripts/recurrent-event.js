@@ -17,6 +17,15 @@ let isVueJS3 = (typeof Vue.createApp == "function");
 
 const defaultNbMax = 50
 const maxForNbMax = 300
+const daysToCodeAssoc = {
+    mon:1,
+    tue:2,
+    wed:3,
+    thu:4,
+    fri:5,
+    sat:6,
+    sun:7
+}
 
 let appParams = {
     components: {},
@@ -24,11 +33,14 @@ let appParams = {
         return {
             datePickerForLimitInternal:null,
             days:['mon'],
+            except:[],
             month:'',
+            newExcept:'',
             nbmax:defaultNbMax,
             nth:'',
             recurrenceBaseId: '',
             repetitionInternal: '',
+            showExcept: false,
             showRange: false,
             startDateInputInternal : null,
             stepInternal:2,
@@ -36,6 +48,66 @@ let appParams = {
         }
     },
     computed:{
+        availableExcept(){
+            const currentStartDate = this.getCurrentStartDate()
+            if (typeof currentStartDate !== 'string' || currentStartDate.length === 0){
+                return []
+            }
+            let date = new Date(currentStartDate)
+            if (date.toString() === 'Invalid Date'){
+                return []
+            }
+            
+            const endDateLimit = (this.datePickerForLimit.value.length > 0)
+                ? new Date(this.datePickerForLimit.value)
+                : null
+            const endDateLimitTime = (endDateLimit === null
+                || endDateLimit.toString() === 'Invalid Date')
+                ? -1
+                : endDateLimit.getTime()
+            const except = []
+            for (let i = 0; i < this.nbmax; i++) {
+                let nextStartDate = null
+                switch (this.repetition) {
+                    case 'd':
+                        nextStartDate = new Date(date.getTime()+this.step*24*3600*1000)
+                        break
+                    case 'w':
+                        const currentStartDayCode = date.getDay() || 7
+                        const daysTocode = this.days.map((d)=>daysToCodeAssoc[d] ?? 1)
+                        let nextWantedDay = null
+                        const maxDaysToCode = daysTocode.reduce((acc,val)=>Math.max(acc,val),1)
+                        if (!daysTocode.includes(currentStartDayCode) || currentStartDayCode === maxDaysToCode){
+                            nextWantedDay = daysTocode.reduce((acc,val)=>Math.min(acc,val),7)
+                            nextStartDate = new Date(date.getTime())
+                            nextStartDate.setDate(nextStartDate.getDate()+nextWantedDay+7*(this.step-1)+7-currentStartDayCode)
+                        } else {
+                            nextWantedDay = daysTocode.filter((d)=>d > currentStartDayCode).reduce((acc,val)=>Math.min(acc,val),7)
+                            nextStartDate = new Date(date.getTime())
+                            nextStartDate.setDate(nextStartDate.getDate()+nextWantedDay-currentStartDayCode)
+                        }
+                        break
+                
+                    case 'm':
+                    case 'y':
+                    default:
+                        break
+                }
+                if (nextStartDate === null
+                    || nextStartDate.toString() === 'Invalid Date'){
+                    return []
+                }
+                date = nextStartDate
+                if ( endDateLimitTime < 0
+                     || nextStartDate.getTime() <= endDateLimitTime
+                    ){
+                    except.push(date.toISOString().slice(0,10))
+                }            }
+            return except
+        },
+        availableExceptFiltered(){
+            return this.availableExcept.filter((elem)=>!this.except.includes(elem))
+        },
         baseElement(){
             return this.element?.getElementsByClassName('selector_is_recurrent')?.[0]
         },
@@ -200,9 +272,19 @@ let appParams = {
             ? data.days
             : ['mon']
         this.month = data?.month ?? ''
+        this.except = Array.isArray(data?.except) ? data?.except : []
         this.registerChangeOnStartDateInput()
     },
     watch: {
+        newExcept(newValue){
+            if (newValue.length > 0){
+                if (!this.except.includes(newValue)
+                    && this.availableExceptFiltered.includes(newValue)){
+                    this.except.push(newValue)
+                }
+                this.newExcept = ''
+            }
+        },
         repetition(repetition){
             if (repetition !== 'w' && this.days?.length > 1){
                 this.days = [this.days[0]]
