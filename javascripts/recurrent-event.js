@@ -26,6 +26,27 @@ const daysToCodeAssoc = {
     sat:6,
     sun:7
 }
+const monthsToCodeAssoc = {
+    jan: 0,
+    feb: 1,
+    mar: 2,
+    apr: 3,
+    may: 4,
+    jun: 5,
+    jul: 6,
+    aug: 7,
+    sep: 8,
+    oct: 9,
+    nov: 10,
+    dec: 11
+}
+const wantedPositionList = {
+    fisrtOfMonth:1,
+    secondOfMonth:2,
+    thirdOfMonth:3,
+    forthOfMonth:4,
+    lastOfMonth:99
+}
 
 let appParams = {
     components: {},
@@ -70,7 +91,7 @@ let appParams = {
                 let nextStartDate = null
                 switch (this.repetition) {
                     case 'd':
-                        nextStartDate = new Date(date.getTime()+this.step*24*3600*1000)
+                        nextStartDate = new Date(date.getTime()+Number(this.step)*24*3600*1000)
                         break
                     case 'w':
                         const currentStartDayCode = date.getDay() || 7
@@ -80,16 +101,27 @@ let appParams = {
                         if (!daysTocode.includes(currentStartDayCode) || currentStartDayCode === maxDaysToCode){
                             nextWantedDay = daysTocode.reduce((acc,val)=>Math.min(acc,val),7)
                             nextStartDate = new Date(date.getTime())
-                            nextStartDate.setDate(nextStartDate.getDate()+nextWantedDay+7*(this.step-1)+7-currentStartDayCode)
+                            nextStartDate.setDate(nextStartDate.getDate()+nextWantedDay+7*(Number(this.step)-1)+7-currentStartDayCode)
                         } else {
                             nextWantedDay = daysTocode.filter((d)=>d > currentStartDayCode).reduce((acc,val)=>Math.min(acc,val),7)
                             nextStartDate = new Date(date.getTime())
                             nextStartDate.setDate(nextStartDate.getDate()+nextWantedDay-currentStartDayCode)
                         }
                         break
-                
                     case 'm':
+                        let {nextStartMonth,currentStartYear} = this.calculateNextMonth(date.getMonth(),date.getFullYear(),Number(this.step))
+                        nextStartDate = this.findNextStartDate(date,currentStartYear,nextStartMonth,(m,y)=>{
+                            return this.calculateNextMonth(m,y,Number(this.step))
+                        })
+                        break
                     case 'y':
+                        nextStartDate = this.findNextStartDate(date,date.getFullYear()+Number(this.step),monthsToCodeAssoc?.[this.month] ?? 0,(m,y)=>{
+                            return {
+                                currentStartYear:y+Number(this.step),
+                                nextStartMonth:m
+                            }
+                        })
+                        break
                     default:
                         break
                 }
@@ -177,6 +209,61 @@ let appParams = {
         }
     },
     methods:{
+        calculateNextMonth(nextStartMonth,currentStartYear,step)
+        {
+            const newMonth = nextStartMonth + step
+            return newMonth > 11
+                ? {
+                    nextStartMonth:newMonth-12,
+                    currentStartYear:currentStartYear + 1
+                }
+                : {
+                    nextStartMonth:newMonth,
+                    currentStartYear
+                }
+        },
+        getNbDaysInMonth(year,month){
+            let firstDayOfMonth = new Date(year,month)
+            firstDayOfMonth.setDate(1)
+            let lastDayOfMonth = new Date(year+(month === 12 ? 1 : 0),(month % 12)+1)
+            lastDayOfMonth.setDate(0)
+            return Math.round((lastDayOfMonth-firstDayOfMonth)/1000/3600/24)+1
+        },
+        findNextStartDate(date,startYear,startMonth,callback){
+            if (this.whenInMonth === 'nthOfMonth'){
+                let limit = 60;
+                let currentStartYear = startYear
+                let nextStartMonth = startMonth
+                const nth = this.nth || 1
+                while(limit > 0 && nth > this.getNbDaysInMonth(currentStartYear,nextStartMonth)){
+                    const data = callback(nextStartMonth,currentStartYear)
+                    nextStartMonth = data?.nextStartMonth ?? nextStartMonth
+                    currentStartYear = data?.currentStartYear ?? currentStartYear
+                    limit = limit -1
+                }
+                let newStartDate = new Date(date.getTime())
+                newStartDate.setFullYear(currentStartYear,nextStartMonth,nth)
+                return newStartDate
+            } else {
+                const wantedPosition = wantedPositionList?.[this.whenInMonth] ?? 1
+                const nbDaysInMonth = this.getNbDaysInMonth(startYear,startMonth)
+                const day = this.days.reduce((acc,d)=>Math.min(acc,daysToCodeAssoc?.[d] ?? 7),7)
+                let counter = 0;
+                let testedDate = new Date(date.getTime())
+                testedDate.setFullYear(startYear,startMonth)
+                let newStartDate = new Date(date.getTime())
+                for (let curDay = 1; curDay <= nbDaysInMonth; curDay++) {
+                    if (counter < wantedPosition){
+                        testedDate.setDate(curDay)
+                        if ((testedDate.getDay() || 7) === day){
+                            counter = counter + 1;
+                            newStartDate = new Date(testedDate.getTime())
+                        }
+                    }
+                }
+                return newStartDate
+            }
+        },
         getCurrentStartDate(){
             return this.startDateInput?.value ?? ''
         },
