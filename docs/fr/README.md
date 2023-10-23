@@ -41,6 +41,7 @@ Ajout des champs:
 
  - un système de cache local
  - **La possibilité de gérer des évènements récurrents**
+ - possibilité de supprimer toutes les pages et fiches possédées par un utilisateur lors de la suppression de cet utilisateur (à activer dans [GererConfig](?GererConfig ':ignore'))
 
 #### Évènements récurrents
 
@@ -78,7 +79,8 @@ Ajout des champs:
 ||personnalisations propres à cette extension|[`auj9-custom-changes`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-custom-changes&type=code)|
 ||système de mises à jour|[`auj9-autoupdate-system`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-autoupdate-system&type=code)|
 ||système de cache local des requêtes SQL|[`auj9-local-cache`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-local-cache&type=code)|
-||corrections concernant les metadonnées|[`auj9-fix-edit-metadata`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-edit-metadata&type=code)|
+||corrections concernant les metadonnées|[`auj9-feat-user-controller-delete-own-pages`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-feat-user-controller-delete-own-pages&type=code)|
+||suppression d'un utilisateur ET des pages et fiches possédées|[`auj9-fix-edit-metadata`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-edit-metadata&type=code)|
 |Template Bazar|`video.twig`|[`auj9-bazar-list-video-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-video-dynamic&type=code)|
 ||`send-mail.twig`|[`auj9-bazar-list-send-mail-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-send-mail-dynamic&type=code)|
 

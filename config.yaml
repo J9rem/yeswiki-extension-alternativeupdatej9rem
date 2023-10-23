@@ -20,6 +20,7 @@ parameters:
     limitedGroups: # coma separated
   cleanUnusedMetadata: false    # auj9-fix-edit-metadata
   default-sender-email: ''      # Feature UUID : auj9-bazar-list-send-mail-dynamic
+  deletePagesAndEntriesWithUser: false # Feature UUID : auj9-feat-user-controller-delete-own-pages
   alternativeupdatej9rem_editable_config_params:
     - 'activateEventRepetition' # Feature UUID : auj9-recurrent-events
     - 'canDuplicateEntryIfNotRightToWrite' # Feature UUID : auj9-duplicate
@@ -31,6 +32,7 @@ parameters:
       - 'activated'
     - 'formIdAreaToDepartment'  # Feature UUID : auj9-autoupdateareas-action
     - 'default-sender-email'    # Feature UUID : auj9-bazar-list-send-mail-dynamic
+    - 'deletePagesAndEntriesWithUser' # Feature UUID : auj9-feat-user-controller-delete-own-pages
 
 services:
   _defaults:
@@ -52,6 +54,10 @@ services:
   # Feature UUID : auj9-fix-4-4-2
   YesWiki\Alternativeupdatej9rem\Controller\IcalFormatter:
     decorates: YesWiki\Bazar\Controller\IcalFormatter
+    decoration_on_invalid: null
+  # Feature UUID : auj9-feat-user-controller-delete-own-pages
+  YesWiki\Alternativeupdatej9rem\Controller\UserController:
+    decorates: YesWiki\Core\Controller\UserController
     decoration_on_invalid: null
   # Feature UUID : auj9-video-field
   # Feature UUID : auj9-bazar-list-video-dynamic
