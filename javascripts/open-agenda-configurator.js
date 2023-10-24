@@ -22,8 +22,9 @@ let appParams = {
             message:'',
             messageClass:'',
             newFormId:'',
-            newFormKey:'',
             newFormAgendaId:'',
+            newFormKey:'',
+            newFormPublicKey:'',
             newKeyName:'',
             newKeyValue:'',
             token: ''
@@ -130,6 +131,7 @@ let appParams = {
                     id:String(this.newFormId),
                     name:this.newFormKey,
                     value:this.newFormAgendaId,
+                    public:this.newFormPublicKey,
                     token:this.token
                 })
                 .then((data)=>{
@@ -211,6 +213,21 @@ let appParams = {
                 .catch(this.manageError)
                 .finally(()=>{this.callingApi = false})
         },
+        async testFormKey(formId){
+            this.callingApi = true
+            this.message = `testingformkey ${formId}`
+            this.messageClass = 'info'
+            return await this.fetch(wiki.url(`?api/openagenda/config/testpublickey/${formId}`),'post',{
+                token:this.token
+            })
+            .then((data)=>{
+                this.message = 'ok'
+                this.messageClass = 'success'
+                return data
+            })
+            .catch(this.manageError)
+            .finally(()=>{this.callingApi = false})
+        },
         async testKey(keyName){
             this.callingApi = true
             this.message = `testingkey ${keyName}`
@@ -219,7 +236,6 @@ let appParams = {
                 token:this.token
             })
             .then((data)=>{
-                console.log({data})
                 this.message = 'ok'
                 this.messageClass = 'success'
                 return data

@@ -80,9 +80,9 @@
     </template>
     <template v-if="keys !== null && Object.keys(keys).length > 0">
         <h2>{{ _t('AUJ9_OPEN_AGENDA_CONFIG_ASSOCIATIONS') }}</h2>
-        <div class="col-sm-3">
+        <div class="col-sm-2">
             <div class="control-group form-group input-select">
-                <label class="control-label col-sm-3">{{ _t('AUJ9_OPEN_AGENDA_NEW_FORM') }}</label>
+                <label class="control-label col-sm-2">{{ _t('AUJ9_OPEN_AGENDA_NEW_FORM') }}</label>
                 <div class="control">
                     <select
                         v-model="newFormId"
@@ -96,7 +96,7 @@
         </div>
         <div class="col-sm-2">
             <div class="control-group form-group input-select">
-                <label class="control-label col-sm-3">{{ _t('AUJ9_OPEN_AGENDA_NEW_FORM_KEY') }}</label>
+                <label class="control-label col-sm-2">{{ _t('AUJ9_OPEN_AGENDA_NEW_FORM_KEY') }}</label>
                 <div class="control">
                     <select
                         v-model="newFormKey"
@@ -124,23 +124,45 @@
                 </div>
             </div>
         </div>
+        <div class="col-sm-3">
+            <div class="control-group form-group">
+                <label class="control-label col-sm-3">{{ _t('AUJ9_OPEN_AGENDA_NEW_FORM_PUBLIC') }}</label>
+                <div class="control">
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            v-model="newFormPublicKey"
+                            class="form-control"
+                            pattern="[a-f0-9]{10,}"
+                            :disabled="callingApi"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="col-sm-2">
             <div class="control-group form-group">
                 <button 
                     class="btn btn-success btn-icon" 
-                    :disabled="callingApi || !(newFormId?.length > 0 && newFormKey?.length > 0 && newFormAgendaId?.length >= 5)"
+                    :disabled="callingApi || !(newFormId?.length > 0 && newFormKey?.length > 0 && newFormAgendaId?.length >= 5 && newFormPublicKey?.length > 10)"
                     @click.prevent.stop="registerNewForm"
                     ><i class="fas fa-plus"></i></button>
             </div>
         </div>
         <div class="clearfix"></div>
         <template v-for="(assoc,formId) in associations">
-            <div>{{"{{formId}} ({{ forms?.[formId]?.bn_label_nature?.slice(0,20) ?? '?' }}) => {{assoc?.key}} / {{assoc?.id}}"}}<button 
-                class="btn btn-icon btn-danger btn-xs"
-                :disabled="callingApi"
-                @click.prevent.stop="removeFormAssoc(formId)"
-                ><i class="fas fa-trash"></i>
-            </button></div>
+            <div>{{"{{formId}} ({{ forms?.[formId]?.bn_label_nature?.slice(0,20) ?? '?' }}) => {{assoc?.key}} / {{assoc?.id}} / {{assoc?.public}}"}}<button 
+                    class="btn btn-icon btn-danger btn-xs"
+                    :disabled="callingApi"
+                    @click.prevent.stop="removeFormAssoc(formId)"
+                    ><i class="fas fa-trash"></i>
+                </button><button 
+                    class="btn btn-icon btn-primary btn-xs"
+                    @click.prevent.stop="testFormKey(formId)"
+                    :disabled="callingApi"
+                    >{{ _t('AUJ9_OPEN_AGENDA_CONFIG_TESTKEY') }}
+                </button>
+            </div>
         </template>
     </template>
 </div>

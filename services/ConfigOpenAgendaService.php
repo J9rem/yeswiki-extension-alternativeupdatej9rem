@@ -76,6 +76,27 @@ class ConfigOpenAgendaService
             'expiresIn' => $data['expires_in']
         ];
     }
+    /**
+     * get events
+     * @param string $formId
+     * @return array 
+     * @throws Exception
+     */
+    public function getEvents(string $formId): array
+    {
+        $association = $this->openAgendaParams['associations'][$formId] ?? '';
+        if (empty($association)){
+            throw new Exception('Unknown id !');
+        }
+        $data = $this->getRouteApi(
+            "https://api.openagenda.com/v2/agendas/{$association['id']}/events?key={$association['public']}",
+            'getEvents'
+        );
+        if (!is_array($data) || empty($data)){
+            throw new Exception('badly formatted response !');
+        }
+        return $data;
+    }
 
     /**
      * get Hello Asso route api

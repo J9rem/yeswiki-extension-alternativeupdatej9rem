@@ -91,6 +91,20 @@ class ConfigOpenAgendaController extends YesWikiController
             empty($data['token']) ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK
         );
     }
+    /**
+     * test public key
+     * @param string $formId
+     * @return ApiResponse
+     */
+    public function testPublickey(string $formId)
+    {
+        $this->csrfTokenController->checkToken(self::TOKEN_ID, 'POST', 'token',false);
+        $data = $this->configOpenAgendaService->getEvents($formId);
+        return new ApiResponse(
+            empty($data['success']) ? ['error'=>$data['error'] ?? '!!!'] : $data,
+            empty($data['success']) ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK
+        );
+    }
 
     /**
      * set a new key
@@ -145,6 +159,9 @@ class ConfigOpenAgendaController extends YesWikiController
         }
         if ($association){
             $params['id'] = $delete ? '/.+/' : '/^[0-9]+$/';
+            if (!$delete){
+                $params['public'] = '/^[a-f0-9]{10,}$/';
+            }
         }
         if (!$delete){
             $params['value'] = $association
@@ -179,7 +196,8 @@ class ConfigOpenAgendaController extends YesWikiController
             $openAgenda[$currentParamName][$keyForParam] = $association 
                 ? [
                     'key' => $_POST['name'],
-                    'id' => $_POST['value']
+                    'id' => $_POST['value'],
+                    'public' => $_POST['public']
                 ]
                 : $_POST['value'];
         } elseif (isset($openAgenda[$currentParamName][$keyForParam])){
