@@ -133,7 +133,7 @@ class ConfigOpenAgendaController extends YesWikiController
         }
         if (!$delete){
             $params['value'] = $association
-                ? '/^[0-9]{10,}$/'
+                ? '/^[0-9]{4,}$/'
                 : '/^[a-f0-9]{10,}$/';
         }
         foreach($params as $key => $search){
