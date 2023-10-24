@@ -211,6 +211,22 @@ let appParams = {
                 .catch(this.manageError)
                 .finally(()=>{this.callingApi = false})
         },
+        async testKey(keyName){
+            this.callingApi = true
+            this.message = `testingkey ${keyName}`
+            this.messageClass = 'info'
+            return await this.fetch(wiki.url(`?api/openagenda/config/testkey/${keyName}`),'post',{
+                token:this.token
+            })
+            .then((data)=>{
+                console.log({data})
+                this.message = 'ok'
+                this.messageClass = 'success'
+                return data
+            })
+            .catch(this.manageError)
+            .finally(()=>{this.callingApi = false})
+        },
         toPreFormData(thing,key =""){
             let type = typeof thing;
             switch (type) {

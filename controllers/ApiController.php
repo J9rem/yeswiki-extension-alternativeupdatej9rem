@@ -728,4 +728,12 @@ class ApiController extends YesWikiController
     {
         return $this->getService(ConfigOpenAgendaController::class)->removeAssociation();
     }
+    /**
+     * @Route("/api/openagenda/config/testkey/{key}", methods={"POST"}, options={"acl":{"public","@admins"}})
+     * Feature UUID : auj9-open-agenda-connect
+     */
+    public function testkey($key)
+    {
+        return $this->getService(ConfigOpenAgendaController::class)->testkey($key);
+    }
 }

@@ -14,9 +14,9 @@ namespace YesWiki\Alternativeupdatej9rem\Controller;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
+use YesWiki\Alternativeupdatej9rem\Service\ConfigOpenAgendaService;
 use YesWiki\Core\ApiResponse;
 use YesWiki\Core\Controller\CsrfTokenController;
-use YesWiki\Core\Service\ConfigurationService;
 use YesWiki\Core\YesWikiController;
 use YesWiki\Security\Controller\SecurityController;
 
@@ -24,20 +24,20 @@ class ConfigOpenAgendaController extends YesWikiController
 {
     public const TOKEN_ID = "POST /api/alternativeupdatej9rem/openagenda";
 
-    protected $configurationService;
+    protected $configOpenAgendaService;
     protected $csrfTokenController;
     protected $csrfTokenManager;
     protected $params;
     protected $securityController;
 
     public function __construct(
-        ConfigurationService $configurationService,
+        ConfigOpenAgendaService $configOpenAgendaService,
         CsrfTokenController $csrfTokenController,
         CsrfTokenManager $csrfTokenManager,
         ParameterBagInterface $params,
         SecurityController $securityController
     ) {
-        $this->configurationService = $configurationService;
+        $this->configOpenAgendaService = $configOpenAgendaService;
         $this->csrfTokenController = $csrfTokenController;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->params = $params;
@@ -74,6 +74,21 @@ class ConfigOpenAgendaController extends YesWikiController
         return new Response(
             $content,
             Response::HTTP_OK
+        );
+    }
+
+    /**
+     * test private key
+     * @param string $key
+     * @return ApiResponse
+     */
+    public function testkey(string $key)
+    {
+        $this->csrfTokenController->checkToken(self::TOKEN_ID, 'POST', 'token',false);
+        $data = $this->configOpenAgendaService->getAccessToken($key);
+        return new ApiResponse(
+            empty($data['token']) ? ['error'=>$data['error'] ?? '!!!'] : ['test' => 'ok'],
+            empty($data['token']) ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK
         );
     }
 
@@ -154,7 +169,7 @@ class ConfigOpenAgendaController extends YesWikiController
             );
         }
 
-        list('config' => $config,'openAgenda' => $openAgenda) = $this->getOpenAgendaFromConfig();
+        list('config' => $config,'openAgenda' => $openAgenda) = $this->configOpenAgendaService->getOpenAgendaFromConfig();
         $currentParamName = $association ? 'associations' : 'privateApiKeys';
         $keyForParam = $association ? $_POST['id'] : $_POST['name'];
         if (!isset($openAgenda[$currentParamName])){
@@ -177,23 +192,11 @@ class ConfigOpenAgendaController extends YesWikiController
         $config->write();
 
         // reload
-        list('openAgenda' => $openAgenda) = $this->getOpenAgendaFromConfig();
+        list('openAgenda' => $openAgenda) = $this->configOpenAgendaService->getOpenAgendaFromConfig();
         
         return new ApiResponse(
             [$currentParamName=>$openAgenda[$currentParamName]],
             (!$delete && empty($openAgenda[$currentParamName])) ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK
         );
-    }
-
-    /**
-     * get config from wakka.config.php
-     * @return array [$openAgenda,$config]
-     */
-    protected function getOpenAgendaFromConfig(): array
-    {
-        $config = $this->configurationService->getConfiguration('wakka.config.php');
-        $config->load();
-        $openAgenda = (isset($config->openAgenda)) ? $config->openAgenda : [];
-        return compact(['config','openAgenda']);
     }
 }

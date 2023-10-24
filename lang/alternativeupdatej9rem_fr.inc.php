@@ -194,6 +194,7 @@ return [
   'AUJ9_OPEN_AGENDA_CONFIG_ASSOCIATIONS' => 'Associations',
   'AUJ9_OPEN_AGENDA_CONFIG_TITLE' => 'Configuration de la connexion à Open Agenda',
   'AUJ9_OPEN_AGENDA_CONFIG_KEYS' => 'Clés privées',
+  'AUJ9_OPEN_AGENDA_CONFIG_TESTKEY' => 'Tester la clé',
   'AUJ9_OPEN_AGENDA_ERROR' => 'Une erreur est survenue',
   'AUJ9_OPEN_AGENDA_GET_FORM' => 'Recherche des formulaires',
   'AUJ9_OPEN_AGENDA_NEW_FORM' => 'Formulaire',

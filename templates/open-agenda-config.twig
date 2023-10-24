@@ -68,8 +68,14 @@
     <template v-for="(key,keyName) in keys">
         <div>{{"{{keyName}} => {{key}}"}}<button 
             class="btn btn-icon btn-danger btn-xs"
+            :disabled="callingApi"
             @click.prevent.stop="removeKey(keyName)"
             ><i class="fas fa-trash"></i>
+        </button><button 
+            class="btn btn-icon btn-primary btn-xs"
+            @click.prevent.stop="testKey(keyName)"
+            :disabled="callingApi"
+            >{{ _t('AUJ9_OPEN_AGENDA_CONFIG_TESTKEY') }}
         </button></div>
     </template>
     <template v-if="keys !== null && Object.keys(keys).length > 0">
@@ -131,6 +137,7 @@
         <template v-for="(assoc,formId) in associations">
             <div>{{"{{formId}} ({{ forms?.[formId]?.bn_label_nature?.slice(0,20) ?? '?' }}) => {{assoc?.key}} / {{assoc?.id}}"}}<button 
                 class="btn btn-icon btn-danger btn-xs"
+                :disabled="callingApi"
                 @click.prevent.stop="removeFormAssoc(formId)"
                 ><i class="fas fa-trash"></i>
             </button></div>
