@@ -203,7 +203,9 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, $isPost);
         if ($isPost && !empty($postData) && (is_string($postData) || is_array($postData))) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, is_array($postData)
+                ? $this->prepareForPost($postData)
+                : $postData);
         }
         if (!empty($bearer)) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -312,7 +314,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
                 'link' => $this->wiki->Href('',$entry['id_fiche'])
             ]
         ];
-        return $this->prepareForPost($data);
+        return $data;
     }
 
     /**
