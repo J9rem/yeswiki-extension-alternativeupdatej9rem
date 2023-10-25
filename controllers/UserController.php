@@ -179,7 +179,7 @@ class UserController extends CoreUserController
                         ? $entryController->delete($tag)
                         : $this->pageManager->deleteOrphaned($tag)
                     );
-                if ($deteled){
+                if ($deleted){
                     $pagesWhereOwner = array_filter(
                         $pagesWhereOwner,
                         function($tagToFilter) use($tag){
