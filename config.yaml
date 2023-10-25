@@ -23,8 +23,8 @@ parameters:
   deletePagesAndEntriesWithUser: false # Feature UUID : auj9-feat-user-controller-delete-own-pages
   openAgenda: # Feature UUID : auj9-open-agenda-connect
     isActivated: false
-    privateApiKeys: null # object agendaUUID: privateKey
-    associations: null # object agendaUUID: array of local forms' id
+    privateApiKeys: null
+    associations: null
   alternativeupdatej9rem_editable_config_params:
     - 'activateEventRepetition' # Feature UUID : auj9-recurrent-events
     - 'canDuplicateEntryIfNotRightToWrite' # Feature UUID : auj9-duplicate
@@ -82,5 +82,9 @@ services:
       - { name: yeswiki.event_subscriber }
   # Feature UUID : auj9-local-cache
   YesWiki\Alternativeupdatej9rem\Service\CacheService:
+    tags:
+      - { name: yeswiki.event_subscriber }
+  # Feature UUID : auj9-open-agenda-connect
+  YesWiki\Alternativeupdatej9rem\Service\ConfigOpenAgendaService:
     tags:
       - { name: yeswiki.event_subscriber }

@@ -14,22 +14,90 @@ namespace YesWiki\Alternativeupdatej9rem\Service;
 
 use Exception;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Throwable;
+use URLify;
+use YesWiki\Core\Entity\Event;
 use YesWiki\Core\Service\ConfigurationService;
+use YesWiki\Wiki;
 
-class ConfigOpenAgendaService
+class ConfigOpenAgendaService implements EventSubscriberInterface
 {
     protected $configurationService;
+    protected $followedFormsIds;
+    protected $isActivated;
     protected $openAgendaParams;
     protected $params;
+    protected $wiki;
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            'entry.created' => ['followEntryCreation',-99], // negative integer to be the last one
+            'entry.updated' => ['followEntryChange',-99], // negative integer to be the last one
+            'entry.deleted' => ['followEntryDeletion',-99], // negative integer to be the last one
+        ];
+    }
 
     public function __construct(
         ConfigurationService $configurationService,
-        ParameterBagInterface $params
+        ParameterBagInterface $params,
+        Wiki $wiki
     ) {
         $this->configurationService = $configurationService;
         $this->params = $params;
+        $this->wiki = $wiki;
         $this->openAgendaParams = $params->get('openAgenda');
+        $this->isActivated = ($this->openAgendaParams['isActivated'] ?? false) === true;
+        $this->followedFormsIds = array_keys($this->openAgendaParams['associations'] ?? []);
+    }
+
+    /**
+     * @param Event $event
+     */
+    public function followEntryCreation($event)
+    {
+        if ($this->isActivated){
+            $entry = $this->getEntry($event);
+            if ($this->shouldFollowEntry($entry)){
+                $this->createEvent($entry);
+            }
+        }
+    }
+
+    /**
+     * @param Event $event
+     */
+    public function followEntryChange($event)
+    {
+        if ($this->isActivated){
+            $entry = $this->getEntry($event);
+            if ($this->shouldFollowEntry($entry)){
+            }
+        }
+    }
+
+    /**
+     * @param Event $event
+     */
+    public function followEntryDeletion($event)
+    {
+        if ($this->isActivated){
+            $entryBeforeDeletion = $this->getEntry($event);
+            if (!empty($entryBeforeDeletion) && $this->shouldFollowEntry($entryBeforeDeletion, false)){
+            }
+        }
+    }
+    
+    /**
+     * @param Event $event
+     * @return array $entry
+     */
+    protected function getEntry(Event $event): array
+    {
+        $data = $event->getData();
+        $entry = $data['data'] ?? [];
+        return is_array($entry) ? $entry : [];
     }
 
     /**
@@ -45,31 +113,47 @@ class ConfigOpenAgendaService
     }
 
     /**
+     * @param array $entry
+     * @param bool $testDate
+     * @return bool
+     */
+    protected function shouldFollowEntry(array $entry,bool $testDate = false): bool
+    {
+        return !empty($entry['id_typeannonce'])
+            && !empty($entry['id_fiche'])
+            && in_array($entry['id_typeannonce'],$this->followedFormsIds)
+            && (
+                !$testDate
+                || (
+                    !empty($entry['bf_date_debut_evenement'])
+                    && !empty($entry['bf_date_fin_evenement'])
+                )
+            );
+    }
+
+    /**
      * get access token
      * @param string $keyName
      * @return array [string $token, int $expiresIn]
+     * @throws Exception
      */
     public function getAccessToken(string $keyName): array
     {
         $code = $this->openAgendaParams['privateApiKeys'][$keyName] ?? '';
         if (empty($code)){
-            return ['error' => 'Unknown key !'];
+            throw new Exception('Unknown key !');
         }
-        try {
-            $data = $this->getRouteApi(
-                'https://api.openagenda.com/v2/requestAccessToken',
-                'requestAccessToken',
-                true,
-                [
-                    'grant_type' => 'authorization_code',
-                    'code' => $code
-                ]
-            );
-        } catch (Throwable $th) {
-            return ['error' => $th->getMessage()];
-        }
+        $data = $this->getRouteApi(
+            'https://api.openagenda.com/v2/requestAccessToken',
+            'requestAccessToken',
+            true,
+            [
+                'grant_type' => 'authorization_code',
+                'code' => $code
+            ]
+        );
         if (empty($data['access_token']) || empty($data['expires_in'])){
-            return ['error' => 'badly formatted response !'];
+            throw new Exception('badly formatted response !');
         }
         return [
             'token' => $data['access_token'],
@@ -149,4 +233,121 @@ class ConfigOpenAgendaService
         return $output;
     }
 
+    /**
+     * create an event on OpenAgenda
+     * @param array $entry
+     * @throws Exception
+     */
+    protected function createEvent(array $entry)
+    {
+        $association = $this->openAgendaParams['associations'][$entry['id_typeannonce']];
+
+        list('token' => $token,'expiresIn'=> $expiresIn) = 
+            $this->getAccessToken($association['key']);
+        
+        $data = $this->getRouteApi(
+            "https://api.openagenda.com/v2/agendas/{$association['id']}/events",
+            'createEvent',
+            true,
+            [
+                'access_token' => $token,
+                'nonce' => random_int(0,pow(2, 31)),
+                'data' => $this->prepareEntryData($entry,$this->generateOpenAgendaUid($association['id'],$entry['id_fiche']))
+            ]
+        );
+        if (!empty($data['message'])){
+            trigger_error("openAgendaCreate: {$data['message']}");
+        }
+    }
+
+    /**
+     * prepare Entry data
+     * @param array $entry
+     * @param int $uid
+     * @return array
+     */
+    protected function prepareEntryData(array $entry,int $uid): array
+    {
+        $entryLang = $GLOBALS['prefered_language'] ?? 'fr';
+        $entryTitle = $entry['bf_titre'] ?? $entry['id_fiche'];
+        $data = [
+            'uid' => $uid,
+            'slug' => URLify::slug($entryTitle),
+            'title' => [
+                $entryLang => substr(strip_tags($entryTitle),0,140)
+            ],
+            'state' => 2, // published, 1= not published controller, 0 = to control
+            'featured' => false, // to display in head
+        ];
+
+        
+        $entryDescription = 'TBD';
+        $renderedEntryDescription = 'TBD';
+        $entryImage = '';
+
+        if (!empty($renderedEntryDescription)){
+            $data['description'] = [
+                $entryLang => substr(strip_tags($renderedEntryDescription),0,200)
+            ];
+        }
+        if (!empty($entryDescription)){
+            $data['longDescription'] = [
+                $entryLang => substr(strip_tags($entryDescription),0,10000)
+            ];
+        }
+        if (!empty($entryImage)){
+            $data['image'] = [
+                'url' => $entryImage
+            ];
+        }
+        $data['timings'] = [
+            [
+                'begin' => $entry['bf_date_debut_evenement'],
+                'end' =>  $entry['bf_date_fin_evenement']
+            ]
+        ];
+        // TODO manage recurrence
+        $data['links'] = [
+            [
+                'link' => $this->wiki->Href('',$entry['id_fiche'])
+            ]
+        ];
+        return $this->prepareForPost($data);
+    }
+
+    /**
+     * prepare data for POST
+     * @param array $data
+     * @param bool $isTop
+     * @return array
+     */
+    protected function prepareForPost(array $data, bool $isTop = true): array
+    {
+        $newData = [];
+        foreach ($data as $key => $value) {
+            if (is_scalar($value)){
+                $newData[$isTop ? $key : "[$key]"] = strval($value);
+            } elseif (is_array($value)){
+                $tmp = $this->prepareForPost($value,false);
+                foreach($tmp as $key2 => $value2){
+                    $newKeyName = $isTop
+                        ? "$key$key2"
+                        : "[$key]$key2";
+                    $newData[$newKeyName] = $value2;
+                }
+            }
+        }
+        return $newData;
+    }
+
+    /**
+     * generate OpenAgenda uid from entryId and agenda uid
+     * @param int $agendaUid
+     * @param string $entryId
+     * @return int $uid
+     */
+    protected function generateOpenAgendaUid(int $agendaUid,string $entryId): int
+    {
+        return intval(sprintf('%u',crc32("$agendaUid$entryId")));
+    }
 }

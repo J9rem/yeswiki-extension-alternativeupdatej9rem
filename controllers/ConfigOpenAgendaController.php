@@ -11,9 +11,11 @@
  */
 namespace YesWiki\Alternativeupdatej9rem\Controller;
 
+use Exception;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
+use Throwable;
 use YesWiki\Alternativeupdatej9rem\Service\ConfigOpenAgendaService;
 use YesWiki\Core\ApiResponse;
 use YesWiki\Core\Controller\CsrfTokenController;
@@ -85,11 +87,21 @@ class ConfigOpenAgendaController extends YesWikiController
     public function testkey(string $key)
     {
         $this->csrfTokenController->checkToken(self::TOKEN_ID, 'POST', 'token',false);
-        $data = $this->configOpenAgendaService->getAccessToken($key);
-        return new ApiResponse(
-            empty($data['token']) ? ['error'=>$data['error'] ?? '!!!'] : ['test' => 'ok'],
-            empty($data['token']) ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK
-        );
+        try {
+            $data = $this->configOpenAgendaService->getAccessToken($key);
+            if (empty($data['token'])){
+                throw new Exception('token not found!');
+            }
+            return new ApiResponse(
+                ['test' => 'ok'],
+                 Response::HTTP_OK
+            );
+        } catch (Throwable $th) {
+            return new ApiResponse(
+                ['error'=>$th->getMessage()],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
     }
     /**
      * test public key
