@@ -23,6 +23,7 @@ use YesWiki\Wiki;
 
 class ConfigOpenAgendaService implements EventSubscriberInterface
 {
+    protected $cacheTokens;
     protected $configurationService;
     protected $followedFormsIds;
     protected $isActivated;
@@ -50,6 +51,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         $this->openAgendaParams = $params->get('openAgenda');
         $this->isActivated = ($this->openAgendaParams['isActivated'] ?? false) === true;
         $this->followedFormsIds = array_keys($this->openAgendaParams['associations'] ?? []);
+        $this->cacheTokens = [];
     }
 
     /**
@@ -60,7 +62,12 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         if ($this->isActivated){
             $entry = $this->getEntry($event);
             if ($this->shouldFollowEntry($entry)){
-                $this->createEvent($entry);
+                try {
+                    $this->createEvent($entry);
+                } catch (Throwable $th) {
+                    // TODO remove this trigger
+                    trigger_error($th->__toString());
+                }
             }
         }
     }
@@ -143,22 +150,25 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         if (empty($code)){
             throw new Exception('Unknown key !');
         }
-        $data = $this->getRouteApi(
-            'https://api.openagenda.com/v2/requestAccessToken',
-            'requestAccessToken',
-            true,
-            [
-                'grant_type' => 'authorization_code',
-                'code' => $code
-            ]
-        );
-        if (empty($data['access_token']) || empty($data['expires_in'])){
-            throw new Exception('badly formatted response !');
+        if (empty($this->cacheTokens[$code])){
+            $data = $this->getRouteApi(
+                'https://api.openagenda.com/v2/requestAccessToken',
+                'requestAccessToken',
+                [
+                    'grant_type' => 'authorization_code',
+                    'code' => $code
+                ]
+            );
+            if (empty($data['access_token']) || empty($data['expires_in'])){
+                trigger_error(json_encode($data));
+                throw new Exception('badly formatted response !');
+            }
+            $this->cacheTokens[$code] = [
+                'token' => $data['access_token'],
+                'expiresIn' => $data['expires_in']
+            ];
         }
-        return [
-            'token' => $data['access_token'],
-            'expiresIn' => $data['expires_in']
-        ];
+        return $this->cacheTokens[$code];
     }
     /**
      * get events
@@ -186,28 +196,28 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      * get Hello Asso route api
      * @param string $url
      * @param string $type
-     * @param bool $isPost optionnal
      * @param array|string $postData optionnal
      * @param string $bearer
      * @return mixed $resul
      * @throws Exception
      */
-    protected function getRouteApi(string $url, string $type, bool $isPost = false, $postData = [], string $bearer = '')
+    protected function getRouteApi(string $url, string $type, $postData = [], string $bearer = '')
     {
-        if (!empty($bearer)) {
-            $headers = [
-                "Authorization: Bearer $bearer",
-            ];
-        }
+        $headers = !empty($bearer) ? ["Authorization: Bearer $bearer"] : [] ;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, $isPost);
-        if ($isPost && !empty($postData) && (is_string($postData) || is_array($postData))) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, is_array($postData)
-                ? $this->prepareForPost($postData)
-                : $postData);
+        if (!empty($postData) && (is_string($postData) || is_array($postData))) {
+            curl_setopt($ch, CURLOPT_POST, true);
+            if (is_array($postData)){
+                $headers[] = 'Content-Type: application/json';
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+            } else {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+            }
+        } else {
+            curl_setopt($ch, CURLOPT_POST, false);
         }
-        if (!empty($bearer)) {
+        if (!empty($headers)) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -279,7 +289,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
                 $entryLang => substr(strip_tags($entryTitle),0,140)
             ],
             'state' => 2, // published, 1= not published controller, 0 = to control
-            'featured' => false, // to display in head
+            'featured' => false // to display in head
         ];
 
         
@@ -315,31 +325,6 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             ]
         ];
         return $data;
-    }
-
-    /**
-     * prepare data for POST
-     * @param array $data
-     * @param bool $isTop
-     * @return array
-     */
-    protected function prepareForPost(array $data, bool $isTop = true): array
-    {
-        $newData = [];
-        foreach ($data as $key => $value) {
-            if (is_scalar($value)){
-                $newData[$isTop ? $key : "[$key]"] = strval($value);
-            } elseif (is_array($value)){
-                $tmp = $this->prepareForPost($value,false);
-                foreach($tmp as $key2 => $value2){
-                    $newKeyName = $isTop
-                        ? "$key$key2"
-                        : "[$key]$key2";
-                    $newData[$newKeyName] = $value2;
-                }
-            }
-        }
-        return $newData;
     }
 
     /**
