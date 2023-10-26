@@ -8,6 +8,7 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
 
  - l'extension corrige aussi des soucis pouvant aussi survenir dans l'enregistrement des dates et leur affichage via `{{bazarliste template="calendar"}}` ou via l'export `ICAL` pour `doryphore 4.4.1` (ainsi qu'une amélioration de la stabilité du champ `image`)
  - l'extension corrige un souci sur les metadonnées des pages qui peuvent être créées en base de données, même si l'utilisateur n'est pas connecté.
+ - l'extension corrige un souci pour émettre un évènement lors de la suppression d'une fiche à partir d'un tableau
 
 ### Actions
 
@@ -80,6 +81,7 @@ Ajout des champs:
 ||système de mises à jour|[`auj9-autoupdate-system`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-autoupdate-system&type=code)|
 ||système de cache local des requêtes SQL|[`auj9-local-cache`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-local-cache&type=code)|
 ||corrections concernant les metadonnées|[`auj9-feat-user-controller-delete-own-pages`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-feat-user-controller-delete-own-pages&type=code)|
+||correctif au niveau de la suppression des pages via l'api|[`auj9-fix-page-controller`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-page-controller&type=code)|
 ||suppression d'un utilisateur ET des pages et fiches possédées|[`auj9-fix-edit-metadata`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-edit-metadata&type=code)|
 |Template Bazar|`video.twig`|[`auj9-bazar-list-video-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-video-dynamic&type=code)|
 ||`send-mail.twig`|[`auj9-bazar-list-send-mail-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-send-mail-dynamic&type=code)|

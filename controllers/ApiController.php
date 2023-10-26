@@ -20,12 +20,15 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\Exception\TokenNotFoundException;
 use YesWiki\Alternativeupdatej9rem\Controller\BazarSendMailController; // Feature UUID : auj9-bazar-list-send-mail-dynamic
+use YesWiki\Alternativeupdatej9rem\Controller\PageController; // Feature UUID : auj9-fix-page-controller
 use YesWiki\Alternativeupdatej9rem\Service\AutoUpdateService;
 use YesWiki\Alternativeupdatej9rem\Service\CacheService; // Feature UUID : auj9-local-cache
 use YesWiki\Bazar\Controller\ApiController as BazarApiController; // Feature UUID : auj9-local-cache
 use YesWiki\Core\ApiResponse;
 use YesWiki\Core\Controller\AuthController;
 use YesWiki\Core\Controller\CsrfTokenController;
+use YesWiki\Core\Service\DbService; // Feature UUID : auj9-fix-page-controller
+use YesWiki\Core\Service\PageManager; // Feature UUID : auj9-fix-page-controller
 use YesWiki\Core\Service\TripleStore;
 use YesWiki\Core\Service\UserManager;
 use YesWiki\Core\YesWikiController;
@@ -560,6 +563,92 @@ class ApiController extends YesWikiController
         } else {
             return $bazarApiController->getBazarListData();
         }
+    }
+
+    /**
+     * @Route("/api/pages/{tag}/delete",methods={"POST"},options={"acl":{"public","+"}},priority=5)
+     * Feature UUID : auj9-fix-page-controller
+     */
+    public function deletePageByGetMethod($tag)
+    {
+        $result = [];
+        $code = Response::HTTP_INTERNAL_SERVER_ERROR;
+        try {
+            $csrfTokenController = $this->wiki->services->get(CsrfTokenController::class);
+            $csrfTokenController->checkToken('main', 'POST', 'csrfToken',false);
+        } catch (TokenNotFoundException $th) {
+            $code = Response::HTTP_UNAUTHORIZED;
+            $result = [
+                'notDeleted' => [$tag],
+                'error' => $th->getMessage()
+            ];
+        } catch (Throwable $th) {
+            $code = Response::HTTP_INTERNAL_SERVER_ERROR;
+            $result = [
+                'notDeleted' => [$tag],
+                'error' => $th->getMessage()
+            ];
+        }
+        return (empty($result))
+            ? $this->deletePage($tag)
+            : new ApiResponse($result, $code);
+    }
+
+    /**
+     * @Route("/api/pages/{tag}",methods={"DELETE"},options={"acl":{"public","+"}},priority=5)
+     * Feature UUID : auj9-fix-page-controller
+     */
+    public function deletePage($tag)
+    {
+        $pageManager = $this->getService(PageManager::class);
+        $pageController = $this->getService(PageController::class);
+        $dbService = $this->getService(DbService::class);
+
+        $result = [
+            'notDeleted' => [$tag]
+        ];
+        $code = Response::HTTP_INTERNAL_SERVER_ERROR;
+        try {
+            $page = $pageManager->getOne($tag, null, false);
+            if (empty($page)) {
+                $code = Response::HTTP_NOT_FOUND;
+            } else {
+                $tag = isset($page['tag']) ? $page['tag'] : $tag;
+                $result['notDeleted'] = [$tag];
+                if ($this->wiki->UserIsOwner($tag) || $this->wiki->UserIsAdmin()) {
+                    if (!$pageManager->isOrphaned($tag)) {
+                        $dbService->query("DELETE FROM {$dbService->prefixTable('links')} WHERE to_tag = '$tag'");
+                    }
+                    $done = $pageController->delete($tag);
+                    if (!$done || !empty($pageManager->getOne($tag, null, false))) {
+                        $code = Response::HTTP_INTERNAL_SERVER_ERROR;
+                    } else {
+                        $result['deleted'] = [$tag];
+                        unset($result['notDeleted']);
+                        $code = Response::HTTP_OK;
+                    }
+                } else {
+                    $code = Response::HTTP_UNAUTHORIZED;
+                }
+            }
+        } catch (Throwable $th) {
+            try {
+                $page = $pageManager->getOne($tag, null, false);
+                $result['error'] = $th->getMessage();
+                if (!empty($page)) {
+                    $code = Response::HTTP_INTERNAL_SERVER_ERROR;
+                } else {
+                    $code = Response::HTTP_OK;
+                    unset($result['notDeleted']);
+                    $result['deleted'] = [$tag];
+                }
+            } catch (Throwable $th) {
+                $code = Response::HTTP_INTERNAL_SERVER_ERROR;
+                $result['error'] = $th->getMessage();
+            }
+        }
+
+        return new ApiResponse($result, $code);
     }
 
     /**
