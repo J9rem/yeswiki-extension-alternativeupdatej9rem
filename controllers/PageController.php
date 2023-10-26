@@ -46,7 +46,6 @@ class PageController extends YesWikiController
      */
     public function delete(string $tag): bool
     {
-        trigger_error("$tag deleted !");
         if ($this->entryManager->isEntry($tag)){
             return $this->entryController->delete($tag);
         } else {
