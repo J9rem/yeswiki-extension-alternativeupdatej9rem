@@ -99,6 +99,11 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         if ($this->isActivated){
             $entry = $this->getEntry($event);
             if ($this->shouldFollowEntry($entry)){
+                try {
+                    $this->updateEvent($entry);
+                } catch (Throwable $th) {
+                    trigger_error($th->__toString());
+                }
             }
         }
     }
@@ -111,6 +116,11 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         if ($this->isActivated){
             $entryBeforeDeletion = $this->getEntry($event);
             if (!empty($entryBeforeDeletion) && $this->shouldFollowEntry($entryBeforeDeletion, false)){
+                try {
+                    $this->deleteEvent($entryBeforeDeletion);
+                } catch (Throwable $th) {
+                    trigger_error($th->__toString());
+                }
             }
         }
     }
@@ -216,13 +226,14 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      * @param string $url
      * @param string $type
      * @param array|string $postData optionnal
-     * @param string $bearer
+     * @param array $headersFromExt
+     * @param string $customRequest
      * @return mixed $resul
      * @throws Exception
      */
-    protected function getRouteApi(string $url, string $type, $postData = [], string $bearer = '')
+    protected function getRouteApi(string $url, string $type, $postData = [], array $headersFromExt = [], string $customRequest = '')
     {
-        $headers = !empty($bearer) ? ["Authorization: Bearer $bearer"] : [] ;
+        $headers = array_filter($headersFromExt,'is_string') ;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         if (!empty($postData) && (is_string($postData) || is_array($postData))) {
@@ -235,6 +246,9 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             }
         } else {
             curl_setopt($ch, CURLOPT_POST, false);
+            if (!empty($customRequest) && in_array($customRequest,['PATCH','PUT','GET','DELETE','HEAD','CONNECT'])){
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $customRequest);
+            }
         }
         if (!empty($headers)) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -299,19 +313,102 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
     }
 
     /**
+     * delete to openagenda
+     * @param string $name
+     * @param string $formId
+     * @param string $type
+     * @return array $results
+     * @throws Exception
+     */
+    protected function deleteFromOpenAgenda(
+        string $name,
+        string $formId,
+        string $type
+    ):array
+    {
+        $association = $this->openAgendaParams['associations'][$formId];
+
+        list('token' => $token,'expiresIn'=> $expiresIn) = 
+            $this->getAccessToken($association['key']);
+
+        $results = $this->getRouteApi(
+            "https://api.openagenda.com/v2/agendas/{$association['id']}/$type",
+            $name,
+            [],
+            [
+                "access-token: $token",
+                "nonce: {$this->generateNonce()}"
+            ],
+            'DELETE'
+        );
+        $this->triggerErrorsIfNeeded("openAgenda$name",$results);
+        return $results;
+    }
+
+    /**
      * create an event on OpenAgenda
      * @param array $entry
      * @throws Exception
      */
     protected function createEvent(array $entry)
     {
-        
         $data = $this->postToOpenAgenda(
             'createEvent',
             $entry['id_typeannonce'],
             'events',
             $this->prepareEntryData($entry)
         );
+
+        if (!empty($data['event']['uid'])){
+            $this->registerUid($entry['id_fiche'],$data['event']['uid']);
+        }
+    }
+    
+    /**
+     * update an event on OpenAgenda
+     * @param array $entry
+     * @throws Exception
+     */
+    protected function updateEvent(array $entry)
+    {
+        $uid = $this->getUid($entry['id_fiche']);
+        if (empty($uid)){
+            $this->createEvent($entry);
+        } else {
+            $data = $this->postToOpenAgenda(
+                'updateEvent',
+                $entry['id_typeannonce'],
+                "events/$uid",
+                $this->prepareEntryData($entry)
+            );
+        }
+    }
+
+    /**
+     * delete an event from OpenAgenda
+     * @param array $entry
+     * @throws Exception
+     */
+    protected function deleteEvent(array $entry)
+    {
+        $uid = $this->getUid($entry['id_fiche']);
+        if (!empty($uid)){
+            // first update with empty data
+            $data = $this->postToOpenAgenda(
+                'setEventToDeleted',
+                $entry['id_typeannonce'],
+                "events/$uid",
+                $this->prepareEntryData(array_merge($entry,[
+                    'bf_titre' => '==DELETED=='
+                ]))
+            );
+            $data = $this->deleteFromOpenAgenda(
+                'deleteEvent',
+                $entry['id_typeannonce'],
+                "events/$uid"
+            );
+            $this->deleteAllUid($entry['id_fiche']);
+        }
     }
 
     /**
@@ -335,14 +432,14 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         $imagePropName = $this->getImagePropertyName($entry['id_typeannonce']);
         $entryImage = $entry[$imagePropName] ?? '';
 
-        if (!empty($desc['description'])){
-            $data['description'] = [
-                $entryLang => substr($desc['description'],0,199).(strlen($desc['description'])>199?'…':'')
-            ];
-        }
+        $data['description'] = [
+            $entryLang => empty($desc['description'])
+                ? substr(strip_tags($entryTitle),0,140)
+                : substr($desc['description'],0,199).(strlen($desc['description'])>199?'…':'')
+        ];
         if (!empty($desc['longDescriptionMarkdown'])){
             $data['longDescription'] = [
-                $entryLang => substr($desc['longDescriptionMarkdown'],0,9999).(strlen($desc['longDescriptionMarkdown'])>9999?'…':'')
+                $entryLang => substr($desc['longDescriptionMarkdown'],0,9995).(strlen($desc['longDescriptionMarkdown'])>9995?'…':'')
             ];
         }
         if (!empty($entryImage)
@@ -621,15 +718,16 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             ? ($entry[$descriptionField] ?? '')
             : $descriptionField->renderStaticIfPermitted($entry);
         $renderedDescriptionHtml = (strpos($renderedDescriptionFromFrield,'<span class="BAZ_texte">') === false)
-            ? preg_replace('/[\s\S]*<span class="BAZ_texte">([\s\S]*)<\\/span>\\s*<\\/div>\\s*$/','$1',$renderedDescriptionFromFrield)
-            : $renderedDescriptionFromFrield;
+            ? $renderedDescriptionFromFrield
+            : preg_replace('/[\s\S]*<span class="BAZ_texte">([\s\S]*)<\\/span>\\s*<\\/div>\\s*$/','$1',$renderedDescriptionFromFrield);
+        $renderedDescriptionHtml = preg_replace('/^   \s*/','',$renderedDescriptionHtml);
         
-        $description = strip_tags($renderedDescriptionHtml);
+        $description = trim(strip_tags($renderedDescriptionHtml));
 
-        $renderedDescriptionHtmlCleaned = strip_tags(
+        $renderedDescriptionHtmlCleaned = trim(strip_tags(
             $renderedDescriptionHtml,
             '<br><li><a><p><i><b><h1><h2><h3><h4><h5><h6><figure><img><del><code>'
-        );
+        ));
 
         $longDescriptionMarkdown = preg_replace(
             [
@@ -647,7 +745,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             ],
             [
                 '',
-                '_','**','~~','`',"  \r\n",'',"\r\n\r\n",
+                '*','**','~~','`',"  \r\n",'',"\r\n\r\n",
                 "\n# ","\n## ","\n### ","\n#### ","\n##### ","\n###### ",
                 "\n",
                 "\n - ",'',
@@ -660,10 +758,53 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             ],
             $renderedDescriptionHtmlCleaned
         );
-        $longDescriptionMarkdown = strip_tags($longDescriptionMarkdown);
+        $longDescriptionMarkdown = trim(strip_tags($longDescriptionMarkdown),"\x00..\x1F");
         $url = $this->wiki->Href('',$entry['id_fiche']);
         $longDescriptionMarkdown .= (empty($longDescriptionMarkdown) ? '' : "  \n")."Source: [$url]($url)";
+        $longDescriptionMarkdown = trim(trim($longDescriptionMarkdown),"\x00..\x1F");
 
         return compact(['description','longDescriptionMarkdown']);
     }
+
+    /**
+     * register open agenda uid
+     * overwrite it if existing
+     * @param string $entryId
+     * @param int $uid
+     */
+    protected function registerUid(string $entryId,int $uid)
+    {
+        $triples = $this->tripleStore->getAll($entryId,self::TRIPLE_PROPERTY,'','');
+        if (empty($triples)){
+            $this->tripleStore->create($entryId,self::TRIPLE_PROPERTY,$uid,'','');
+        } elseif (count($triples) > 1) {
+            for ($i=1; $i < count($triples); $i++) {
+                $this->tripleStore->delete($entryId,self::TRIPLE_PROPERTY,$triples[$i]['value'],'','');
+            }
+            $this->registerUid($entryId,$uid);
+        } else {
+            $this->tripleStore->update($entryId,self::TRIPLE_PROPERTY,$triples[0]['value'],$uid,'','');
+        }
+    }
+
+    /**
+     * get open agenda uid
+     * @param string $entryId
+     * @return int (0 if not existing)
+     */
+    protected function getUid(string $entryId): int
+    {
+        $value = $this->tripleStore->getOne($entryId,self::TRIPLE_PROPERTY,'','');
+        return empty($value) ? 0 : intval($value);
+    }
+
+    /**
+     * delete all open agenda uid
+     * @param string $entryId
+     */
+    protected function deleteAllUid(string $entryId)
+    {
+        $this->tripleStore->delete($entryId,self::TRIPLE_PROPERTY,null,'','');
+    }
+
 }
