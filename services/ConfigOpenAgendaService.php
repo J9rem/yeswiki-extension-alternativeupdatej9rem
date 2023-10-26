@@ -22,6 +22,7 @@ use URLify;
 use YesWiki\Bazar\Field\ImageField;
 use YesWiki\Bazar\Field\MapField;
 use YesWiki\Bazar\Field\TextareaField;
+use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Bazar\Service\FormManager;
 use YesWiki\Core\Entity\Event;
 use YesWiki\Core\Service\ConfigurationService;
@@ -39,6 +40,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
     protected $cacheTokens;
     protected $configurationService;
     protected $followedFormsIds;
+    protected $entryManager;
     protected $formManager;
     protected $isActivated;
     protected $openAgendaParams;
@@ -57,12 +59,14 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
 
     public function __construct(
         ConfigurationService $configurationService,
+        EntryManager $entryManager,
         FormManager $formManager,
         ParameterBagInterface $params,
         TripleStore $tripleStore,
         Wiki $wiki
     ) {
         $this->configurationService = $configurationService;
+        $this->entryManager = $entryManager;
         $this->formManager = $formManager;
         $this->params = $params;
         $this->tripleStore = $tripleStore;
@@ -814,6 +818,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
     {
         $timings = [];
         try {
+            $timingsForMaster = [];
             $firstBeginning = new DateTimeImmutable($entry['bf_date_debut_evenement']);
             try {
                 $firstEnd = new DateTimeImmutable($entry['bf_date_fin_evenement']);
@@ -830,34 +835,68 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             $beginPlus24h = $firstBeginning->add(new DateInterval('PT24H'));
             if ($firstEnd->diff($beginPlus24h)->invert === 0){
                 // less than 24 h or 24h
-                $timings[] = [
-                    'begin' => $firstBeginning->format('c'),
-                    'end' =>  $firstEnd->format('c')
+                $timingsForMaster[] = [
+                    'begin' => $firstBeginning->add(new DateInterval("PT0S")),
+                    'end' =>  $firstEnd->add(new DateInterval("PT0S"))
                 ];
             } else {
                 // first day
                 $nextDayMidnight = $beginPlus24h->setTime(0,0);
-                $timings[] = [
-                    'begin' => $firstBeginning->format('c'),
-                    'end' =>  $nextDayMidnight->format('c')
+                $timingsForMaster[] = [
+                    'begin' => $firstBeginning->add(new DateInterval("PT0S")),
+                    'end' =>  $nextDayMidnight->add(new DateInterval("PT0S"))
                 ];
 
                 $currentDayMidnight = $nextDayMidnight;
                 $nextDayMidnight = $nextDayMidnight->add(new DateInterval('P1D'))->setTime(0,0);
-                while ($nextDayMidnight->diff($firstEnd)->invert === 0) {
-                    $timings[] = [
-                        'begin' => $currentDayMidnight->format('c'),
-                        'end' =>  $nextDayMidnight->format('c')
+                while ($firstEnd->diff($nextDayMidnight)->invert > 0) {
+                    $timingsForMaster[] = [
+                        'begin' => $currentDayMidnight->add(new DateInterval("PT0S")),
+                        'end' =>  $nextDayMidnight->add(new DateInterval("PT0S"))
                     ];
                     $currentDayMidnight = $nextDayMidnight;
                     $nextDayMidnight = $nextDayMidnight->add(new DateInterval('P1D'))->setTime(0,0);
                 }
 
                 // last day
-                $timings[] = [
-                    'begin' => $currentDayMidnight->format('c'),
-                    'end' =>  $firstEnd->format('c')
+                $timingsForMaster[] = [
+                    'begin' => $currentDayMidnight->add(new DateInterval("PT0S")),
+                    'end' =>  $firstEnd->add(new DateInterval("PT0S"))
                 ];
+            }
+            $steps = [0]; // seconds
+            if (!empty($entry['bf_date_fin_evenement_data']['isRecurrent'])
+                && $entry['bf_date_fin_evenement_data']['isRecurrent'] == "1"){
+                $linkedEntries = $this->entryManager->search([
+                        'formsIds' => [$entry['id_typeannonce']],
+                        'queries' => [
+                            'bf_date_fin_evenement_data' => "{\"recurrentParentId\":\"{$entry['id_fiche']}\"}"
+                        ]
+                    ],
+                    false, // filter on read Acl
+                    false // useGuard 
+                );
+                if (!empty($linkedEntries)){
+                    foreach($linkedEntries as $linkedEntry){
+                        if (!empty($linkedEntry['bf_date_debut_evenement'])){
+                            try {
+                                $currentBegin = new DateTimeImmutable($linkedEntry['bf_date_debut_evenement']);
+                                if ($firstBeginning->diff($currentBegin)->invert === 0){
+                                    $steps[] = $currentBegin->getTimestamp() - $firstBeginning->getTimestamp();
+                                }
+                            } catch (Throwable $th) {
+                            }
+                        }
+                    }
+                }
+            }
+            foreach ($steps as $step) {
+                foreach ($timingsForMaster as $timing) {
+                    $timings[] = [
+                        'begin' => ($timing['begin'])->add(new DateInterval("PT{$step}S"))->format('c'),
+                        'end' =>  ($timing['end'])->add(new DateInterval("PT{$step}S"))->format('c')
+                    ];
+                }
             }
         } catch (Throwable $th) {
             trigger_error($th->__toString());
