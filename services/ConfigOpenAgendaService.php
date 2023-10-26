@@ -12,6 +12,8 @@
 
 namespace YesWiki\Alternativeupdatej9rem\Service;
 
+use DateInterval;
+use DateTimeImmutable;
 use Exception;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -163,6 +165,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
                 || (
                     !empty($entry['bf_date_debut_evenement'])
                     && !empty($entry['bf_date_fin_evenement'])
+                    && empty($entry['bf_date_fin_evenement_data']['recurrentParentId'])
                 )
             );
     }
@@ -452,13 +455,8 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
                 ];
             }
         }
-        $data['timings'] = [
-            [
-                'begin' => $entry['bf_date_debut_evenement'],
-                'end' =>  $entry['bf_date_fin_evenement']
-            ]
-        ];
-        // TODO manage recurrence
+        $data['timings'] = $this->getTimings($entry);
+        
         $entryPlace = $this->getPlace($entry);
         if (empty($entryPlace)){
             $entryPlace = $this->createPlace($entry);
@@ -807,4 +805,68 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         $this->tripleStore->delete($entryId,self::TRIPLE_PROPERTY,null,'','');
     }
 
+    /**
+     * get timings
+     * @param array $entry
+     * @return array $timings
+     */
+    protected function getTimings(array $entry): array
+    {
+        $timings = [];
+        try {
+            $firstBeginning = new DateTimeImmutable($entry['bf_date_debut_evenement']);
+            try {
+                $firstEnd = new DateTimeImmutable($entry['bf_date_fin_evenement']);
+                if (strlen($entry['bf_date_fin_evenement']) < 11){
+                    // set to midnight of next day
+                    $firstEnd = $firstEnd->add(new DateInterval('P1D'))->setTime(0,0);
+                }
+                if ($firstBeginning->diff($firstEnd)->invert > 0){
+                    throw new Exception('End should be after beginning !');
+                }
+            } catch (Throwable $th) {
+                $firstEnd = $firstBeginning->add(new DateInterval('PT1H'));
+            }
+            $beginPlus24h = $firstBeginning->add(new DateInterval('PT24H'));
+            if ($firstEnd->diff($beginPlus24h)->invert === 0){
+                // less than 24 h or 24h
+                $timings[] = [
+                    'begin' => $firstBeginning->format('c'),
+                    'end' =>  $firstEnd->format('c')
+                ];
+            } else {
+                // first day
+                $nextDayMidnight = $beginPlus24h->setTime(0,0);
+                $timings[] = [
+                    'begin' => $firstBeginning->format('c'),
+                    'end' =>  $nextDayMidnight->format('c')
+                ];
+
+                $currentDayMidnight = $nextDayMidnight;
+                $nextDayMidnight = $nextDayMidnight->add(new DateInterval('P1D'))->setTime(0,0);
+                while ($nextDayMidnight->diff($firstEnd)->invert === 0) {
+                    $timings[] = [
+                        'begin' => $currentDayMidnight->format('c'),
+                        'end' =>  $nextDayMidnight->format('c')
+                    ];
+                    $currentDayMidnight = $nextDayMidnight;
+                    $nextDayMidnight = $nextDayMidnight->add(new DateInterval('P1D'))->setTime(0,0);
+                }
+
+                // last day
+                $timings[] = [
+                    'begin' => $currentDayMidnight->format('c'),
+                    'end' =>  $firstEnd->format('c')
+                ];
+            }
+        } catch (Throwable $th) {
+            trigger_error($th->__toString());
+            $timings[] = [
+                'begin' => $entry['bf_date_debut_evenement'],
+                'end' =>  $entry['bf_date_fin_evenement']
+            ];
+        }
+        return $timings;
+
+    }
 }
