@@ -17,16 +17,22 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Throwable;
 use URLify;
+use YesWiki\Bazar\Field\ImageField;
 use YesWiki\Bazar\Field\MapField;
+use YesWiki\Bazar\Field\TextareaField;
 use YesWiki\Bazar\Service\FormManager;
 use YesWiki\Core\Entity\Event;
 use YesWiki\Core\Service\ConfigurationService;
+use YesWiki\Core\Service\TripleStore;
 use YesWiki\Wiki;
 
 class ConfigOpenAgendaService implements EventSubscriberInterface
 {
+    public const TRIPLE_PROPERTY = 'https://yeswiki.net/triple/openagenda/event/uid';
     public const UNKNOWN_PLACE_NAME = 'France';
 
+    protected $cacheDescriptionPropertyName;
+    protected $cacheImagePropertyName;
     protected $cacheMapField;
     protected $cacheTokens;
     protected $configurationService;
@@ -35,6 +41,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
     protected $isActivated;
     protected $openAgendaParams;
     protected $params;
+    protected $tripleStore;
     protected $wiki;
 
     public static function getSubscribedEvents()
@@ -50,15 +57,19 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         ConfigurationService $configurationService,
         FormManager $formManager,
         ParameterBagInterface $params,
+        TripleStore $tripleStore,
         Wiki $wiki
     ) {
         $this->configurationService = $configurationService;
         $this->formManager = $formManager;
         $this->params = $params;
+        $this->tripleStore = $tripleStore;
         $this->wiki = $wiki;
         $this->openAgendaParams = $params->get('openAgenda');
         $this->isActivated = ($this->openAgendaParams['isActivated'] ?? false) === true;
         $this->followedFormsIds = array_keys($this->openAgendaParams['associations'] ?? []);
+        $this->cacheDescriptionPropertyName = [];
+        $this->cacheImagePropertyName = [];
         $this->cacheMapField = [];
         $this->cacheTokens = [];
     }
@@ -74,7 +85,6 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
                 try {
                     $this->createEvent($entry);
                 } catch (Throwable $th) {
-                    // TODO remove this trigger
                     trigger_error($th->__toString());
                 }
             }
@@ -321,25 +331,29 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             'featured' => false // to display in head
         ];
 
-        
-        $entryDescription = 'TBD';
-        $renderedEntryDescription = 'TBD';
-        $entryImage = '';
+        $desc = $this->getDescriptions($entry);
+        $imagePropName = $this->getImagePropertyName($entry['id_typeannonce']);
+        $entryImage = $entry[$imagePropName] ?? '';
 
-        if (!empty($renderedEntryDescription)){
+        if (!empty($desc['description'])){
             $data['description'] = [
-                $entryLang => substr(strip_tags($renderedEntryDescription),0,200)
+                $entryLang => substr($desc['description'],0,199).(strlen($desc['description'])>199?'…':'')
             ];
         }
-        if (!empty($entryDescription)){
+        if (!empty($desc['longDescriptionMarkdown'])){
             $data['longDescription'] = [
-                $entryLang => substr(strip_tags($entryDescription),0,10000)
+                $entryLang => substr($desc['longDescriptionMarkdown'],0,9999).(strlen($desc['longDescriptionMarkdown'])>9999?'…':'')
             ];
         }
-        if (!empty($entryImage)){
-            $data['image'] = [
-                'url' => $entryImage
-            ];
+        if (!empty($entryImage)
+            && preg_match('/\.(?:png|jpg|jpeg|bmp|webp)$/i',$entryImage)
+        ){
+            $baseUrl = explode('?',$this->params->get('base_url'))[0];
+            if (!preg_match('/^http?:\\/\\/localhost\\//',$baseUrl)){
+                $data['image'] = [
+                    'url' => "{$baseUrl}files/$entryImage"
+                ];
+            }
         }
         $data['timings'] = [
             [
@@ -348,11 +362,6 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             ]
         ];
         // TODO manage recurrence
-        $data['links'] = [
-            [
-                'link' => $this->wiki->Href('',$entry['id_fiche'])
-            ]
-        ];
         $entryPlace = $this->getPlace($entry);
         if (empty($entryPlace)){
             $entryPlace = $this->createPlace($entry);
@@ -543,5 +552,118 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             }
         }
         return $this->cacheMapField[$formId];
+    }
+
+    /**
+     * get description propertyName if any
+     * @param string $formId
+     * @return string|TextareaField
+     */
+    protected function getDescriptionField(string $formId)
+    {
+        if (!array_key_exists($formId,$this->cacheDescriptionPropertyName)){
+            $form = $this->formManager->getOne($formId);
+            $this->cacheDescriptionPropertyName[$formId] = null;
+            if (!empty($form['prepared'])){
+                foreach($form['prepared'] as $field){
+                    if (
+                        $field instanceof TextareaField
+                        && (
+                            empty($this->cacheDescriptionPropertyName[$formId])
+                            || $field->getPropertyName() === 'bf_description'
+                        )
+                    ){
+                        $this->cacheDescriptionPropertyName[$formId] = $field;
+                    }
+                }
+                if (empty($this->cacheDescriptionPropertyName[$formId])){
+                    $this->cacheDescriptionPropertyName[$formId] = 'bf_description';
+                }
+            }
+        }
+        return $this->cacheDescriptionPropertyName[$formId];
+    }
+
+    /**
+     * get description image property name if any
+     * @param string $formId
+     * @return string
+     */
+    protected function getImagePropertyName(string $formId): string
+    {
+        if (!array_key_exists($formId,$this->cacheImagePropertyName)){
+            $form = $this->formManager->getOne($formId);
+            $this->cacheImagePropertyName[$formId] = '';
+            if (!empty($form['prepared'])){
+                foreach($form['prepared'] as $field){
+                    if (
+                        empty($this->cacheImagePropertyName[$formId])
+                        && $field instanceof ImageField
+                    ){
+                        $this->cacheImagePropertyName[$formId] = $field->getPropertyName();
+                    }
+                }
+            }
+        }
+        return $this->cacheImagePropertyName[$formId];
+    }
+
+    /**
+     * get descriptions
+     * @param array $entry
+     * @return array string [$description,$longDescriptionMarkdown]
+     */
+    protected function getDescriptions(array $entry):array
+    {
+        $descriptionField = $this->getDescriptionField($entry['id_typeannonce']);
+
+        $renderedDescriptionFromFrield = is_string($descriptionField)
+            ? ($entry[$descriptionField] ?? '')
+            : $descriptionField->renderStaticIfPermitted($entry);
+        $renderedDescriptionHtml = (strpos($renderedDescriptionFromFrield,'<span class="BAZ_texte">') === false)
+            ? preg_replace('/[\s\S]*<span class="BAZ_texte">([\s\S]*)<\\/span>\\s*<\\/div>\\s*$/','$1',$renderedDescriptionFromFrield)
+            : $renderedDescriptionFromFrield;
+        
+        $description = strip_tags($renderedDescriptionHtml);
+
+        $renderedDescriptionHtmlCleaned = strip_tags(
+            $renderedDescriptionHtml,
+            '<br><li><a><p><i><b><h1><h2><h3><h4><h5><h6><figure><img><del><code>'
+        );
+
+        $longDescriptionMarkdown = preg_replace(
+            [
+                '/<i(?: [^>]*)?><\\/i>/',
+                '/<\\/?i(?: [^>]*)?>/','/<\\/?b(?: [^>]*)?>/','/<\\/?del(?: [^>]*)?>/','/<\\/?code(?: [^>]*)?>/','/<\\/?br(?: [^>]*)?>/','/<p(?: [^>]*)?>/','/<\\/p>/',
+                '/<h1(?: [^>]*)?>/','/<h2(?: [^>]*)?>/','/<h3(?: [^>]*)?>/','/<h4(?: [^>]*)?>/','/<h5(?: [^>]*)?>/','/<h6(?: [^>]*)?>/',
+                '/<\\/h[0-6]>/',
+                '/<li(?: [^>]*)?>/','/<\\/li>/',
+                '/<img(?: [^>]*)?src="([^"]+)"(?: [^>]*)?alt="([^"]+)"(?: [^>]*)?\\/>/',
+                '/<img(?: [^>]*)?alt="([^"]+)"(?: [^>]*)?src="([^"]+)"(?: [^>]*)?\\/>/',
+                '/<img(?: [^>]*)?src="([^"]+)"(?: [^>]*)?\\/>/',
+                '/<a(?: [^>]*)?href="[^"]+\\/upload.(amp;)?file=[^"]+"(?: [^>]*)?>[^<]*<\\/a>/',
+                '/<a(?: [^>]*)?href="([^"]+)(?:\\/iframe)?"(?: [^>]*)?>([^<]+)<\\/a>/',
+                '/<a(?: [^>]*)?href="([^"]+)(?:\\/iframe)?"(?: [^>]*)?><\\/a>/'
+            ],
+            [
+                '',
+                '_','**','~~','`',"  \r\n",'',"\r\n\r\n",
+                "\n# ","\n## ","\n### ","\n#### ","\n##### ","\n###### ",
+                "\n",
+                "\n - ",'',
+                "![$2]($1)",
+                "![$1]($2)",
+                "![an image]($1)",
+                '',
+                "[$2]($1)",
+                "[$1]($1)"
+            ],
+            $renderedDescriptionHtmlCleaned
+        );
+        $longDescriptionMarkdown = strip_tags($longDescriptionMarkdown);
+        $url = $this->wiki->Href('',$entry['id_fiche']);
+        $longDescriptionMarkdown .= (empty($longDescriptionMarkdown) ? '' : "  \n")."Source: [$url]($url)";
+
+        return compact(['description','longDescriptionMarkdown']);
     }
 }
