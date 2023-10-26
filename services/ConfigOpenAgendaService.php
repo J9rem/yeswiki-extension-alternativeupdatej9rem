@@ -25,7 +25,7 @@ use YesWiki\Wiki;
 
 class ConfigOpenAgendaService implements EventSubscriberInterface
 {
-    public const UNKNOWN_PLACE_NAME = 'Inconnu';
+    public const UNKNOWN_PLACE_NAME = 'France';
 
     protected $cacheMapField;
     protected $cacheTokens;
@@ -435,15 +435,16 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
     protected function extractAddress(array $entry): array
     {
         $mapField = $this->getMapField($entry['id_typeannonce']);
+        $defaultFieldsNames =  [    
+            'street' => MapField::DEFAULT_FIELDNAME_STREET,
+            'street1' => MapField::DEFAULT_FIELDNAME_STREET1,
+            'street2' => MapField::DEFAULT_FIELDNAME_STREET2,
+            'postalCode' => MapField::DEFAULT_FIELDNAME_POSTALCODE,
+            'town' => MapField::DEFAULT_FIELDNAME_TOWN,
+            'state' => MapField::DEFAULT_FIELDNAME_STATE
+        ];
         $fieldNames = empty($mapField)
-            ? [    
-                'street' => MapField::DEFAULT_FIELDNAME_STREET,
-                'street1' => MapField::DEFAULT_FIELDNAME_STREET1,
-                'street2' => MapField::DEFAULT_FIELDNAME_STREET2,
-                'postalCode' => MapField::DEFAULT_FIELDNAME_POSTALCODE,
-                'town' => MapField::DEFAULT_FIELDNAME_TOWN,
-                'state' => MapField::DEFAULT_FIELDNAME_STATE
-            ]
+            ? $defaultFieldsNames
             : $mapField->getAutocompleteFieldnames();
         $geolocationFieldNames = empty($mapField)
             ? [    
@@ -455,17 +456,15 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
                 'longitude' => $mapField->getLongitudeField()
             ];
 
-        $extract = array_map(
-            function($propertyName) use ($entry){
-                return (!empty($propertyName)
-                        && !empty($entry[$propertyName])
-                        && is_string($entry[$propertyName])
-                    )
-                    ? trim($entry[$propertyName])
-                    : '';
-            },
-            $fieldNames
-        );
+        $extract = [];
+        foreach(array_keys($defaultFieldsNames) as $key){
+            $extract[$key] = (!empty($fieldNames[$key])
+                    && !empty($entry[$fieldNames[$key]])
+                    && is_string($entry[$fieldNames[$key]])
+                )
+                ? trim($entry[$fieldNames[$key]])
+                : '';
+        }
         
         $name = implode(',',array_filter(
             $extract,
