@@ -20,6 +20,7 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\Exception\TokenNotFoundException;
 use YesWiki\Alternativeupdatej9rem\Controller\BazarSendMailController; // Feature UUID : auj9-bazar-list-send-mail-dynamic
+use YesWiki\Alternativeupdatej9rem\Controller\ConfigOpenAgendaController ; // Feature UUID : auj9-open-agenda-connect
 use YesWiki\Alternativeupdatej9rem\Controller\PageController; // Feature UUID : auj9-fix-page-controller
 use YesWiki\Alternativeupdatej9rem\Service\AutoUpdateService;
 use YesWiki\Alternativeupdatej9rem\Service\CacheService; // Feature UUID : auj9-local-cache
@@ -686,5 +687,61 @@ class ApiController extends YesWikiController
     public function getCurrentUserEmail()
     {
         return $this->getService(BazarSendMailController::class)->getCurrentUserEmail();
+    }
+    /**
+     * @Route("/api/openagenda/config/html", methods={"GET"}, options={"acl":{"public"}})
+     * Feature UUID : auj9-open-agenda-connect
+     */
+    public function configOpenAgendaHTML()
+    {
+        return $this->getService(ConfigOpenAgendaController::class)->configOpenAgendaHTML();
+    }
+    /**
+     * @Route("/api/openagenda/config/setkey", methods={"POST"}, options={"acl":{"public","@admins"}})
+     * Feature UUID : auj9-open-agenda-connect
+     */
+    public function setKey()
+    {
+        return $this->getService(ConfigOpenAgendaController::class)->setKey();
+    }
+    /**
+     * @Route("/api/openagenda/config/removekey", methods={"POST"}, options={"acl":{"public","@admins"}})
+     * Feature UUID : auj9-open-agenda-connect
+     */
+    public function removeKey()
+    {
+        return $this->getService(ConfigOpenAgendaController::class)->removeKey();
+    }
+    /**
+     * @Route("/api/openagenda/config/setassociation", methods={"POST"}, options={"acl":{"public","@admins"}})
+     * Feature UUID : auj9-open-agenda-connect
+     */
+    public function setAssociation()
+    {
+        return $this->getService(ConfigOpenAgendaController::class)->setAssociation();
+    }
+    /**
+     * @Route("/api/openagenda/config/removeassociation", methods={"POST"}, options={"acl":{"public","@admins"}})
+     * Feature UUID : auj9-open-agenda-connect
+     */
+    public function removeAssociation()
+    {
+        return $this->getService(ConfigOpenAgendaController::class)->removeAssociation();
+    }
+    /**
+     * @Route("/api/openagenda/config/testkey/{key}", methods={"POST"}, options={"acl":{"public","@admins"}})
+     * Feature UUID : auj9-open-agenda-connect
+     */
+    public function testkey($key)
+    {
+        return $this->getService(ConfigOpenAgendaController::class)->testkey($key);
+    }
+    /**
+     * @Route("/api/openagenda/config/testpublickey/{formId}", methods={"POST"}, options={"acl":{"public","@admins"}})
+     * Feature UUID : auj9-open-agenda-connect
+     */
+    public function testPublickey($formId)
+    {
+        return $this->getService(ConfigOpenAgendaController::class)->testPublickey($formId);
     }
 }

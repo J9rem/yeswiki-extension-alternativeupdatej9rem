@@ -1,0 +1,168 @@
+{# # This file is part of the YesWiki Extension alternativeupdatej9rem.
+# Authors : see README.md file that was distributed with this source code.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+# Feature UUID : auj9-open-agenda-connect
+#}
+
+
+{{ include_javascript('javascripts/vendor/vue/vue.js') }}
+{{ include_javascript('tools/alternativeupdatej9rem/javascripts/open-agenda-configurator.js',false,true) }}
+{{ include_css('tools/alternativeupdatej9rem/styles/open-agenda-configurator.css') }}
+
+<h1>{{ _t('AUJ9_OPEN_AGENDA_CONFIG_TITLE') }}</h1>
+
+<div class="open-agenda-configurator" data-data="{{ data|json_encode }}">
+    <div :class="{alert:true,[message.length > 0 ? `alert-${messageClass || 'info'}` : 'alert-info']:true}">
+        <template v-if="message === 'getform'">{{ _t('AUJ9_OPEN_AGENDA_GET_FORM') }}</template>
+        <template v-else-if="message === 'error'">{{ _t('AUJ9_OPEN_AGENDA_ERROR') }}</template>
+        <template v-else-if="message === 'youturn'">{{ _t('AUJ9_OPEN_AGENDA_YOU_TURN') }}</template>
+        <template v-else-if="message === 'registeringkey'">{{ _t('AUJ9_OPEN_AGENDA_REGISTERING_KEY') }}</template>
+        <template v-else-if="message === 'registeringassociation'">{{ _t('AUJ9_OPEN_AGENDA_REGISTERING_ASSOCIATION') }}</template>
+        <span v-else-if="message.slice(0,'removingkey '.length) === 'removingkey '" v-html="'{{ _t('AUJ9_OPEN_AGENDA_REMOVING_KEY') }}'.replace('{name}',message.slice('removingkey '.length))"></span>
+        <span v-else v-html="message"></span>
+    </div>
+    <h2>{{ _t('AUJ9_OPEN_AGENDA_CONFIG_KEYS') }}</h2>
+    <div class="col-sm-4">
+        <div class="control-group form-group">
+            <label class="control-label col-sm-3">{{ _t('AUJ9_OPEN_AGENDA_NEW_KEY_NAME') }}</label>
+            <div class="control">
+                <div class="input-group">
+                    <input
+                        type="text"
+                        v-model="newKeyName"
+                        class="form-control"
+                        pattern="[A-Za-z][A-Za-z0-9_\-]{2,}"
+                        :disabled="callingApi"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="control-group form-group">
+            <label class="control-label col-sm-3">{{ _t('AUJ9_OPEN_AGENDA_NEW_KEY_VALUE') }}</label>
+            <div class="control">
+                <div class="input-group">
+                    <input
+                        type="text"
+                        v-model="newKeyValue"
+                        class="form-control"
+                        pattern="[a-f0-9]{10,}"
+                        :disabled="callingApi"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="control-group form-group">
+            <button 
+                class="btn btn-success btn-icon" 
+                :disabled="callingApi || !(newKeyValue?.length > 10 && newKeyName?.length > 3)"
+                @click.prevent.stop="registerNewKey"
+                ><i class="fas fa-plus"></i></button>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <template v-for="(key,keyName) in keys">
+        <div>{{"{{keyName}} => {{key}}"}}<button 
+            class="btn btn-icon btn-danger btn-xs"
+            :disabled="callingApi"
+            @click.prevent.stop="removeKey(keyName)"
+            ><i class="fas fa-trash"></i>
+        </button><button 
+            class="btn btn-icon btn-primary btn-xs"
+            @click.prevent.stop="testKey(keyName)"
+            :disabled="callingApi"
+            >{{ _t('AUJ9_OPEN_AGENDA_CONFIG_TESTKEY') }}
+        </button></div>
+    </template>
+    <template v-if="keys !== null && Object.keys(keys).length > 0">
+        <h2>{{ _t('AUJ9_OPEN_AGENDA_CONFIG_ASSOCIATIONS') }}</h2>
+        <div class="col-sm-2">
+            <div class="control-group form-group input-select">
+                <label class="control-label col-sm-2">{{ _t('AUJ9_OPEN_AGENDA_NEW_FORM') }}</label>
+                <div class="control">
+                    <select
+                        v-model="newFormId"
+                        :disabled="callingApi"
+                        >
+                        <option value="">{{ _t('BAZ_CHOISIR') }}</option>
+                        <option v-for="form in agendaForms" :value="form?.bn_id_nature ?? ''" v-html="`${form?.bn_label_nature?.slice(0,20) ?? form?.bn_id_nature ?? ''} (${form?.bn_id_nature ?? 0})`"></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="control-group form-group input-select">
+                <label class="control-label col-sm-2">{{ _t('AUJ9_OPEN_AGENDA_NEW_FORM_KEY') }}</label>
+                <div class="control">
+                    <select
+                        v-model="newFormKey"
+                        :disabled="callingApi"
+                        >
+                        <option value="">{{ _t('BAZ_CHOISIR') }}</option>
+                        <option v-for="(key,keyName) in keys" :value="keyName" v-html="keyName"></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="control-group form-group">
+                <label class="control-label col-sm-3">{{ _t('AUJ9_OPEN_AGENDA_NEW_FORM_ID') }}</label>
+                <div class="control">
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            v-model="newFormAgendaId"
+                            class="form-control"
+                            pattern="[0-9]{4,}"
+                            :disabled="callingApi"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="control-group form-group">
+                <label class="control-label col-sm-3">{{ _t('AUJ9_OPEN_AGENDA_NEW_FORM_PUBLIC') }}</label>
+                <div class="control">
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            v-model="newFormPublicKey"
+                            class="form-control"
+                            pattern="[a-f0-9]{10,}"
+                            :disabled="callingApi"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="control-group form-group">
+                <button 
+                    class="btn btn-success btn-icon" 
+                    :disabled="callingApi || !(newFormId?.length > 0 && newFormKey?.length > 0 && newFormAgendaId?.length >= 5 && newFormPublicKey?.length > 10)"
+                    @click.prevent.stop="registerNewForm"
+                    ><i class="fas fa-plus"></i></button>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <template v-for="(assoc,formId) in associations">
+            <div>{{"{{formId}} ({{ forms?.[formId]?.bn_label_nature?.slice(0,20) ?? '?' }}) => {{assoc?.key}} / {{assoc?.id}} / {{assoc?.public}}"}}<button 
+                    class="btn btn-icon btn-danger btn-xs"
+                    :disabled="callingApi"
+                    @click.prevent.stop="removeFormAssoc(formId)"
+                    ><i class="fas fa-trash"></i>
+                </button><button 
+                    class="btn btn-icon btn-primary btn-xs"
+                    @click.prevent.stop="testFormKey(formId)"
+                    :disabled="callingApi"
+                    >{{ _t('AUJ9_OPEN_AGENDA_CONFIG_TESTKEY') }}
+                </button>
+            </div>
+        </template>
+    </template>
+</div>

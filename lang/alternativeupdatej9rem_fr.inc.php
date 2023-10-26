@@ -188,4 +188,23 @@ return [
   'AUJ9_SEND_MAIL_TEMPLATE_SINGULAR_NB_DEST_TEXT' => 'Actuellement {nb} destinataire',
   'AUJ9_SEND_MAIL_TEMPLATE_SIZE' => 'Taille :',
   'AUJ9_SEND_MAIL_TEMPLATE_UNCHECKALL' => 'Décocher tout ce qui est visible',
+
+  // templates/open-agenda-config.twig
+  // Feature UUID : auj9-open-agenda-connect
+  'AUJ9_OPEN_AGENDA_CONFIG_ASSOCIATIONS' => 'Associations',
+  'AUJ9_OPEN_AGENDA_CONFIG_TITLE' => 'Configuration de la connexion à Open Agenda',
+  'AUJ9_OPEN_AGENDA_CONFIG_KEYS' => 'Clés privées',
+  'AUJ9_OPEN_AGENDA_CONFIG_TESTKEY' => 'Tester la clé',
+  'AUJ9_OPEN_AGENDA_ERROR' => 'Une erreur est survenue',
+  'AUJ9_OPEN_AGENDA_GET_FORM' => 'Recherche des formulaires',
+  'AUJ9_OPEN_AGENDA_NEW_FORM' => 'Formulaire',
+  'AUJ9_OPEN_AGENDA_NEW_FORM_ID' => 'Identifiant Open Agenda',
+  'AUJ9_OPEN_AGENDA_NEW_FORM_KEY' => 'Clé privée associée',
+  'AUJ9_OPEN_AGENDA_NEW_FORM_PUBLIC' => 'Clé publique',
+  'AUJ9_OPEN_AGENDA_NEW_KEY_NAME' => 'Nom de la nouvelle clé',
+  'AUJ9_OPEN_AGENDA_NEW_KEY_VALUE' => 'Valeur de la nouvelle clé',
+  'AUJ9_OPEN_AGENDA_REGISTERING_ASSOCIATION' => 'Enregistrement de l\'association',
+  'AUJ9_OPEN_AGENDA_REGISTERING_KEY' => 'Enregistrement de la clé',
+  'AUJ9_OPEN_AGENDA_REMOVING_KEY' => 'Retrait de la clé {name}',
+  'AUJ9_OPEN_AGENDA_YOU_TURN' => 'A votre tour !',
 ];
