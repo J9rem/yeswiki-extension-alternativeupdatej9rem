@@ -17,15 +17,21 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Throwable;
 use URLify;
+use YesWiki\Bazar\Field\MapField;
+use YesWiki\Bazar\Service\FormManager;
 use YesWiki\Core\Entity\Event;
 use YesWiki\Core\Service\ConfigurationService;
 use YesWiki\Wiki;
 
 class ConfigOpenAgendaService implements EventSubscriberInterface
 {
+    public const UNKNOWN_PLACE_NAME = 'Inconnu';
+
+    protected $cacheMapField;
     protected $cacheTokens;
     protected $configurationService;
     protected $followedFormsIds;
+    protected $formManager;
     protected $isActivated;
     protected $openAgendaParams;
     protected $params;
@@ -42,15 +48,18 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
 
     public function __construct(
         ConfigurationService $configurationService,
+        FormManager $formManager,
         ParameterBagInterface $params,
         Wiki $wiki
     ) {
         $this->configurationService = $configurationService;
+        $this->formManager = $formManager;
         $this->params = $params;
         $this->wiki = $wiki;
         $this->openAgendaParams = $params->get('openAgenda');
         $this->isActivated = ($this->openAgendaParams['isActivated'] ?? false) === true;
         $this->followedFormsIds = array_keys($this->openAgendaParams['associations'] ?? []);
+        $this->cacheMapField = [];
         $this->cacheTokens = [];
     }
 
@@ -246,45 +255,65 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
     }
 
     /**
+     * post to openagenda
+     * @param string $name
+     * @param string $formId
+     * @param string $type
+     * @param array $data
+     * @return array $results
+     * @throws Exception
+     */
+    protected function postToOpenAgenda(
+        string $name,
+        string $formId,
+        string $type,
+        array $data
+    ):array
+    {
+        $association = $this->openAgendaParams['associations'][$formId];
+
+        list('token' => $token,'expiresIn'=> $expiresIn) = 
+            $this->getAccessToken($association['key']);
+
+        $results = $this->getRouteApi(
+            "https://api.openagenda.com/v2/agendas/{$association['id']}/$type",
+            $name,
+            [
+                'access_token' => $token,
+                'nonce' => $this->generateNonce(),
+                'data' => $data
+            ]
+        );
+        $this->triggerErrorsIfNeeded("openAgenda$name",$results);
+        return $results;
+    }
+
+    /**
      * create an event on OpenAgenda
      * @param array $entry
      * @throws Exception
      */
     protected function createEvent(array $entry)
     {
-        $association = $this->openAgendaParams['associations'][$entry['id_typeannonce']];
-
-        list('token' => $token,'expiresIn'=> $expiresIn) = 
-            $this->getAccessToken($association['key']);
         
-        $data = $this->getRouteApi(
-            "https://api.openagenda.com/v2/agendas/{$association['id']}/events",
+        $data = $this->postToOpenAgenda(
             'createEvent',
-            true,
-            [
-                'access_token' => $token,
-                'nonce' => random_int(0,pow(2, 31)),
-                'data' => $this->prepareEntryData($entry,$this->generateOpenAgendaUid($association['id'],$entry['id_fiche']))
-            ]
+            $entry['id_typeannonce'],
+            'events',
+            $this->prepareEntryData($entry)
         );
-        if (!empty($data['message'])){
-            trigger_error("openAgendaCreate: {$data['message']}");
-        }
     }
 
     /**
      * prepare Entry data
      * @param array $entry
-     * @param int $uid
      * @return array
      */
-    protected function prepareEntryData(array $entry,int $uid): array
+    protected function prepareEntryData(array $entry): array
     {
         $entryLang = $GLOBALS['prefered_language'] ?? 'fr';
         $entryTitle = $entry['bf_titre'] ?? $entry['id_fiche'];
         $data = [
-            'uid' => $uid,
-            'slug' => URLify::slug($entryTitle),
             'title' => [
                 $entryLang => substr(strip_tags($entryTitle),0,140)
             ],
@@ -324,17 +353,196 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
                 'link' => $this->wiki->Href('',$entry['id_fiche'])
             ]
         ];
+        $entryPlace = $this->getPlace($entry);
+        if (empty($entryPlace)){
+            $entryPlace = $this->createPlace($entry);
+        }
+        $data['locationUid'] = $entryPlace['uid'] ?? 0;
         return $data;
     }
 
     /**
-     * generate OpenAgenda uid from entryId and agenda uid
-     * @param int $agendaUid
-     * @param string $entryId
-     * @return int $uid
+     * create a place from entry on OpenAgenda
+     * @param array $entry
+     * @return array $createdPlace
+     * @throws Exception
      */
-    protected function generateOpenAgendaUid(int $agendaUid,string $entryId): int
+    protected function createPlace(array $entry): array
     {
-        return intval(sprintf('%u',crc32("$agendaUid$entryId")));
+        $extract = $this->extractAddress($entry);
+
+        $data = [
+            'name' => $extract['name'],
+            'address' => $extract['address'],
+            'state' => 1, // verified by default,
+            'countryCode' => 'FR' // TODO manage country code
+        ];
+        if (!empty($extract['town'])){
+            $data['city'] = $extract['town'];
+        }
+        if (!empty($extract['postalCode'])){
+            $data['postalCode'] = $extract['postalCode'];
+        }
+        if (!empty($extract['latitude'])){
+            $data['latitude'] = floatval($extract['latitude']);
+        }
+        if (!empty($extract['longitude'])){
+            $data['longitude'] = floatval($extract['longitude']);
+        }
+
+        $result = $this->postToOpenAgenda(
+            'createPlace',
+            $entry['id_typeannonce'],
+            'locations',
+            $data
+        );
+        return empty($result['location']) ? [] : $result['location'];
+    }
+
+    /**
+     * get a place from entry on OpenAgenda
+     * @param array $entry
+     * @return array $place
+     * @throws Exception
+     */
+    protected function getPlace(array $entry)
+    {
+        $association = $this->openAgendaParams['associations'][$entry['id_typeannonce']];
+
+        $extract = $this->extractAddress($entry);
+        
+        $data = $this->getRouteApi(
+            "https://api.openagenda.com/v2/agendas/{$association['id']}/locations?key={$association['public']}&search=".urlencode($extract['name']),
+            'getPlace'
+        );
+        $this->triggerErrorsIfNeeded('openAgendaGetPlace',$data);
+        $places = empty($data['locations'])
+            ? []
+            : array_filter(
+                $data['locations'],
+                function($place) use($extract){
+                    return ($place['name'] ?? '') === $extract['name'];
+                }
+            );
+        return empty($places) ? [] : $places[array_key_first($places)];
+    }
+
+    /**
+     * extract address from $entry
+     * @param array $entry
+     * @return array (String) [$name,$address,$street,$street1,$street2,$postalCode,$town,$state,$latitude,$longitude]
+     */
+    protected function extractAddress(array $entry): array
+    {
+        $mapField = $this->getMapField($entry['id_typeannonce']);
+        $fieldNames = empty($mapField)
+            ? [    
+                'street' => MapField::DEFAULT_FIELDNAME_STREET,
+                'street1' => MapField::DEFAULT_FIELDNAME_STREET1,
+                'street2' => MapField::DEFAULT_FIELDNAME_STREET2,
+                'postalCode' => MapField::DEFAULT_FIELDNAME_POSTALCODE,
+                'town' => MapField::DEFAULT_FIELDNAME_TOWN,
+                'state' => MapField::DEFAULT_FIELDNAME_STATE
+            ]
+            : $mapField->getAutocompleteFieldnames();
+        $geolocationFieldNames = empty($mapField)
+            ? [    
+                'latitude' => 'bf_latitude',
+                'longitude' => 'bf_longitude'
+            ]
+            : [    
+                'latitude' => $mapField->getLatitudeField(),
+                'longitude' => $mapField->getLongitudeField()
+            ];
+
+        $extract = array_map(
+            function($propertyName) use ($entry){
+                return (!empty($propertyName)
+                        && !empty($entry[$propertyName])
+                        && is_string($entry[$propertyName])
+                    )
+                    ? trim($entry[$propertyName])
+                    : '';
+            },
+            $fieldNames
+        );
+        
+        $name = implode(',',array_filter(
+            $extract,
+            function($str){
+                return !empty($str);
+            }
+        ));
+
+        $extract['name'] = empty($name) ? self::UNKNOWN_PLACE_NAME : substr($name,0,100);
+        $extract['address'] = empty($name) ? self::UNKNOWN_PLACE_NAME : substr($name,0,255);
+
+        foreach($geolocationFieldNames as $key => $fieldName){
+            $extract[$key] = empty($fieldName)
+                ? ''
+                : ($entry[$fieldName] ?? $entry['geolocation'][$fieldName] ?? '');
+        }
+        return $extract;
+    }
+
+    /**
+     * trigger errors if needed
+     * @param string $name
+     * @param array $data
+     */
+    protected function triggerErrorsIfNeeded(string $name, array $data)
+    {
+        $errors = [];
+        if (!empty($data['message'])){
+            $errors[] = $data['message'];
+        }
+        if (!empty($data['errors'])){
+            $errors[] = implode(
+                ';',
+                array_map(
+                    function($e){
+                        return 'code:'.($e['code']??'???')
+                            .'=>'.($e['message']??'???')
+                            .' (field:'.($e['field'] ?? '??').')';
+                    },
+                
+                    $data['errors']
+                )
+            );
+        }
+        if (!empty($errors)){
+            trigger_error("$name: ".implode('...',$errors));
+        }
+    }
+
+    /**
+     * generate nonce
+     * @return int
+     */
+    protected function generateNonce(): int
+    {
+        return random_int(0,pow(2, 31));
+    }
+
+    /**
+     * get MapField if any
+     * @param string $formId
+     * @return null|MapField
+     */
+    protected function getMapField(string $formId): ?MapField
+    {
+        if (!array_key_exists($formId,$this->cacheMapField)){
+            $form = $this->formManager->getOne($formId);
+            $this->cacheMapField[$formId] = null;
+            if (!empty($form['prepared'])){
+                foreach($form['prepared'] as $field){
+                    if (empty($this->cacheMapField[$formId])
+                        && $field instanceof MapField){
+                        $this->cacheMapField[$formId] = $field;
+                    }
+                }
+            }
+        }
+        return $this->cacheMapField[$formId];
     }
 }
