@@ -15,6 +15,7 @@ let appParams = {
     components: {},
     data() {
         return {
+            activated: false,
             associations: {},
             callingApi: false,
             forms: null,
@@ -243,6 +244,22 @@ let appParams = {
             .catch(this.manageError)
             .finally(()=>{this.callingApi = false})
         },
+        async toggleActivation(value){
+            this.callingApi = true
+            this.message = `changing state`
+            this.messageClass = 'info'
+            return await this.fetch(wiki.url('?api/openagenda/config/toggleactivation'),'post',{
+                token:this.token
+            })
+            .then((data)=>{
+                this.activated = (data?.isActivated === true)
+                this.message = 'ok'
+                this.messageClass = 'success'
+                return data
+            })
+            .catch(this.manageError)
+            .finally(()=>{this.callingApi = false})
+        },
         toPreFormData(thing,key =""){
             let type = typeof thing;
             switch (type) {
@@ -301,6 +318,7 @@ let appParams = {
     },
     mounted(){
         const data = JSON.parse(this.dataset)
+        this.activated = (data?.isActivated === true)
         this.keys = (typeof data?.privateApiKeys === 'object' && Object.keys(data?.privateApiKeys).length > 0) 
             ? data?.privateApiKeys
             : {}

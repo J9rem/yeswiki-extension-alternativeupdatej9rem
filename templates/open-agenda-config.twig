@@ -13,6 +13,16 @@
 <h1>{{ _t('AUJ9_OPEN_AGENDA_CONFIG_TITLE') }}</h1>
 
 <div class="open-agenda-configurator" data-data="{{ data|json_encode }}">
+    <div class="control-group form-group">
+        <div class="checkbox" @click.prevent.stop="toggleActivation(activated)">
+            <label for="openAgendaActivated">
+			  {% apply spaceless %}
+                <input class="element_checkbox" type="checkbox" id="openAgendaActivated" :checked="activated" :disabled="callingApi"/>
+                <span>{{ _t('AUJ9_OPEN_AGENDA_ACTIVATED') }}</span>
+			  {% endapply %}
+            </label>
+        </div>
+    </div>
     <div :class="{alert:true,[message.length > 0 ? `alert-${messageClass || 'info'}` : 'alert-info']:true}">
         <template v-if="message === 'getform'">{{ _t('AUJ9_OPEN_AGENDA_GET_FORM') }}</template>
         <template v-else-if="message === 'error'">{{ _t('AUJ9_OPEN_AGENDA_ERROR') }}</template>

@@ -69,7 +69,8 @@ class ConfigOpenAgendaController extends YesWikiController
             'data' => [
                 'privateApiKeys' => $openAgendaParams['privateApiKeys'] ?? [],
                 'associations' => $openAgendaParams['associations'] ?? [],
-                'token' => $this->csrfTokenManager->refreshToken(self::TOKEN_ID)->getValue()
+                'token' => $this->csrfTokenManager->refreshToken(self::TOKEN_ID)->getValue(),
+                'isActivated' => ($openAgendaParams['isActivated'] ?? false) === true
             ]
         ]);
         $this->wiki->page = null;
@@ -115,6 +116,34 @@ class ConfigOpenAgendaController extends YesWikiController
         return new ApiResponse(
             empty($data['success']) ? ['error'=>$data['error'] ?? '!!!'] : $data,
             empty($data['success']) ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK
+        );
+    }
+
+    /**
+     * toggle activation
+     * @return ApiResponse
+     */
+    public function toggleActivation()
+    {
+        $this->csrfTokenController->checkToken(self::TOKEN_ID, 'POST', 'token',false);
+
+        list('config' => $config,'openAgenda' => $openAgenda) = $this->configOpenAgendaService->getOpenAgendaFromConfig();
+
+        if (empty($openAgenda['isActivated'])){
+            $openAgenda['isActivated'] = true;
+        } elseif (isset($openAgenda['isActivated'])){
+            unset($openAgenda['isActivated']);
+        }
+
+        $config->openAgenda = $openAgenda;
+        $config->write();
+
+        // reload
+        list('openAgenda' => $openAgenda) = $this->configOpenAgendaService->getOpenAgendaFromConfig();
+
+        return new ApiResponse(
+            ['isActivated'=>($openAgenda['isActivated'] ?? false) === true],
+            Response::HTTP_OK
         );
     }
 

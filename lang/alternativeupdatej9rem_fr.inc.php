@@ -191,6 +191,7 @@ return [
 
   // templates/open-agenda-config.twig
   // Feature UUID : auj9-open-agenda-connect
+  'AUJ9_OPEN_AGENDA_ACTIVATED' => 'Fonctionnalité activée ?',
   'AUJ9_OPEN_AGENDA_CONFIG_ASSOCIATIONS' => 'Associations',
   'AUJ9_OPEN_AGENDA_CONFIG_TITLE' => 'Configuration de la connexion à Open Agenda',
   'AUJ9_OPEN_AGENDA_CONFIG_KEYS' => 'Clés privées',
