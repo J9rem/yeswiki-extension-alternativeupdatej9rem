@@ -36,16 +36,16 @@ let appParams = {
             return (this.forms === null) ? {} : Object.fromEntries(
                 Object.entries(this.forms)
                     .filter(([,form])=>{
-                        return form?.prepared?.some((field)=>{
+                        return Array.isArray(form?.prepared) && (form?.prepared?.some((field)=>{
                             return ['jour','listedatedeb','listedatefin'].includes(field?.type)
                                 && field?.propertyname === 'bf_date_debut_evenement'
-                        }) ?? false
+                        }) ?? false)
                     })
                     .filter(([,form])=>{
-                        return form?.prepared?.some((field)=>{
+                        return Array.isArray(form?.prepared) && (form?.prepared?.some((field)=>{
                             return ['jour','listedatedeb','listedatefin'].includes(field?.type)
                                 && field?.propertyname === 'bf_date_fin_evenement'
-                        }) ?? false
+                        }) ?? false)
                     })
             )
         },
