@@ -35,17 +35,29 @@ let appParams = {
         agendaForms(){
             return (this.forms === null) ? {} : Object.fromEntries(
                 Object.entries(this.forms)
-                    .filter(([,form])=>{
-                        return Array.isArray(form?.prepared) && (form?.prepared?.some((field)=>{
-                            return ['jour','listedatedeb','listedatefin'].includes(field?.type)
-                                && field?.propertyname === 'bf_date_debut_evenement'
-                        }) ?? false)
+                    .map(([k,form])=>{
+                        if (typeof form === 'object'){
+                            form.prepared = Array.isArray(form?.prepared) 
+                                ? form.prepared
+                                : (
+                                    (typeof form?.prepared === 'object' && form?.prepared !== null)
+                                    ? Object.values(form.prepared)
+                                    : []
+                                )
+                        }
+                        return [k,form]
                     })
                     .filter(([,form])=>{
-                        return Array.isArray(form?.prepared) && (form?.prepared?.some((field)=>{
+                        return form?.prepared?.some((field)=>{
+                            return ['jour','listedatedeb','listedatefin'].includes(field?.type)
+                                && field?.propertyname === 'bf_date_debut_evenement'
+                        }) ?? false
+                    })
+                    .filter(([,form])=>{
+                        return form?.prepared?.some((field)=>{
                             return ['jour','listedatedeb','listedatefin'].includes(field?.type)
                                 && field?.propertyname === 'bf_date_fin_evenement'
-                        }) ?? false)
+                        }) ?? false
                     })
             )
         },
