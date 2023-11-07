@@ -10,6 +10,7 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
  - l'extension corrige un souci sur les metadonnées des pages qui peuvent être créées en base de données, même si l'utilisateur n'est pas connecté.
  - l'extension corrige un souci pour émettre un évènement lors de la suppression d'une fiche à partir d'un tableau
  - l'extension corrige un souci pour les champs liés
+ - l'extension corrige une faille de sécurité sur les droits de lecture pour le handler `lmsraw`
 
 ### Actions
 
@@ -84,6 +85,7 @@ Ajout des champs:
 ||système de mises à jour|[`auj9-autoupdate-system`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-autoupdate-system&type=code)|
 ||système de cache local des requêtes SQL|[`auj9-local-cache`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-local-cache&type=code)|
 ||corrections concernant les metadonnées|[`auj9-feat-user-controller-delete-own-pages`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-feat-user-controller-delete-own-pages&type=code)|
+||corrections la faille de sécurité du handler `lmsraw`|[`auj9-fix-lmsraw-handler`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-lmsraw-handler&type=code)|
 ||correctif au niveau de la suppression des pages via l'api|[`auj9-fix-page-controller`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-page-controller&type=code)|
 ||suppression d'un utilisateur ET des pages et fiches possédées|[`auj9-fix-edit-metadata`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-edit-metadata&type=code)|
 ||correction d'un souci avec les champs liés|[`auj9-fix-linkedentry-empty`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-linkedentry-empty&type=code)|
