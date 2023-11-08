@@ -42,27 +42,10 @@ Ajout des champs:
 
 ### Nouvelles fonctionnalités
 
- - un système de cache local
- - **La possibilité de gérer des évènements récurrents**
+ - un système de cache local (cf. [Aide](#cache-local))
+ - **La possibilité de gérer des évènements récurrents** (cf. [Aide](#%C3%89v%C3%A8nements-r%C3%A9currents))
  - possibilité de supprimer toutes les pages et fiches possédées par un utilisateur lors de la suppression de cet utilisateur (à activer dans [GererConfig](?GererConfig ':ignore'))
  - **La possibilité de connecter un formulaire à [Open Agenda](https://openagenda.com)** (cf. documentation [ci-dessous](#documentation-open-agenda))
-
-#### Évènements récurrents
-
-!> la gestion des évènements récurrents est temporairement désativée pa défaut.
-
->Pour l'activer:
->  - se rendre dans [GererConfig](?GererConfig ':ignore')
->  - dans la partie `ALTERNATIVEUPDATEJ9REM`, mettre `true` pour la variable `activateEventRepetition`
-
-#### cache local 
-
- - La fonctionnalité de cache local est désativée par défaut. Il faut l'activer manuellement dans [GererConfig](?GererConfig ':ignore')
- - **ATTENTION, cette fonctionnalité est encore expérimentale**. Il est possible que le rafraîchissement trop tardif du cache epêche la bonne mise à jour des données affichées.
- - Le cache peut être effacé pour forcer un rafraîchissement de celui-ci en cliquant sur le lien ci-dessous
-```yeswiki preview=100px
-{{clearlocalcache}}
-```
 
 ----
 **Identification des fonctionnalités dans le code source**
@@ -105,6 +88,23 @@ Ajout des champs:
 ----
 
 ## Documentation
+
+#### Évènements récurrents
+
+!> la gestion des évènements récurrents est temporairement désativée pa défaut.
+
+>Pour l'activer:
+>  - se rendre dans [GererConfig](?GererConfig ':ignore')
+>  - dans la partie `ALTERNATIVEUPDATEJ9REM`, mettre `true` pour la variable `activateEventRepetition`
+
+#### cache local 
+
+ - La fonctionnalité de cache local est désativée par défaut. Il faut l'activer manuellement dans [GererConfig](?GererConfig ':ignore')
+ - **ATTENTION, cette fonctionnalité est encore expérimentale**. Il est possible que le rafraîchissement trop tardif du cache epêche la bonne mise à jour des données affichées.
+ - Le cache peut être effacé pour forcer un rafraîchissement de celui-ci en cliquant sur le lien ci-dessous
+```yeswiki preview=100px
+{{clearlocalcache}}
+```
 
 ### Aide pour l'action editentrypartial
 
