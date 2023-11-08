@@ -57,6 +57,10 @@ services:
   YesWiki\Alternativeupdatej9rem\Service\FieldFactory:
     decorates: YesWiki\Bazar\Service\FieldFactory
     decoration_on_invalid: null
+  # Feature UUID : auj9-can-force-entry-save-for-admin
+  YesWiki\Alternativeupdatej9rem\Service\AssetsManager:
+    decorates: YesWiki\Core\Service\AssetsManager
+    decoration_on_invalid: null
   # Feature UUID : auj9-fix-4-4-2
   YesWiki\Alternativeupdatej9rem\Controller\IcalFormatter:
     decorates: YesWiki\Bazar\Controller\IcalFormatter
