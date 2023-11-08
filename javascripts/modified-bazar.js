@@ -416,7 +416,7 @@ $(document).ready(() => {
     displayErrorMessage(str = '') {
       const msg = str.length > 0 ? str : this.errorMessage
       if (userIsAdmin){
-        if (confirm(`Une erreur est survenue\n${msg}\nVoulez-vous forcer l'enregistrement malgré cette erreur ?`)){
+        if (confirm(_t('AUJ9_BAZAR_ERROR_FOR_ADMINS',{msg}))){
           throw 'canForceSave'
         }
       } else {

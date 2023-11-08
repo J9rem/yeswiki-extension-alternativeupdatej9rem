@@ -83,4 +83,8 @@ return [
   // Feature UUID : auj9-bazar-list-send-mail-dynamic
   'AUJ9_SEND_MAIL_TEMPLATE_SENT' => 'Emails(s) envoyés (pour {details})',
   'AUJ9_SEND_MAIL_TEMPLATE_NOT_SENT' => 'Emails(s) non envoyés {errorMsg}',
+
+  // javascripts/modified-bazar.js
+  // Feature UUID : auj9-can-force-entry-save-for-admin
+  'AUJ9_BAZAR_ERROR_FOR_ADMINS' => "Une erreur est survenue\n{msg}\nVoulez-vous forcer l'enregistrement malgré cette erreur ?",
 ];
