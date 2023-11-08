@@ -413,9 +413,15 @@ $(document).ready(() => {
         this.checkPattern(input, index)
       }
     },
-    displayErrorMessage() {
-      console.log({userIsAdmin})
-      alert(this.errorMessage)
+    displayErrorMessage(str = '') {
+      const msg = str.length > 0 ? str : this.errorMessage
+      if (userIsAdmin){
+        if (confirm(`Une erreur est survenue\n${msg}\nVoulez-vous forcer l'enregistrement malgré cette erreur ?`)){
+          throw 'canForceSave'
+        }
+      } else {
+        alert(msg)
+      }
     },
     scrollToFirstinputInError(type = 'error') {
       const error = this[type] ?? -1
@@ -459,16 +465,21 @@ $(document).ready(() => {
       this.filterVisibleInputs('requiredInputs')
       this.filterVisibleInputs('textInputsWithPattern')
       this.checkInputs()
-      if (this.error > -1) {
-        this.displayErrorMessage()
-        this.scrollToFirstinputInError('error')
-        return false
-      }
-      if (this.errorPattern > -1) {
-        console.log({userIsAdmin})
-        alert(this.errorMessagePattern)
-        this.scrollToFirstinputInError('errorPattern')
-        return false
+      try {
+        if (this.error > -1) {
+          this.displayErrorMessage()
+          this.scrollToFirstinputInError('error')
+          return false
+        }
+        if (this.errorPattern > -1) {
+          this.displayErrorMessage(this.errorMessagePattern)
+          this.scrollToFirstinputInError('errorPattern')
+          return false
+        }
+      } catch (error) {
+        if (error !== 'canForceSave'){
+          return false
+        }
       }
       return true
     },
