@@ -79,6 +79,17 @@ return [
   'ALTERNATIVEUPDATE_VIDEO_POSITION_RIGHT' => 'Alignée à droite',
   'ALTERNATIVEUPDATE_URL_DISPLAY_VIDEO' => 'Afficher le lecteur si le lien est une vidéo ?',
 
+  // javascripts/fields/nbsubscription.js
+  // Feature UUID : auj9-subscribe-to-entry
+  'AUJ9_NB_SUBSCRIPTION' => 'Nombre d\'inscriptions',
+  // javascripts/fields/subscribe.js
+  // Feature UUID : auj9-subscribe-to-entry
+  'AUJ9_SUBSCRIBE' => 'Inscriptions',
+  'AUJ9_SUBSCRIBE_SHOWLIST' => 'Afficher la liste',
+  'AUJ9_SUBSCRIBE_TYPE' => 'Type',
+  'AUJ9_SUBSCRIBE_TYPE_ENTRY' => 'Fiche',
+  'AUJ9_SUBSCRIBE_TYPE_USER' => 'Utilisateur',
+
   // javascripts/components/BazarSendMail.js
   // Feature UUID : auj9-bazar-list-send-mail-dynamic
   'AUJ9_SEND_MAIL_TEMPLATE_SENT' => 'Emails(s) envoyés (pour {details})',
