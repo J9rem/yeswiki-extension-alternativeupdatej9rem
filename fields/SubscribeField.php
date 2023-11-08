@@ -35,6 +35,12 @@ class SubscribeField extends CheckboxEntryField
         $this->showList = empty($values[self::FIELD_SHOWLIST])
             || $values[self::FIELD_SHOWLIST] !== 'no';
         $this->maxChars = '';
+        $this->propertyName = $this->type . $this->name . $this->listLabel;
+    }
+
+    public function getOptions()
+    {
+        return  [];
     }
 
     public function getIsUserType():bool
