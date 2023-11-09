@@ -15,6 +15,31 @@ import {
   listsMapping
 } from '../../../bazar/presentation/javascripts/form-edit-template/fields/commons/attributes.js'
 
+const updateEnFormDisplay = (element) => {
+  const base = $(element).closest(".subscribe-field.form-field")
+  const selectForm = base.find("select[name=form]").closest('.form-group');
+  const selectTypeSubscription = base.find("select[name=typesubscription]")
+
+  const currentValue = selectTypeSubscription.val()
+  if (currentValue.trim().length === 0){
+    selectForm.hide()
+  } else {
+    selectForm.show()
+  }
+}
+
+const initSubscribe = () => {
+  const base = $(".subscribe-field")
+  const selectTypeSubscription = base.find("select[name=typesubscription]:not(.initialized)")
+
+  selectTypeSubscription?.change(function(event){
+    updateEnFormDisplay(event.target)
+  })
+  selectTypeSubscription?.addClass('initialized')
+
+  selectTypeSubscription?.trigger("change")
+}
+
 export default {
   field: {
     label: _t('AUJ9_SUBSCRIBE'),
@@ -76,6 +101,9 @@ export default {
   renderInput() {
     return {
       field: `<span>Liste des inscrits <i class="fas fa-angle-down"></i></span> <button class="btn btn-xs btn-success" disabled><i class="fas fa-user-plus"></i> ${_t('AUJ9_SUBSCRIBE')}</button>`,
+      onRender: function(){
+        initSubscribe()
+      }
     }
   }
 }
