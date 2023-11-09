@@ -51,6 +51,11 @@ return [
   'AUJ9_SEND_MAIL_TEMPLATE_REPLYTO' => 'Répondre à',
   'AUJ9_SEND_MAIL_TEMPLATE_HIDDENCOPY' => 'Copie cachée à',
 
+  // fields/SubscribeField.php
+  // Feature UUID : auj9-subscribe-to-entry
+  'AUJ9_SUBSCRIBE_SEE_LIST' => 'Voir la liste',
+  'AUJ9_SUBSCRIBE_HIDE_LIST' => 'Cacher la liste',
+
   // fields/video.twig
   // Feature UUID : auj9-video-field
   'VIDEO_LINK_FIELD' => 'Lien vers la vidéo : %{link}',
