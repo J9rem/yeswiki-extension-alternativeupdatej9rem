@@ -14,6 +14,7 @@ namespace YesWiki\Alternativeupdatej9rem\Field;
 
 use DateTimeImmutable;
 use Psr\Container\ContainerInterface;
+use YesWiki\Alternativeupdatej9rem\Service\SubscriptionManager;
 use YesWiki\Bazar\Field\CheckboxEntryField;
 use YesWiki\Core\Service\AssetsManager;
 use YesWiki\Core\Service\UserManager;
@@ -162,6 +163,17 @@ class SubscribeField extends CheckboxEntryField
             return $output;
         }
         return parent::renderInput($entry);
+    }
+
+    public function formatValuesBeforeSaveIfEditable($entry, bool $isCreation = false)
+    {
+        $output = parent::formatValuesBeforeSaveIfEditable($entry,$isCreation);
+        $values = $this->getValues($output);
+        $output = array_merge(
+            $output,
+            $this->getService(SubscriptionManager::class)->registerNB($entry,$values,$this)
+        );
+        return $output;
     }
 
     public function getIsUserType():bool

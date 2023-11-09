@@ -92,3 +92,7 @@ services:
   YesWiki\Alternativeupdatej9rem\Service\ConfigOpenAgendaService:
     tags:
       - { name: yeswiki.event_subscriber }
+  # Feature UUID : auj9-subscribe-to-entry
+  YesWiki\Alternativeupdatej9rem\Service\SubscriptionManager:
+    tags:
+      - { name: yeswiki.event_subscriber }

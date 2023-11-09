@@ -71,6 +71,12 @@ return [
   'AUJ9_PAGE_NEW_NAME' => 'Nom de la nouvelle page à créer',
   'AUJ9_SAVE' => 'Sauver',
   
+  // services/SubscriptionManager.php
+  // Feature UUID : auj9-subscribe-to-entry
+  'AUJ9_SUBSCRIBE_EMPTY' => '0 inscrit',
+  'AUJ9_SUBSCRIBE_ONE_SUBSCRIPTION' => '1 inscrit',
+  'AUJ9_SUBSCRIBE_MANY_SUBSCRIPTIONS' => '%{X} inscrits',
+
   // services/ActionsBuilderService.php
   // Feature UUID : auj9-editentrypartial-action
   'AUJ9_EDIT_ENTRY_PARTIAL_ACTION_FIELDS_LABEL' => 'Champs à modifier',
