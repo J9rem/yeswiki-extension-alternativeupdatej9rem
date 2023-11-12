@@ -14,6 +14,7 @@ namespace YesWiki\Alternativeupdatej9rem;
 
 use Exception;
 use Throwable;
+use YesWiki\Bazar\Service\FormManager;
 use YesWiki\Core\YesWikiHandler;
 use YesWiki\Core\Service\AclService;
 use YesWiki\Core\Service\DbService;
@@ -154,6 +155,32 @@ class UpdateHandler__ extends YesWikiHandler
             }
         }
         /* === end of Feature UUID : auj9-fix-edit-metadata === */
+
+        /* === Feature UUID : auj9-video-field === */
+        $formManager = $this->getService(FormManager::class);
+        $forms = $formManager->getAll();
+        foreach($forms as $form){
+            if (!empty($form['template']) && is_array($form['template'])){
+                $toSave = false;
+                foreach($form['template'] as $key => $fieldTemplate){
+                    if ($fieldTemplate[0] === 'video'){
+                        $toSave = true;
+                    }
+                }
+                if ($toSave){
+                    $messages[] = "ℹ️ Converting videofield to urlfield in form {$form['bn_id_nature']}";
+                    $separator = preg_quote('***','/');
+                    $form['bn_template'] = preg_replace(
+                        "/\nvideo$separator([^*]+)$separator([^|]+)$separator([^*]+)$separator([^*]+)$separator([^|]+)$separator([^*]+)((?:{$separator}[^*]+){4}(?:$separator(?:[^*]+| \\* )){2}(?:{$separator}[^*]*){4,}\r?\n)/",
+                        "\nlien_internet***$1***$2***displayvideo*** ***$5***$3|$4|$6$7",
+                        $form['bn_template']);
+                    $formManager->update($form);
+                    $messages[] = "&nbsp;&nbsp; ✅";
+                }
+
+            }
+        }
+        /* === end of Feature UUID : auj9-video-field === */
         
         if (!empty($messages)){
             $message = implode('<br/>',$messages);
