@@ -92,11 +92,6 @@ trait ActionsBuilderServiceCommon
                         $props[$propName] = [
                             'type' => 'correspondance',
                             'subproperties' => [
-                                'videofieldname' => [
-                                    'type' => 'form-field',
-                                    'label' => _t('AUJ9_BAZARVIDEO_ACTION_VIDEO_FIELDNAME_LABEL'),
-                                    'value' => 'bf_video'
-                                ],
                                 'imagefieldname' => $propDef['subproperties']['visual'] ?? [],
                                 'urlfieldname' => [
                                     'type' => 'form-field',

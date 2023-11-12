@@ -72,7 +72,6 @@ return [
   'AUJ9_EDIT_ENTRY_PARTIAL_ACTION_LABEL' => 'Modifier partiellement une fiche',
   // Feature UUID : auj9-bazar-list-video-dynamic
   'AUJ9_BAZARVIDEO_ACTION_LABEL' => 'Affichage des vidéos par bloc',
-  'AUJ9_BAZARVIDEO_ACTION_VIDEO_FIELDNAME_LABEL' => 'Champ vidéo',
   'AUJ9_BAZARVIDEO_ACTION_VIDEO_LINK_LABEL' => 'Champ lien',
 
   // templates/bazar/fields/date.twig

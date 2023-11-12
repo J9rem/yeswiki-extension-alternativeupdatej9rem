@@ -28,7 +28,7 @@ registerFieldAUJ9rem(getCustomSendMailField({
   linkedLabelAUJ9remConf
 }))
 // Feature UUID : auj9-video-field
-registerFieldAUJ9rem(getVideoField({
+registerFieldAUJ9rem(getUrlField({
   defaultMapping,
   readConf,
   writeconf,
