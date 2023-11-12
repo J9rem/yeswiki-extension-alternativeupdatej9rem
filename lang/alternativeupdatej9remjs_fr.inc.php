@@ -68,7 +68,7 @@ return [
   'ALTERNATIVEUPDATE_FIELD_FORM' => 'Champ fourni par l\'extension "alternativeupdatej9rem"',
   'ALTERNATIVEUPDATE_FIELD_LINKEDLABEL' => 'Champ e-mail dans la fiche courante',
   'ALTERNATIVEUPDATE_FIELD_LINKEDLABEL_HINT' => 'Laisser vide pour ne pas utiliser la fiche courante',
-  // javascripts/fields/videofield.js
+  // javascripts/fields/urlfield.js
   // Feature UUID : auj9-video-field
   'ALTERNATIVEUPDATE_VIDEO_MAXHEIGHT_LABEL' => 'Hauteur maximal de la vidéo',
   'ALTERNATIVEUPDATE_VIDEO_MAXWIDTH_LABEL' => 'Largeur maximal de la vidéo',
@@ -77,7 +77,7 @@ return [
   'ALTERNATIVEUPDATE_VIDEO_POSITION_LABEL' => 'Position de la vidéo',
   'ALTERNATIVEUPDATE_VIDEO_POSITION_LEFT' => 'Alignée à gauche',
   'ALTERNATIVEUPDATE_VIDEO_POSITION_RIGHT' => 'Alignée à droite',
-  'ALTERNATIVEUPDATE_VIDEO_LABEL' => 'vidéo',
+  'ALTERNATIVEUPDATE_URL_DISPLAY_VIDEO' => 'Afficher le lecteur si le lien est une vidéo ?',
 
   // javascripts/components/BazarSendMail.js
   // Feature UUID : auj9-bazar-list-send-mail-dynamic

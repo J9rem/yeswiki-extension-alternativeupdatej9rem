@@ -33,7 +33,7 @@ class BazarAction__ extends YesWikiAction
             // Feature UUID : auj9-custom-sendmail
             $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/customsendmailfield.js');
             // Feature UUID : auj9-video-field
-            $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/videofield.js');
+            $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/urlfield.js');
             if (file_exists('tools/bazar/presentation/javascripts/form-edit-template/fields/commons/render-helper.js')){
                 $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/form-edit-template-module.js', false, true);
             } else {
