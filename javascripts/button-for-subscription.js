@@ -69,7 +69,8 @@ const toogleRegistrationForUser = async (entryId,propertyName) => {
                     registered: data?.newState === true,
                     errorMsg: data?.errorMsg ?? '',
                     isError: data?.isError === true,
-                    nb: data?.nb ?? []
+                    nb: data?.nb ?? [],
+                    thereIsAvailablePlace: data?.thereIsAvailablePlace === true
                 }
             })
             .finally(()=>{
@@ -88,7 +89,7 @@ window.toogleRegistration = (event,entryId = '',propertyName = '') => {
     const btn = event.target.classList.contains('btn') ? event.target : closest(event.target,'btn')
     btn?.setAttribute('disabled','disabled')
     toogleRegistrationForUser(entryId,propertyName)
-        .then(({registered,isError,errorMsg,nb})=>{
+        .then(({registered,isError,errorMsg,nb,thereIsAvailablePlace})=>{
             if (isError){
                 throw new Error(errorMsg)
             }
@@ -105,6 +106,15 @@ window.toogleRegistration = (event,entryId = '',propertyName = '') => {
                 if (group.classList.contains('registered')){
                     group.classList.remove('registered')
                     group.classList.add('not-registered')
+                }
+            }
+            if (thereIsAvailablePlace){
+                if (group.classList.contains('no-place')){
+                    group.classList.remove('no-place')
+                }
+            } else {
+                if (!group.classList.contains('no-place')){
+                    group.classList.add('no-place')
                 }
             }
             if (nb?.length == 2 && nb?.[0]?.length > 0 && nb?.[1]?.length > 0){

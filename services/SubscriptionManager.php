@@ -209,13 +209,30 @@ class SubscriptionManager implements EventSubscriberInterface
             $modifiedEntry = $this->saveEntryInDb($newEntry);
             $nbSubscriptionField = $this->getNbSubscriptionField($modifiedEntry);
             $newValues = $subscribeField->getValues($modifiedEntry);
-            return array_merge($output,['newState' => in_array($user['name'],$newValues),'isError' => false]+(
+            return array_merge($output,[
+                    'newState' => in_array($user['name'],$newValues),
+                    'isError' => false,
+                    'thereIsAvailablePlace'=>$this->isThereAvailablePlace($modifiedEntry,$subscribeField)
+                ]+(
                 empty($nbSubscriptionField)
                 ? []
                 : ['nb' => [$nbSubscriptionField->getPropertyName(),$modifiedEntry[$nbSubscriptionField->getPropertyName()] ?? '']]
             ));
         }
         return array_merge($output,['errorMsg' => 'Part not already supported']);
+    }
+
+    /**
+     * check if there is available place
+     * @param array $entry
+     * @param SubscribeField $subscribeField
+     * @return bool
+     */
+    public function isThereAvailablePlace(array $entry,SubscribeField $subscribeField): bool
+    {
+        $nbMax = $this->getMaximumNumberOfSubscriptions($entry,$subscribeField);
+        $values = $subscribeField->getValues($entry);
+        return ($nbMax === -1 || $nbMax > count($values));
     }
 
     /**

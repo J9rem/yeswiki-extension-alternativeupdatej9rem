@@ -225,5 +225,6 @@ return [
   // Feature UUID : auj9-subscribe-to-entry
   'AUJ9_CONNECT_TO_REGISTER' => 'Se connecter pour s\'inscrire',
   'AUJ9_REGISTER' => 'S\'inscrire',
+  'AUJ9_REGISTER_NO_PLACE' => 'Il n\'y a plus de place disponible',
   'AUJ9_UNREGISTER' => 'Se désinscrire',
 ];

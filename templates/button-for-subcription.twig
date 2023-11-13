@@ -7,12 +7,19 @@
 
 {{ include_javascript('tools/alternativeupdatej9rem/javascripts/button-for-subscription.js',false,true) }}
 {{ include_css('tools/alternativeupdatej9rem/styles/button-for-subscription.css') }}
-<div class="subscription-group {{ hasAcl('+') ? (isRegistered ? 'registered' : 'not-registered') : 'to-connect' }}">
+<div class="subscription-group {{ hasAcl('+') ? (isRegistered ? 'registered' : 'not-registered') : 'to-connect' }}{{ noPlace ? ' no-place' :'' }}">
     <a class="connection-button btn btn-xs btn-primary" href="#LoginModal" title="{{ _t('AUJ9_CONNECT_TO_REGISTER') }}" data-toggle="modal"><i class="fas fa-sign-in-alt"></i> {{ _t('AUJ9_CONNECT_TO_REGISTER') }}</a>
     <button
         class="register-button btn btn-xs btn-primary"
         onClick="typeof toogleRegistration === 'function' ? toogleRegistration(event,{{ entryId|json_encode }},{{ propertyName|json_encode }}) : null"
         title="{{ _t('AUJ9_REGISTER') }}">
+        <i class="fas fa-user-plus"></i> {{ _t('AUJ9_REGISTER') }}
+    </button>
+    <button
+        class="register-button no-place btn btn-xs btn-primary"
+        title="{{ _t('AUJ9_REGISTER_NO_PLACE') }}"
+        data-toggle="tooltip"
+        disabled>
         <i class="fas fa-user-plus"></i> {{ _t('AUJ9_REGISTER') }}
     </button>
     <button 
