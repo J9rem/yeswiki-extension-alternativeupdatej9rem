@@ -169,18 +169,35 @@ class SubscribeField extends CheckboxEntryField
                 );
             $output = parent::renderInput($entry);
             $this->options = $savedOptions;
-            return $output;
+            $askForLimit = $this->render(
+                '@bazar/inputs/text.twig',
+                [
+                    'field' => [
+                        'type' => 'text',
+                        'hint' => _t('AUJ9_SUBSCRIBE_HINT_FOR_MAX'),
+                        'label' => _t('AUJ9_SUBSCRIBE_LABEL_FOR_MAX'),
+                        'subType' => 'number',
+                        'name' => $this->getPropertyName().'_data[max]',
+                        'size' => -1
+                    ],
+                    'value' => intval($entry[$this->getPropertyName().'_data']['max'] ?? -1)
+                ]
+            );
+            return $askForLimit.$output;
         }
         return parent::renderInput($entry);
     }
 
     public function formatValuesBeforeSaveIfEditable($entry, bool $isCreation = false)
     {
+        $subsciptionManager = $this->getService(SubscriptionManager::class);
         $output = parent::formatValuesBeforeSaveIfEditable($entry,$isCreation);
+        $values = $this->getValues($output);
+        $output = $subsciptionManager->keepOnlyBellowMax($entry,$values,$this,$output);
         $values = $this->getValues($output);
         $output = array_merge(
             $output,
-            $this->getService(SubscriptionManager::class)->registerNB($entry,$values,$this)
+            $subsciptionManager->registerNB($entry,$values,$this)
         );
         return $output;
     }

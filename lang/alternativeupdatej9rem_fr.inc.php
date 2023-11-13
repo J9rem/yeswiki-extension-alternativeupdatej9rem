@@ -53,8 +53,10 @@ return [
 
   // fields/SubscribeField.php
   // Feature UUID : auj9-subscribe-to-entry
-  'AUJ9_SUBSCRIBE_SEE_LIST' => 'Voir la liste',
   'AUJ9_SUBSCRIBE_HIDE_LIST' => 'Cacher la liste',
+  'AUJ9_SUBSCRIBE_HINT_FOR_MAX' => '-1 = pas de limite',
+  'AUJ9_SUBSCRIBE_LABEL_FOR_MAX' => 'Nombre maximum d\'inscriptions',
+  'AUJ9_SUBSCRIBE_SEE_LIST' => 'Voir la liste',
 
   // fields/video.twig
   // Feature UUID : auj9-video-field

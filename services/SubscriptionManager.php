@@ -192,7 +192,6 @@ class SubscriptionManager implements EventSubscriberInterface
             return array_merge($output,['errorMsg' => 'User can not read or write this field']);
         }
         if ($subscribeField->getIsUserType()){
-            $newSate = false;
             $values = $subscribeField->getValues($entry);
             if ($this->isRegistered($subscribeField,$entry)){
                 $newValues = array_filter(
@@ -202,7 +201,6 @@ class SubscriptionManager implements EventSubscriberInterface
                     }
                 );
             } else {
-                $newSate = true;
                 $newValues = $values;
                 $newValues[] = $user['name'];
             }
@@ -210,7 +208,8 @@ class SubscriptionManager implements EventSubscriberInterface
             $newEntry[$subscribeField->getPropertyName()] = implode(',', $newValues);
             $modifiedEntry = $this->saveEntryInDb($newEntry);
             $nbSubscriptionField = $this->getNbSubscriptionField($modifiedEntry);
-            return array_merge($output,['newState' => $newSate,'isError' => false]+(
+            $newValues = $subscribeField->getValues($modifiedEntry);
+            return array_merge($output,['newState' => in_array($user['name'],$newValues),'isError' => false]+(
                 empty($nbSubscriptionField)
                 ? []
                 : ['nb' => [$nbSubscriptionField->getPropertyName(),$modifiedEntry[$nbSubscriptionField->getPropertyName()] ?? '']]
@@ -244,12 +243,67 @@ class SubscriptionManager implements EventSubscriberInterface
     }
 
     /**
-     * generate events for new or removed subscriptions
+     * keep only new values bellow maximum number
      * @param null|array $entry
      * @param array $values
      * @param SubscribeField $subscribeField
+     * @param array $fieldsToRegister
+     * @return array
      */
-    protected function generateEvents(?array $entry,array $values, SubscribeField $subscribeField)
+    public function keepOnlyBellowMax(?array $entry,array $values, SubscribeField $subscribeField, array $fieldsToRegister): array
+    {
+        $fields = $fieldsToRegister;
+        $data = $this->getChangesOnValues($entry,$values,$subscribeField);
+        if (!empty($data)){
+            $nbMax = $this->getMaximumNumberOfSubscriptions($entry,$subscribeField);
+            if ($nbMax >= 0 && count($values) > $nbMax){
+                $nbToRemoveFromValues = count($values) - $nbMax;
+                $nbToRemoveFromNew = min($nbToRemoveFromValues,count($data['newValues']));
+                $notToAdd = [];
+                $newValues = $data['newValues'];
+                for ($i=0; $i < $nbToRemoveFromNew ; $i++) { 
+                    $notToAdd[] = array_pop($newValues);
+                }
+                $fields[$subscribeField->getPropertyName()] = implode(
+                    ',',
+                    array_filter(
+                        $values,
+                        function($v) use ($notToAdd){
+                            return !in_array($v,$notToAdd);
+                        }
+                    )
+                );
+            }
+        }
+        return $fields;
+    }
+
+    /**
+     * get maximum number of subsciptions
+     * @param array $entry
+     * @param SubscribeField $subscribeField
+     * @return int 
+     */
+    protected function getMaximumNumberOfSubscriptions(array $entry,SubscribeField $subscribeField): int
+    {
+        $propName = $subscribeField->getPropertyName();
+        if (isset($entry[$propName.'_data']['max'])){
+            $max = $entry[$propName.'_data']['max'];
+            if (strval($max) === strval(intval($max)) && intval($max) >= 0){
+                return intval($max);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * get changes of values
+     * @param null|array $entry
+     * @param array $values
+     * @param SubscribeField $subscribeField
+     * @return array [array $newValues, array $removedValues]
+     */
+    protected function getChangesOnValues(?array $entry,array $values, SubscribeField $subscribeField): array
     {
         if (!empty($entry['id_fiche']) && is_string($entry['id_fiche'])){
             $oldEntry = $this->entryManager->getOne($entry['id_fiche']);
@@ -262,10 +316,25 @@ class SubscriptionManager implements EventSubscriberInterface
             $removedValues = array_filter($previousValues,function($v) use($values){
                 return !in_array($v,$values);
             });
+            return compact(['newValues','removedValues']);
+        }
+        return [];
+    }
 
+    /**
+     * generate events for new or removed subscriptions
+     * @param null|array $entry
+     * @param array $values
+     * @param SubscribeField $subscribeField
+     */
+    protected function generateEvents(?array $entry,array $values, SubscribeField $subscribeField)
+    {
+        $data = $this->getChangesOnValues($entry,$values,$subscribeField);
+        if (!empty($data)){
+            $postFix = $subscribeField->getIsUserType() ? 'asUser' : 'asEntry';
             foreach([
-                'subscription.new.asUser' => $newValues,
-                'subscription.removed.asUser' => $removedValues
+                "subscription.new.$postFix" => $data['newValues'],
+                "subscription.removed.$postFix" => $data['removedValues']
             ] as $eventName => $values){
                 foreach ($values as $value) {
                     $errors = $this->eventDispatcher->yesWikiDispatch($eventName, [
