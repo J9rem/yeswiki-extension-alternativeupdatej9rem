@@ -774,9 +774,7 @@ class ApiController extends YesWikiController
     {
         return $this->executeInSecureContext(function ($autoUpdateService) use ($entryId,$fieldName){
             return new ApiResponse(
-                [
-                    'newState' => $this->wiki->services->get(SubscriptionManager::class)->toggleRegistrationState($entryId,$fieldName)
-                ],
+                $this->wiki->services->get(SubscriptionManager::class)->toggleRegistrationState($entryId,$fieldName),
                 Response::HTTP_OK
             );
         });

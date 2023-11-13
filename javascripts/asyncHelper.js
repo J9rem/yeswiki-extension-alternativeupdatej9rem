@@ -13,7 +13,7 @@
 /* sync methods */
 
 const manageError = (error) => {
-    if (window.wiki.isDebugEnabled){
+    if (window.wiki.isDebugEnabled === true || window.wiki.isDebugEnabled === 'true'){
         console.error(error)
     }
     return null

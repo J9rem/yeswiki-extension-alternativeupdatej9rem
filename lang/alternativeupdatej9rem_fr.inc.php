@@ -73,9 +73,9 @@ return [
   
   // services/SubscriptionManager.php
   // Feature UUID : auj9-subscribe-to-entry
-  'AUJ9_SUBSCRIBE_EMPTY' => '0 inscrit',
-  'AUJ9_SUBSCRIBE_ONE_SUBSCRIPTION' => '1 inscrit',
-  'AUJ9_SUBSCRIBE_MANY_SUBSCRIPTIONS' => '%{X} inscrits',
+  'AUJ9_SUBSCRIBE_EMPTY' => '0 inscription',
+  'AUJ9_SUBSCRIBE_ONE_SUBSCRIPTION' => '1 inscription',
+  'AUJ9_SUBSCRIBE_MANY_SUBSCRIPTIONS' => '%{X} inscriptions',
 
   // services/ActionsBuilderService.php
   // Feature UUID : auj9-editentrypartial-action

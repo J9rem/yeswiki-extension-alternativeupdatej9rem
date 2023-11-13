@@ -64,7 +64,14 @@ const toogleRegistrationForUser = async (entryId,propertyName) => {
                     token:tokenForPost
                 }
             )
-            .then((data)=>data?.newState === true)
+            .then((data)=>{
+                return {
+                    registered: data?.newState === true,
+                    errorMsg: data?.errorMsg ?? '',
+                    isError: data?.isError === true,
+                    nb: data?.nb ?? []
+                }
+            })
             .finally(()=>{
                 contactingApi = false
             })
@@ -81,7 +88,10 @@ window.toogleRegistration = (event,entryId = '',propertyName = '') => {
     const btn = event.target.classList.contains('btn') ? event.target : closest(event.target,'btn')
     btn?.setAttribute('disabled','disabled')
     toogleRegistrationForUser(entryId,propertyName)
-        .then((registered)=>{
+        .then(({registered,isError,errorMsg,nb})=>{
+            if (isError){
+                throw new Error(errorMsg)
+            }
             const group = closest(event.target,'subscription-group')
             if (!group){
                 return null
@@ -95,6 +105,12 @@ window.toogleRegistration = (event,entryId = '',propertyName = '') => {
                 if (group.classList.contains('registered')){
                     group.classList.remove('registered')
                     group.classList.add('not-registered')
+                }
+            }
+            if (nb?.length == 2 && nb?.[0]?.length > 0 && nb?.[1]?.length > 0){
+                const spanForNB = group.parentNode.querySelector(`[data-id=${nb[0]}] > span.BAZ_texte`)
+                if (spanForNB?.innerText){
+                    spanForNB.innerText = nb[1]
                 }
             }
         })

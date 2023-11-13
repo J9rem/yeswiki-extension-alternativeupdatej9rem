@@ -158,24 +158,38 @@ class SubscriptionManager implements EventSubscriberInterface
      * toogle registration state
      * @param string $entryId
      * @param string $propertyName
-     * @return bool $newState // false in case of any error
+     * @return array [bool $newState, bool $isError, string $errorMsg]
      */
-    public function toggleRegistrationState(string $entryId, $propertyName): bool
+    public function toggleRegistrationState(string $entryId, $propertyName): array
     {
         $user = $this->authController->getLoggedUser();
+        $output = [
+            'newState' => false,
+            'isError' => true,
+            'errorMsg' => ''
+        ];
         if (empty($user['name'])){
-            return false;
+            return array_merge($output,['errorMsg' => 'not connected']);
         }
         if (empty($entryId) || empty($propertyName)){
-            return false;
+            return array_merge($output,['errorMsg' => 'empty entryId']);
         }
-        $entry = $this->entryManager->getOne($entryId);
+        $entry = $this->entryManager->getOne(
+            $entryId,
+            false, // not semantic
+            null, // latest time
+            false, // no cache
+            true // byPass acls
+        );
         if (empty($entry) || empty($entry['id_typeannonce'])){
-            return false;
+            return array_merge($output,['errorMsg' => 'Not found entry']);
         }
         $subscribeField = $this->formManager->findFieldFromNameOrPropertyName($propertyName,$entry['id_typeannonce']);
         if (empty($subscribeField) || !($subscribeField instanceof SubscribeField)){
-            return false;
+            return array_merge($output,['errorMsg' => 'Field not found']);
+        }
+        if (!$subscribeField->canRead($entry,$user['name']) || !$subscribeField->canEdit($entry)){
+            return array_merge($output,['errorMsg' => 'User can not read or write this field']);
         }
         if ($subscribeField->getIsUserType()){
             $newSate = false;
@@ -194,17 +208,23 @@ class SubscriptionManager implements EventSubscriberInterface
             }
             $newEntry = $entry;
             $newEntry[$subscribeField->getPropertyName()] = implode(',', $newValues);
-            $this->saveEntryInDb($newEntry);
-            return $newSate;
+            $modifiedEntry = $this->saveEntryInDb($newEntry);
+            $nbSubscriptionField = $this->getNbSubscriptionField($modifiedEntry);
+            return array_merge($output,['newState' => $newSate,'isError' => false]+(
+                empty($nbSubscriptionField)
+                ? []
+                : ['nb' => [$nbSubscriptionField->getPropertyName(),$modifiedEntry[$nbSubscriptionField->getPropertyName()] ?? '']]
+            ));
         }
-        return false;
+        return array_merge($output,['errorMsg' => 'Part not already supported']);
     }
 
     /**
      * update entry in database not takig in count current GET and POST
      * @param array $newEntry
+     * @return array $modifiedEntry
      */
-    protected function saveEntryInDb(array $newEntry)
+    protected function saveEntryInDb(array $newEntry): array
     {
         $previousGet = $_GET;
         $_GET = ['wiki' => $newEntry['id_fiche']];
@@ -214,11 +234,13 @@ class SubscriptionManager implements EventSubscriberInterface
         $_REQUEST = [];
         $newEntry['antispam'] = 1;
         $newEntry['date_maj_fiche'] = date('Y-m-d H:i:s', time());
-        $this->entryManager->update($newEntry['id_fiche'], $newEntry, false, true);
+        $modifiedEntry = $this->entryManager->update($newEntry['id_fiche'], $newEntry);
 
         $_GET = $previousGet;
         $_POST = $previousPost;
         $_REQUEST = $previousRequest;
+
+        return empty($modifiedEntry) ? [] : $modifiedEntry;
     }
 
     /**
