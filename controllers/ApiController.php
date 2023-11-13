@@ -24,6 +24,7 @@ use YesWiki\Alternativeupdatej9rem\Controller\ConfigOpenAgendaController ; // Fe
 use YesWiki\Alternativeupdatej9rem\Controller\PageController; // Feature UUID : auj9-fix-page-controller
 use YesWiki\Alternativeupdatej9rem\Service\AutoUpdateService;
 use YesWiki\Alternativeupdatej9rem\Service\CacheService; // Feature UUID : auj9-local-cache
+use YesWiki\Alternativeupdatej9rem\Service\SubscriptionManager; // Feature UUID : auj9-subscribe-to-entry
 use YesWiki\Bazar\Controller\ApiController as BazarApiController; // Feature UUID : auj9-local-cache
 use YesWiki\Core\ApiResponse;
 use YesWiki\Core\Controller\AuthController;
@@ -773,7 +774,9 @@ class ApiController extends YesWikiController
     {
         return $this->executeInSecureContext(function ($autoUpdateService) use ($entryId,$fieldName){
             return new ApiResponse(
-                ['success' => true],
+                [
+                    'newState' => $this->wiki->services->get(SubscriptionManager::class)->toggleRegistrationState($entryId,$fieldName)
+                ],
                 Response::HTTP_OK
             );
         });

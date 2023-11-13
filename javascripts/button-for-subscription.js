@@ -14,6 +14,16 @@ let token = null
 
 /* methods */
 
+const closest = (domObj,className) => {
+    let current = domObj
+    let parent = current.parentNode
+    while (parent !== null && parent.tagName !== 'BODY' && !parent.classList.contains(className)) {
+        current = parent
+        parent = parent.parentNode
+    }
+    return parent
+}
+
 const configureEvent = (event) => {
     event.preventDefault()
     event.stopPropagation()
@@ -156,9 +166,7 @@ const toogleRegistrationForUser = async (entryId,propertyName) => {
                     token:tokenForPost
                 }
             )
-            .then((data)=>{
-                console.log({data})
-            })
+            .then((data)=>data?.newSate ?? false)
     }
 }
 
@@ -166,5 +174,20 @@ const toogleRegistrationForUser = async (entryId,propertyName) => {
 
 window.toogleRegistration = (event,entryId = '',propertyName = '') => {
     configureEvent(event)
-    toogleRegistrationForUser(entryId,propertyName).catch(manageError)
+    toogleRegistrationForUser(entryId,propertyName)
+        .then((registered)=>{
+            const group = closest(event.target,'subscription-group')
+            if (registered){
+                if (group.classList.contains('not-registered')){
+                    group.classList.remove('not-registered')
+                    group.classList.add('registered')
+                }
+            } else {
+                if (group.classList.contains('registered')){
+                    group.classList.remove('registered')
+                    group.classList.add('not-registered')
+                }
+            }
+        })
+        .catch(manageError)
 }

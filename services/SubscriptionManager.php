@@ -155,6 +155,17 @@ class SubscriptionManager implements EventSubscriberInterface
     }
 
     /**
+     * toogle registration state
+     * @param string $entryId
+     * @param string $propertyName
+     * @return bool $newState // false in case of any error
+     */
+    public function toggleRegistrationState(string $entryId, $propertyName): bool
+    {
+        return false;
+    }
+
+    /**
      * generate events for new or removed subscriptions
      * @param null|array $entry
      * @param array $values
