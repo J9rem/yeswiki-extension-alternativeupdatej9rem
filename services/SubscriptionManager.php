@@ -162,7 +162,63 @@ class SubscriptionManager implements EventSubscriberInterface
      */
     public function toggleRegistrationState(string $entryId, $propertyName): bool
     {
+        $user = $this->authController->getLoggedUser();
+        if (empty($user['name'])){
+            return false;
+        }
+        if (empty($entryId) || empty($propertyName)){
+            return false;
+        }
+        $entry = $this->entryManager->getOne($entryId);
+        if (empty($entry) || empty($entry['id_typeannonce'])){
+            return false;
+        }
+        $subscribeField = $this->formManager->findFieldFromNameOrPropertyName($propertyName,$entry['id_typeannonce']);
+        if (empty($subscribeField) || !($subscribeField instanceof SubscribeField)){
+            return false;
+        }
+        if ($subscribeField->getIsUserType()){
+            $newSate = false;
+            $values = $subscribeField->getValues($entry);
+            if ($this->isRegistered($subscribeField,$entry)){
+                $newValues = array_filter(
+                    $values,
+                    function($userName) use ($user){
+                        return $userName != $user['name'];
+                    }
+                );
+            } else {
+                $newSate = true;
+                $newValues = $values;
+                $newValues[] = $user['name'];
+            }
+            $newEntry = $entry;
+            $newEntry[$subscribeField->getPropertyName()] = implode(',', $newValues);
+            $this->saveEntryInDb($newEntry);
+            return $newSate;
+        }
         return false;
+    }
+
+    /**
+     * update entry in database not takig in count current GET and POST
+     * @param array $newEntry
+     */
+    protected function saveEntryInDb(array $newEntry)
+    {
+        $previousGet = $_GET;
+        $_GET = ['wiki' => $newEntry['id_fiche']];
+        $previousPost = $_POST;
+        $_POST= [];
+        $previousRequest = $_REQUEST;
+        $_REQUEST = [];
+        $newEntry['antispam'] = 1;
+        $newEntry['date_maj_fiche'] = date('Y-m-d H:i:s', time());
+        $this->entryManager->update($newEntry['id_fiche'], $newEntry, false, true);
+
+        $_GET = $previousGet;
+        $_POST = $previousPost;
+        $_REQUEST = $previousRequest;
     }
 
     /**

@@ -159,14 +159,14 @@ const toogleRegistrationForUser = async (entryId,propertyName) => {
         if (typeof propertyName !== 'string'){
             throw new Error('propertyName should be a string !')
         }
-        await localFetch(
+        return await localFetch(
                 window.wiki.url(`?api/subscriptions/${entryId}/toggleregistration/${propertyName}`),
                 'post',
                 {
                     token:tokenForPost
                 }
             )
-            .then((data)=>data?.newSate ?? false)
+            .then((data)=>data?.newState === true)
     }
 }
 
