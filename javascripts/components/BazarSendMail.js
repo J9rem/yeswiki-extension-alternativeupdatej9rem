@@ -11,6 +11,7 @@
 import SpinnerLoader from '../../../bazar/presentation/javascripts/components/SpinnerLoader.js'
 import NbDest from './nb-dest.js'
 import ProgressBar from './progress-bar.js'
+import asyncHelper from '../asyncHelper.js'
 
 let componentName = 'BazarSendMail';
 let isVueJS3 = (typeof Vue.createApp == "function");
@@ -100,7 +101,7 @@ let componentParams = {
             return await p.then((newValue)=>(newValue === true))
                 .catch((error)=>{
                     if(error!='timeout'){
-                        this.manageError(error)
+                        asyncHelper.manageError(error)
                     };
                     return Promise.resolve(false)
                 })
@@ -111,32 +112,6 @@ let componentParams = {
                     this.timeout = 0
                     this.showConfirmSendMail = false
                 })
-        },
-        async fetch(url,mode = 'get',dataToSend = {}){
-            let func = (url,mode,dataToSend)=>{
-                return (mode == 'get')
-                    ? fetch(url)
-                    : this.post(url,dataToSend)
-            }
-            return await func(url,mode,dataToSend)
-                .then(async (response)=>{
-                    let json = null
-                    try {
-                        json = await response.json()
-                    } catch (error) {
-                        throw {
-                            'errorMsg': error+''
-                        }
-                    }
-                    if (response.ok && typeof json == 'object'){
-                        return json
-                    } else {
-                        throw {
-                            'errorMsg': (typeof json == "object" && 'error' in json) ? json.error : ''
-                        }
-                    }
-                })
-
         },
         finishPreviewUpdate(){
             if (this.nextPreviewTobeRetrieved){
@@ -256,30 +231,6 @@ let componentParams = {
                 this.loadSummernote({lang:langName});
             }
         },
-        manageError(error){
-            if (wiki.isDebugEnabled){
-                console.error(error)
-            }
-            return null
-        },
-        async post(url,dataToSend){
-            return await fetch(url,
-                {
-                    method: 'POST',
-                    body: new URLSearchParams(this.prepareFormData(dataToSend)),
-                    headers: (new Headers()).append('Content-Type','application/x-www-form-urlencoded')
-                })
-        },
-        prepareFormData(thing){
-            let formData = new FormData();
-            if (typeof thing == "object"){
-                let preForm =this.toPreFormData(thing);
-                for (const key in preForm) {
-                    formData.append(key,preForm[key]);
-                }
-            }
-            return formData;
-        },
         removeFromSearchedEntries(idsToRemoveFromSearchedEntries){
             if (idsToRemoveFromSearchedEntries.length > 0){
                 this.$set(this.root,'searchedEntries',this.root.searchedEntries.filter(e => !idsToRemoveFromSearchedEntries.includes(e.id_fiche)))
@@ -374,7 +325,7 @@ let componentParams = {
         },
         async sendMailInternal(dataToSend){
             let contactsToSend = dataToSend.contacts
-            return await this.fetch(wiki.url('?api/auj9/send-mail/sendmail'),'post',dataToSend)
+            return await asyncHelper.fetch(wiki.url('?api/auj9/send-mail/sendmail'),'post',dataToSend)
                 .then(async (json)=>{
                     if (Array.isArray(this.doneFor) && 'sent for' in json && typeof json['sent for'] === 'string'){
                         let currentDone = json['sent for'].split(',')
@@ -447,61 +398,6 @@ let componentParams = {
             }
             this.updatePreview(this.getContentsForUpdate(),{});
         },
-        toPreFormData(thing,key =""){
-            let type = typeof thing;
-            switch (type) {
-                case 'boolean':
-                case 'number':
-                case 'string':
-                    return {
-                        [key]:thing
-                    };
-                case 'object':
-                    if (thing === null) {
-                        return {
-                            [key]:null
-                        };
-                    } else if (Object.keys(thing).length > 0){
-                        let result = {};
-                        for (const propkey in thing) {
-                            result = {
-                                ...result,
-                                ...this.toPreFormData(
-                                    thing[propkey],
-                                    (key.length == 0) ? propkey : `${key}[${propkey}]`
-                                )
-                            }
-                        }
-                        return result;
-                    } else {
-                        return {
-                            [key]: []
-                        };
-                    }
-                
-                case 'array':
-                    if (thing.length == 0){
-                        return {
-                            [key]: []
-                        };
-                    }
-                    let result = {};
-                    thing.forEach((val,propkey)=>{
-                        result = {
-                            ...result,
-                            ...this.toPreFormData(
-                                val,
-                                (key.length == 0) ? propkey : `${key}[${propkey}]`
-                            )
-                        }
-                    });
-                    return result;
-                default:
-                    return {
-                        [key]:null
-                    };
-            }
-        },
         updateAvailableEntries(){
             this.availableEntries = Object.keys(this.entries).filter((key)=>{
                 let entry = this.entries[key];
@@ -526,7 +422,7 @@ let componentParams = {
                 this.doneFor = null
                 let dataToSend= this.getData();
                 dataToSend.message = contents;
-                return await this.fetch(wiki.url('?api/auj9/send-mail/preview'),'post',dataToSend)
+                return await asyncHelper.fetch(wiki.url('?api/auj9/send-mail/preview'),'post',dataToSend)
                     .then((json)=>{
                         if (typeof json == "object"){
                             this.htmlPreview = json.html || "<b>Error !</b>";
@@ -540,7 +436,7 @@ let componentParams = {
             }
         },
         async updateSenderEmailFromLoggedUser(){
-            return await this.fetch(wiki.url('?api/auj9/send-mail/currentuseremail'))
+            return await asyncHelper.fetch(wiki.url('?api/auj9/send-mail/currentuseremail'))
                 .then((json)=>{
                     if ('email' in json && json.email.length > 0){
                         this.senderEmail = json.email
@@ -561,7 +457,7 @@ let componentParams = {
                 entriesIds.forEach((entryId)=>{
                     this.updatingIds.push(entryId);
                 });
-                return await this.fetch(wiki.url('?api/auj9/send-mail/filterentries'),'post',{
+                return await asyncHelper.fetch(wiki.url('?api/auj9/send-mail/filterentries'),'post',{
                     entriesIds,
                     params: this.params
                 })
@@ -591,7 +487,7 @@ let componentParams = {
                         throw 'entriesIds not found'
                     }
                 })
-                .catch(this.manageError)
+                .catch(asyncHelper.manageError)
                 .finally(()=>{
                     this.removeIdsFromUpdating(entriesIds)
                 })

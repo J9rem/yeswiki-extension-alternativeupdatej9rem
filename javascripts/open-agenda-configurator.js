@@ -8,6 +8,8 @@
  * Feature UUID : auj9-open-agenda-connect
  */
 
+import asyncHelper from './asyncHelper.js'
+
 let rootsElements = ['.open-agenda-configurator']
 let isVueJS3 = (typeof Vue.createApp == "function");
 
@@ -69,31 +71,6 @@ let appParams = {
         }
     },
     methods:{
-        async fetch(url,mode = 'get',dataToSend = {}){
-            let func = (url,mode,dataToSend)=>{
-                return (mode == 'get')
-                    ? fetch(url)
-                    : this.post(url,dataToSend)
-            }
-            return await func(url,mode,dataToSend)
-                .then(async (response)=>{
-                    let json = null
-                    try {
-                        json = await response.json()
-                    } catch (error) {
-                        throw {
-                            'errorMsg': error+''
-                        }
-                    }
-                    if (response.ok && typeof json == 'object'){
-                        return json
-                    } else {
-                        throw {
-                            'errorMsg': (typeof json == "object" && 'error' in json) ? json.error : ''
-                        }
-                    }
-                })
-        },
         async getForms(){
             if (this.forms !== null){
                 return this.forms
@@ -101,7 +78,7 @@ let appParams = {
             this.message = 'getform'
             this.messageClass = 'info'
             this.callingApi = true
-            return await this.fetch(wiki.url('?api/forms'))
+            return await asyncHelper.fetch(wiki.url('?api/forms'))
                 .then((forms)=>{
                     this.forms = forms
                     this.message = 'youturn'
@@ -111,36 +88,16 @@ let appParams = {
                 .finally(()=>{this.callingApi = false})
         },
         manageError(error){
-            if (wiki.isDebugEnabled){
-                console.error(error)
-            }
+            const output = asyncHelper.manageError(error)
             this.message = 'error'
             this.messageClass = 'danger'
-            return null
-        },
-        async post(url,dataToSend){
-            return await fetch(url,
-                {
-                    method: 'POST',
-                    body: new URLSearchParams(this.prepareFormData(dataToSend)),
-                    headers: (new Headers()).append('Content-Type','application/x-www-form-urlencoded')
-                })
-        },
-        prepareFormData(thing){
-            let formData = new FormData();
-            if (typeof thing == "object"){
-                let preForm =this.toPreFormData(thing);
-                for (const key in preForm) {
-                    formData.append(key,preForm[key]);
-                }
-            }
-            return formData;
+            return output
         },
         async registerNewForm(){
             this.callingApi = true
             this.message = 'registeringassociation'
             this.messageClass = 'info'
-            return await this.fetch(wiki.url('?api/openagenda/config/setassociation'),'post',{
+            return await asyncHelper.fetch(wiki.url('?api/openagenda/config/setassociation'),'post',{
                     id:String(this.newFormId),
                     name:this.newFormKey,
                     value:this.newFormAgendaId,
@@ -172,7 +129,7 @@ let appParams = {
             this.callingApi = true
             this.message = 'registeringkey'
             this.messageClass = 'info'
-            return await this.fetch(wiki.url('?api/openagenda/config/setkey'),'post',{
+            return await asyncHelper.fetch(wiki.url('?api/openagenda/config/setkey'),'post',{
                     name:this.newKeyName,
                     value:this.newKeyValue,
                     token:this.token
@@ -192,7 +149,7 @@ let appParams = {
             this.callingApi = true
             this.message = `removingassoc ${formId}`
             this.messageClass = 'info'
-            return await this.fetch(wiki.url('?api/openagenda/config/removeassociation'),'post',{
+            return await asyncHelper.fetch(wiki.url('?api/openagenda/config/removeassociation'),'post',{
                     id:formId,
                     token:this.token
                 })
@@ -211,7 +168,7 @@ let appParams = {
             this.callingApi = true
             this.message = `removingkey ${name}`
             this.messageClass = 'info'
-            return await this.fetch(wiki.url('?api/openagenda/config/removekey'),'post',{
+            return await asyncHelper.fetch(wiki.url('?api/openagenda/config/removekey'),'post',{
                     name:name,
                     token:this.token
                 })
@@ -230,7 +187,7 @@ let appParams = {
             this.callingApi = true
             this.message = `testingformkey ${formId}`
             this.messageClass = 'info'
-            return await this.fetch(wiki.url(`?api/openagenda/config/testpublickey/${formId}`),'post',{
+            return await asyncHelper.fetch(wiki.url(`?api/openagenda/config/testpublickey/${formId}`),'post',{
                 token:this.token
             })
             .then((data)=>{
@@ -245,7 +202,7 @@ let appParams = {
             this.callingApi = true
             this.message = `testingkey ${keyName}`
             this.messageClass = 'info'
-            return await this.fetch(wiki.url(`?api/openagenda/config/testkey/${keyName}`),'post',{
+            return await asyncHelper.fetch(wiki.url(`?api/openagenda/config/testkey/${keyName}`),'post',{
                 token:this.token
             })
             .then((data)=>{
@@ -260,7 +217,7 @@ let appParams = {
             this.callingApi = true
             this.message = `changing state`
             this.messageClass = 'info'
-            return await this.fetch(wiki.url('?api/openagenda/config/toggleactivation'),'post',{
+            return await asyncHelper.fetch(wiki.url('?api/openagenda/config/toggleactivation'),'post',{
                 token:this.token
             })
             .then((data)=>{
@@ -271,61 +228,6 @@ let appParams = {
             })
             .catch(this.manageError)
             .finally(()=>{this.callingApi = false})
-        },
-        toPreFormData(thing,key =""){
-            let type = typeof thing;
-            switch (type) {
-                case 'boolean':
-                case 'number':
-                case 'string':
-                    return {
-                        [key]:thing
-                    };
-                case 'object':
-                    if (thing === null) {
-                        return {
-                            [key]:null
-                        };
-                    } else if (Object.keys(thing).length > 0){
-                        let result = {};
-                        for (const propkey in thing) {
-                            result = {
-                                ...result,
-                                ...this.toPreFormData(
-                                    thing[propkey],
-                                    (key.length == 0) ? propkey : `${key}[${propkey}]`
-                                )
-                            }
-                        }
-                        return result;
-                    } else {
-                        return {
-                            [key]: []
-                        };
-                    }
-                
-                case 'array':
-                    if (thing.length == 0){
-                        return {
-                            [key]: []
-                        };
-                    }
-                    let result = {};
-                    thing.forEach((val,propkey)=>{
-                        result = {
-                            ...result,
-                            ...this.toPreFormData(
-                                val,
-                                (key.length == 0) ? propkey : `${key}[${propkey}]`
-                            )
-                        }
-                    });
-                    return result;
-                default:
-                    return {
-                        [key]:null
-                    };
-            }
         }
     },
     mounted(){
