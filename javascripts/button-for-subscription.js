@@ -8,9 +8,12 @@
  * Feature UUID : auj9-subscribe-to-entry
  */
 
+import asyncHelper from './asyncHelper.js'
+
 /* data */
 
 let token = null
+let contactingApi = false
 
 /* methods */
 
@@ -21,7 +24,7 @@ const closest = (domObj,className) => {
         current = parent
         parent = parent.parentNode
     }
-    return parent
+    return parent.tagName === 'BODY' ? null : parent
 }
 
 const configureEvent = (event) => {
@@ -29,123 +32,17 @@ const configureEvent = (event) => {
     event.stopPropagation()
 }
 
-const prepareFormData = (thing) =>{
-    let formData = new FormData()
-    if (typeof thing == "object"){
-        let preForm = toPreFormData(thing)
-        for (const key in preForm) {
-            formData.append(key,preForm[key])
-        }
-    }
-    return formData
-}
-
-const toPreFormData = (thing,key ='') => {
-    let type = typeof thing
-    switch (type) {
-        case 'boolean':
-        case 'number':
-        case 'string':
-            return {
-                [key]:thing
-            }
-        case 'object':
-            if (thing === null) {
-                return {
-                    [key]:null
-                }
-            } else if (Object.keys(thing).length > 0){
-                let result = {}
-                for (const propkey in thing) {
-                    result = {
-                        ...result,
-                        ...toPreFormData(
-                            thing[propkey],
-                            (key.length == 0) ? propkey : `${key}[${propkey}]`
-                        )
-                    }
-                }
-                return result
-            } else {
-                return {
-                    [key]: []
-                }
-            }
-        
-        case 'array':
-            if (thing.length == 0){
-                return {
-                    [key]: []
-                };
-            }
-            let result = {};
-            thing.forEach((val,propkey)=>{
-                result = {
-                    ...result,
-                    ...toPreFormData(
-                        val,
-                        (key.length == 0) ? propkey : `${key}[${propkey}]`
-                    )
-                }
-            });
-            return result
-        default:
-            return {
-                [key]:null
-            }
-    }
-}
-
 /* async methods */
-
-
-const manageError = (error) => {
-    if (window.wiki.isDebugEnabled){
-        console.error(error)
-    }
-    return null
-}
-
-const post = async (url,dataToSend) =>{
-    return await fetch(url,
-        {
-            method: 'POST',
-            body: new URLSearchParams(prepareFormData(dataToSend)),
-            headers: (new Headers()).append('Content-Type','application/x-www-form-urlencoded')
-        })
-}
-
-const localFetch = async (url,mode = 'get',dataToSend = {}) => {
-    let func = (url,mode,dataToSend)=>{
-        return (mode == 'get')
-            ? fetch(url)
-            : post(url,dataToSend)
-    }
-    return await func(url,mode,dataToSend)
-        .then(async (response)=>{
-            let json = null
-            try {
-                json = await response.json()
-            } catch (error) {
-                throw {
-                    'errorMsg': error+''
-                }
-            }
-            if (response.ok && typeof json == 'object'){
-                return json
-            } else {
-                throw {
-                    'errorMsg': (typeof json == "object" && 'error' in json) ? json.error : ''
-                }
-            }
-        })
-}
 
 const getToken = async () => {
     if (token === null){
-        token = await localFetch(window.wiki.url('?api/subscriptions/gettoken'),'post')
+        contactingApi = true
+        token = await asyncHelper.fetch(window.wiki.url('?api/subscriptions/gettoken'),'post')
             .then((data)=>data?.token ?? null)
-            .catch(manageError)
+            .finally(()=>{
+                contactingApi = false
+            })
+            .catch(asyncHelper.manageError)
     }
     return token
 }
@@ -159,7 +56,8 @@ const toogleRegistrationForUser = async (entryId,propertyName) => {
         if (typeof propertyName !== 'string'){
             throw new Error('propertyName should be a string !')
         }
-        return await localFetch(
+        contactingApi = true
+        return await asyncHelper.fetch(
                 window.wiki.url(`?api/subscriptions/${entryId}/toggleregistration/${propertyName}`),
                 'post',
                 {
@@ -167,6 +65,9 @@ const toogleRegistrationForUser = async (entryId,propertyName) => {
                 }
             )
             .then((data)=>data?.newState === true)
+            .finally(()=>{
+                contactingApi = false
+            })
     }
 }
 
@@ -174,9 +75,17 @@ const toogleRegistrationForUser = async (entryId,propertyName) => {
 
 window.toogleRegistration = (event,entryId = '',propertyName = '') => {
     configureEvent(event)
+    if (contactingApi){
+        return null
+    }
+    const btn = event.target.classList.contains('btn') ? event.target : closest(event.target,'btn')
+    btn?.setAttribute('disabled','disabled')
     toogleRegistrationForUser(entryId,propertyName)
         .then((registered)=>{
             const group = closest(event.target,'subscription-group')
+            if (!group){
+                return null
+            }
             if (registered){
                 if (group.classList.contains('not-registered')){
                     group.classList.remove('not-registered')
@@ -189,5 +98,8 @@ window.toogleRegistration = (event,entryId = '',propertyName = '') => {
                 }
             }
         })
-        .catch(manageError)
+        .finally(()=>{
+            btn?.removeAttribute('disabled')
+        })
+        .catch(asyncHelper.manageError)
 }

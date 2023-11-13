@@ -221,7 +221,7 @@ return [
 
   // templates/button-for-subscription.twig
   // Feature UUID : auj9-subscribe-to-entry
-  'AUJ9_CONNECT' => 'Se connecter',
+  'AUJ9_CONNECT_TO_REGISTER' => 'Se connecter pour s\'inscrire',
   'AUJ9_REGISTER' => 'S\'inscrire',
   'AUJ9_UNREGISTER' => 'Se désinscrire',
 ];
