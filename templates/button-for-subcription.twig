@@ -11,13 +11,13 @@
     <a class="connection-button btn btn-xs btn-primary" href="#LoginModal" title="{{ _t('AUJ9_CONNECT') }}"><i class="fas fa-sign-in-alt"></i> {{ _t('AUJ9_CONNECT') }}</a>
     <button
         class="register-button btn btn-xs btn-primary"
-        onClick="typeof subsriptionRegister === 'function' ? subsriptionRegister(event,{{ entryId|json_encode }}) : null"
+        onClick="typeof toogleRegistration === 'function' ? toogleRegistration(event,{{ entryId|json_encode }},{{ propertyName|json_encode }}) : null"
         title="{{ _t('AUJ9_REGISTER') }}">
         <i class="fas fa-user-plus"></i> {{ _t('AUJ9_REGISTER') }}
     </button>
     <button 
         class="unregister-button btn btn-xs btn-primary"
-        onClick="typeof subsriptionUnregister === 'function' ? subsriptionUnregister(event,{{ entryId|json_encode }}) : null"
+        onClick="typeof toogleRegistration === 'function' ? toogleRegistration(event,{{ entryId|json_encode }},{{ propertyName|json_encode }}) : null"
         title="{{ _t('AUJ9_UNREGISTER') }}"
         >
         <i class="fas fa-user-minus"></i> {{ _t('AUJ9_UNREGISTER') }}

@@ -752,4 +752,30 @@ class ApiController extends YesWikiController
     {
         return $this->getService(ConfigOpenAgendaController::class)->toggleActivation();
     }
+
+    /**
+     * @Route("/api/subscriptions/gettoken", methods={"POST"}, options={"acl":{"public","+"}})
+     * Feature UUID : auj9-subscribe-to-entry
+     */
+    public function getTokenForSubscription()
+    {
+        return new ApiResponse(
+            ['token' => $this->wiki->services->get(CsrfTokenManager::class)->getToken(self::TOKEN_ID)->getValue()],
+            Response::HTTP_OK
+        );
+    }
+
+    /**
+     * @Route("/api/subscriptions/{entryId}/toggleregistration/{fieldName}", methods={"POST"}, options={"acl":{"public","+"}})
+     * Feature UUID : auj9-subscribe-to-entry
+     */
+    public function toggleRegistrationUser($entryId,$fieldName)
+    {
+        return $this->executeInSecureContext(function ($autoUpdateService) use ($entryId,$fieldName){
+            return new ApiResponse(
+                ['success' => true],
+                Response::HTTP_OK
+            );
+        });
+    }
 }

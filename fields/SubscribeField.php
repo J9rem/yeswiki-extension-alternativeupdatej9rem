@@ -115,7 +115,8 @@ class SubscribeField extends CheckboxEntryField
             '@alternativeupdatej9rem/button-for-subcription.twig',
             [
                 'isRegistered' => $this->getService(SubscriptionManager::class)->isRegistered($this,$entry),
-                'entryId' => $entry['id_fiche'] ?? ''
+                'entryId' => $entry['id_fiche'] ?? '',
+                'propertyName' => $this->getPropertyName()
             ]
         );
         return $output;
