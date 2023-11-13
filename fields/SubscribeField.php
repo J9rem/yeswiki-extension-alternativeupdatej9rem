@@ -99,6 +99,10 @@ class SubscribeField extends CheckboxEntryField
 
     protected function renderStatic($entry)
     {
+        $subscriptionManager = $this->getService(SubscriptionManager::class);
+        if (!$this->isUserType && !$subscriptionManager->checkIfFormIsOnlyOneEntry($this->getLinkedObjectName())){
+            return $this->showErroMessageForForm();
+        }
         $output= '';
         if ($this->showList){
             if ($this->isUserType){
@@ -111,7 +115,6 @@ class SubscribeField extends CheckboxEntryField
             }
             $output = $this->formatOutput($output ?? '');
         }
-        $subscriptionManager = $this->getService(SubscriptionManager::class);
         $output .= $this->render(
             '@alternativeupdatej9rem/button-for-subcription.twig',
             [
@@ -187,7 +190,20 @@ class SubscribeField extends CheckboxEntryField
             );
             return $askForLimit.$output;
         }
+        
+        $subscriptionManager = $this->getService(SubscriptionManager::class);
+        if (!$subscriptionManager->checkIfFormIsOnlyOneEntry($this->getLinkedObjectName())){
+            return $this->showErroMessageForForm();
+        }
         return parent::renderInput($entry);
+    }
+
+    protected function showErroMessageForForm():string
+    {
+        return $this->render('@templates/alert-message.twig',[
+            'type' => 'danger',
+            'message' => _t('AUJ9_SIBSCRIBE_BAD_CONFIG_FORM')
+        ]);
     }
 
     public function formatValuesBeforeSaveIfEditable($entry, bool $isCreation = false)

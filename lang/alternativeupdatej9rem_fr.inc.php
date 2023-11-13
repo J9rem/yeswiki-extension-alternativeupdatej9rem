@@ -53,6 +53,7 @@ return [
 
   // fields/SubscribeField.php
   // Feature UUID : auj9-subscribe-to-entry
+  'AUJ9_SIBSCRIBE_BAD_CONFIG_FORM' => 'Le champ "subscribe" est mal configuré car le formulaire associé n\'a pas activé l\'option "restreindre à une seule fiche par utilisateur"',
   'AUJ9_SUBSCRIBE_HIDE_LIST' => 'Cacher la liste',
   'AUJ9_SUBSCRIBE_HINT_FOR_MAX' => '-1 = pas de limite',
   'AUJ9_SUBSCRIBE_LABEL_FOR_MAX' => 'Nombre maximum d\'inscriptions',

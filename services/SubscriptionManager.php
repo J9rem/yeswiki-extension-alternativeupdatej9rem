@@ -314,6 +314,20 @@ class SubscriptionManager implements EventSubscriberInterface
     }
 
     /**
+     * check if form is only one entry
+     * @param string $formId
+     * @return bool
+     */
+    public function checkIfFormIsOnlyOneEntry($formId): bool
+    {
+        if (empty($formId) || strval($formId) != strval(intval($formId)) || intval($formId) <= 0){
+            return false;
+        }
+        $form = $this->formManager->getOne(strval($formId));
+        return !empty($form['bn_only_one_entry']) && $form['bn_only_one_entry'] === 'Y';
+    }
+
+    /**
      * get changes of values
      * @param null|array $entry
      * @param array $values
