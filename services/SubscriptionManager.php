@@ -18,12 +18,14 @@ use YesWiki\Alternativeupdatej9rem\Field\NbSubscriptionField;
 use YesWiki\Alternativeupdatej9rem\Field\SubscribeField;
 use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Bazar\Service\FormManager;
+use YesWiki\Core\Controller\AuthController;
 use YesWiki\Core\Entity\Event;
 use YesWiki\Core\Service\EventDispatcher;
 use YesWiki\Wiki;
 
 class SubscriptionManager implements EventSubscriberInterface
 {
+    protected $authController;
     protected $entryManager;
     protected $eventDispatcher;
     protected $formManager;
@@ -40,11 +42,13 @@ class SubscriptionManager implements EventSubscriberInterface
     }
 
     public function __construct(
+        AuthController $authController,
         EntryManager $entryManager,
         EventDispatcher $eventDispatcher,
         FormManager $formManager,
         Wiki $wiki
     ) {
+        $this->authController = $authController;
         $this->entryManager = $entryManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->formManager = $formManager;
@@ -108,6 +112,45 @@ class SubscriptionManager implements EventSubscriberInterface
             return $output;
         } catch (Exception $th) {
             return [];
+        }
+    }
+
+    /**
+     * check if the current user is registered
+     * @param SubscribeField $subscribeField
+     * @param array $entry
+     * @param string $entryId needed if $entry is empty
+     * @return bool // false if any error occurs
+     */
+    public function isRegistered(SubscribeField $subscribeField, array $entry, string $entryId = ''): bool
+    {
+        $currentUser = $this->authController->getLoggedUser();
+        if (empty($currentUser['name'])){
+            return false;
+        }
+        if (empty($entry) || empty($entry['id_fiche']) || empty($entry['id_typeannonce'])){
+            if (empty($entryId)){
+                return false;
+            }
+            $entry = $this->entryManager->getOne($entryId);
+            if (empty($entry) || empty($entry['id_fiche']) || empty($entry['id_typeannonce'])){
+                return false;
+            }
+        }
+
+        $values = $subscribeField->getValues($entry);
+        if (empty($values)){
+            return false;
+        }
+        if ($subscribeField->getIsUserType()){
+            return in_array($currentUser['name'],$values);
+        } else {
+            foreach ($values as $linkedEntryId) {
+                if ($this->wiki->UserIsOwner($linkedEntryId)){
+                    return true;
+                }
+            }
+            return false;
         }
     }
 

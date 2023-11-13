@@ -218,4 +218,10 @@ return [
   'AUJ9_OPEN_AGENDA_REGISTERING_KEY' => 'Enregistrement de la clé',
   'AUJ9_OPEN_AGENDA_REMOVING_KEY' => 'Retrait de la clé {name}',
   'AUJ9_OPEN_AGENDA_YOU_TURN' => 'A votre tour !',
+
+  // templates/button-for-subscription.twig
+  // Feature UUID : auj9-subscribe-to-entry
+  'AUJ9_CONNECT' => 'Se connecter',
+  'AUJ9_REGISTER' => 'S\'inscrire',
+  'AUJ9_UNREGISTER' => 'Se désinscrire',
 ];

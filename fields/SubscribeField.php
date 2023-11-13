@@ -99,18 +99,26 @@ class SubscribeField extends CheckboxEntryField
 
     protected function renderStatic($entry)
     {
-        if (!$this->showList){
-            return '';
+        $output= '';
+        if ($this->showList){
+            if ($this->isUserType){
+                $savedOptions = $this->options;
+                $this->options = $this->getFullOptionsNotSecured();
+                $output = parent::renderStatic($entry);
+                $this->options = $savedOptions;
+            } else {
+                $output = parent::renderStatic($entry);
+            }
+            $output = $this->formatOutput($output ?? '');
         }
-        if ($this->isUserType){
-            $savedOptions = $this->options;
-            $this->options = $this->getFullOptionsNotSecured();
-            $output = parent::renderStatic($entry);
-            $this->options = $savedOptions;
-        } else {
-            $output = parent::renderStatic($entry);
-        }
-        return $this->formatOutput($output ?? '');
+        $output .= $this->render(
+            '@alternativeupdatej9rem/button-for-subcription.twig',
+            [
+                'isRegistered' => $this->getService(SubscriptionManager::class)->isRegistered($this,$entry),
+                'entryId' => $entry['id_fiche'] ?? ''
+            ]
+        );
+        return $output;
     }
 
     /**
