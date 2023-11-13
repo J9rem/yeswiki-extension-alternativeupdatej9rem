@@ -32,8 +32,10 @@ class SubscriptionManager implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'subscription.new' => 'followNewSubscription',
-            'subscription.removed' => 'followReomvedSubscription'
+            'subscription.new.asUser' => 'followNewSubscriptionAsUser',
+            'subscription.removed.asUser' => 'followRemovedSubscriptionAsUser',
+            'subscription.new.asEntry' => 'followNewSubscriptionAsEntry',
+            'subscription.removed.asEntry' => 'followRemovedSubscriptionAsEntry'
         ];
     }
 
@@ -52,16 +54,31 @@ class SubscriptionManager implements EventSubscriberInterface
     /**
      * @param Event $event
      */
-    public function followNewSubscription($event)
+    public function followNewSubscriptionAsUser($event)
     {
-        $this->triggerErrorForDebug('subscription.new',$event);
+        $this->triggerErrorForDebug('subscription.new.asUser',$event);
     }
     /**
      * @param Event $event
      */
-    public function followReomvedSubscription($event)
+    public function followRemovedSubscriptionAsUser($event)
     {
-        $this->triggerErrorForDebug('subscription.removed',$event);
+        $this->triggerErrorForDebug('subscription.removed.asUser',$event);
+    }
+
+    /**
+     * @param Event $event
+     */
+    public function followNewSubscriptionAsEntry($event)
+    {
+        $this->triggerErrorForDebug('subscription.new.asEntry',$event);
+    }
+    /**
+     * @param Event $event
+     */
+    public function followRemovedSubscriptionAsEntry($event)
+    {
+        $this->triggerErrorForDebug('subscription.removed.asEntry',$event);
     }
 
     /**
@@ -115,8 +132,8 @@ class SubscriptionManager implements EventSubscriberInterface
             });
 
             foreach([
-                'subscription.new' => $newValues,
-                'subscription.removed' => $removedValues
+                'subscription.new.asUser' => $newValues,
+                'subscription.removed.asUser' => $removedValues
             ] as $eventName => $values){
                 foreach ($values as $value) {
                     $errors = $this->eventDispatcher->yesWikiDispatch($eventName, [
