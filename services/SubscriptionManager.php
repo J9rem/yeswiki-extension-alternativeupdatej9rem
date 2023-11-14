@@ -16,6 +16,7 @@ use Exception;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use YesWiki\Alternativeupdatej9rem\Field\NbSubscriptionField;
 use YesWiki\Alternativeupdatej9rem\Field\SubscribeField;
+use YesWiki\Bazar\Field\EnumField;
 use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Bazar\Service\FormManager;
 use YesWiki\Core\Controller\AuthController;
@@ -75,6 +76,7 @@ class SubscriptionManager implements EventSubscriberInterface
      */
     public function followNewSubscriptionAsEntry($event)
     {
+        // TODO update subscription for entry
         $this->triggerErrorForDebug('subscription.new.asEntry',$event);
     }
     /**
@@ -82,6 +84,7 @@ class SubscriptionManager implements EventSubscriberInterface
      */
     public function followRemovedSubscriptionAsEntry($event)
     {
+        // TODO update subscription for entry
         $this->triggerErrorForDebug('subscription.removed.asEntry',$event);
     }
 
@@ -450,4 +453,80 @@ class SubscriptionManager implements EventSubscriberInterface
         return $form['prepared'];
     }
 
+    /**
+     * updateEntry with linkedvalues
+     * @param null|array $entry
+     * @param SubscribeField $subscribeField
+     * @return array $entry
+     */
+    public function updateEntryWithLinkedValues(?array $entry,SubscribeField $subscribeField): array
+    {
+        if (empty($entry) || !is_array($entry)){
+            return [];
+        }
+        $modifiedEntry = $entry;
+        $registeredEntries = $this->findRegisteredEntries($subscribeField->getLinkedObjectName(),$entry);
+        $currentValues = $subscribeField->getValues($entry);
+        $proposedValues = array_map(
+            function($e){
+                return $e['id_fiche'];
+            },
+            $registeredEntries
+        );
+        sort($currentValues);
+        sort($proposedValues);
+        if (!($currentValues == $proposedValues)){
+            $modifiedEntry[$subscribeField->getPropertyName()] = implode(
+                ',',
+                array_map(
+                    function($e){
+                        return $e['id_fiche'];
+                    },
+                    $registeredEntries
+                )
+            );
+            $modifiedEntry = $this->saveEntryInDb($modifiedEntry);
+        }
+
+        return $modifiedEntry;
+    }
+
+    /**
+     * find registered entries
+     * @param string $formId
+     * @param null|array $entry
+     * @return array string[] $entriesIds
+     */
+    protected function findRegisteredEntries(string $formId, ?array $entry): array
+    {
+        if (empty($entry['id_typeannonce']) || empty($entry['id_fiche'])){
+            return [];
+        }
+        $form = $this->formManager->getOne($formId);
+        if (empty($form['prepared'])){
+            return [];
+        }
+        $enumField = null;
+        foreach ($form['prepared'] as $field) {
+            if (empty($enumField)
+                && $field instanceof EnumField
+                && $field->isEnumEntryField()
+                && $field->getLinkedObjectName() == $entry['id_typeannonce']
+                ){
+                $enumField = $field;   
+            }
+        }
+        if (empty($enumField)){
+            return [];
+        }
+        $entries = $this->entryManager->search([
+            'formsIds' => [$form['bn_id_nature']],
+            'queries' => [
+                $enumField->getPropertyName() => $entry['id_fiche']
+            ],
+            false, // filter on read ACL
+            false  // use Guard
+        ]);
+        return empty($entries) ? [] : $entries;
+    }
 }

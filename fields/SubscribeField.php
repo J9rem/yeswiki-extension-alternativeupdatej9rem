@@ -16,6 +16,7 @@ use DateTimeImmutable;
 use Psr\Container\ContainerInterface;
 use YesWiki\Alternativeupdatej9rem\Service\SubscriptionManager;
 use YesWiki\Bazar\Field\CheckboxEntryField;
+use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Core\Service\AssetsManager;
 use YesWiki\Core\Service\UserManager;
 
@@ -56,7 +57,7 @@ class SubscribeField extends CheckboxEntryField
             if ($this->isUserType){
                 $this->options = $this->getOptionsFromUsers();
             } else {
-                $this->options = [];
+                $this->options = parent::getOptions();
             }
         }
         return $this->options;
@@ -69,10 +70,48 @@ class SubscribeField extends CheckboxEntryField
             if ($this->isUserType){
                 $this->optionsNotSecured = $this->getOptionsFromUsers(true);
             } else {
-                $this->optionsNotSecured = [];
+                $this->optionsNotSecured = $this->getAllOptionsFromEntries();
             }
         }
         return $this->optionsNotSecured;
+    }
+
+    public function getAllOptionsFromEntries()
+    {
+        $entryManager = $this->getService(EntryManager::class);
+
+        $tabquery = [];
+        if (!empty($this->queries)) {
+            $tableau = array();
+            $tab = explode('|', $this->queries);
+            //découpe la requete autour des |
+            foreach ($tab as $req) {
+                $tabdecoup = explode('=', $req, 2);
+                $tableau[$tabdecoup[0]] = isset($tabdecoup[1]) ? trim($tabdecoup[1]) : '';
+            }
+            $tabquery = array_merge($tabquery, $tableau);
+        } else {
+            $tabquery = '';
+        }
+
+        $fiches = $entryManager->search(
+            [
+                'queries' => $tabquery,
+                'formsIds' => $this->getLinkedObjectName(),
+                'keywords' => (!empty($this->keywords)) ? $this->keywords : ''
+            ],
+            false, // filter on read ACL
+            false  // use Guard
+        );
+
+        $options = [];
+        foreach ($fiches as $fiche) {
+            $options[$fiche['id_fiche']] = $fiche['bf_titre'];
+        }
+        if (is_array($options)) {
+            asort($options);
+        }
+        return $options;
     }
 
     /**
@@ -103,16 +142,15 @@ class SubscribeField extends CheckboxEntryField
         if (!$this->isUserType && !$subscriptionManager->checkIfFormIsOnlyOneEntry($this->getLinkedObjectName())){
             return $this->showErroMessageForForm();
         }
+        if (!$this->isUserType){
+            $entry = $subscriptionManager->updateEntryWithLinkedValues($entry,$this);
+        }
         $output= '';
         if ($this->showList){
-            if ($this->isUserType){
-                $savedOptions = $this->options;
-                $this->options = $this->getFullOptionsNotSecured();
-                $output = parent::renderStatic($entry);
-                $this->options = $savedOptions;
-            } else {
-                $output = parent::renderStatic($entry);
-            }
+            $savedOptions = $this->options;
+            $this->options = $this->getFullOptionsNotSecured();
+            $output = parent::renderStatic($entry);
+            $this->options = $savedOptions;
             $output = $this->formatOutput($output ?? '');
         }
         $output .= $this->render(
@@ -160,6 +198,20 @@ class SubscribeField extends CheckboxEntryField
 
     protected function renderInput($entry)
     {
+        $askForLimit = $this->render(
+            '@bazar/inputs/text.twig',
+            [
+                'field' => [
+                    'type' => 'text',
+                    'hint' => _t('AUJ9_SUBSCRIBE_HINT_FOR_MAX'),
+                    'label' => _t('AUJ9_SUBSCRIBE_LABEL_FOR_MAX'),
+                    'subType' => 'number',
+                    'name' => $this->getPropertyName().'_data[max]',
+                    'size' => -1
+                ],
+                'value' => intval($entry[$this->getPropertyName().'_data']['max'] ?? -1)
+            ]
+        );
         if ($this->isUserType){
             $savedOptions = $this->options;
             $keys = $this->getValues($entry);
@@ -174,20 +226,6 @@ class SubscribeField extends CheckboxEntryField
                 );
             $output = parent::renderInput($entry);
             $this->options = $savedOptions;
-            $askForLimit = $this->render(
-                '@bazar/inputs/text.twig',
-                [
-                    'field' => [
-                        'type' => 'text',
-                        'hint' => _t('AUJ9_SUBSCRIBE_HINT_FOR_MAX'),
-                        'label' => _t('AUJ9_SUBSCRIBE_LABEL_FOR_MAX'),
-                        'subType' => 'number',
-                        'name' => $this->getPropertyName().'_data[max]',
-                        'size' => -1
-                    ],
-                    'value' => intval($entry[$this->getPropertyName().'_data']['max'] ?? -1)
-                ]
-            );
             return $askForLimit.$output;
         }
         
@@ -195,7 +233,8 @@ class SubscribeField extends CheckboxEntryField
         if (!$subscriptionManager->checkIfFormIsOnlyOneEntry($this->getLinkedObjectName())){
             return $this->showErroMessageForForm();
         }
-        return parent::renderInput($entry);
+        $entry = $subscriptionManager->updateEntryWithLinkedValues($entry,$this);
+        return $askForLimit.parent::renderInput($entry);
     }
 
     protected function showErroMessageForForm():string
