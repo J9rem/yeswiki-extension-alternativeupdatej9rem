@@ -533,9 +533,9 @@ class SubscriptionManager implements EventSubscriberInterface
      * searchEnumField
      * @param string $formId
      * @param null|array $entry
-     * @return null|EnumField
+     * @return null|array
      */
-    protected function getEnumField(string $formId, ?array $entry): ?EnumField
+    protected function getEnumField(string $formId, ?array $entry): ?array
     {   
         if (empty($entry['id_typeannonce']) || empty($entry['id_fiche'])){
             return null;
