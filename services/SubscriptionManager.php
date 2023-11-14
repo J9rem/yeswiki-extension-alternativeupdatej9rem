@@ -27,6 +27,7 @@ use YesWiki\Wiki;
 class SubscriptionManager implements EventSubscriberInterface
 {
     protected $authController;
+    protected $cacheForEntries;
     protected $entryManager;
     protected $eventDispatcher;
     protected $formManager;
@@ -54,6 +55,7 @@ class SubscriptionManager implements EventSubscriberInterface
         $this->eventDispatcher = $eventDispatcher;
         $this->formManager = $formManager;
         $this->wiki = $wiki;
+        $this->cacheForEntries = [];
     }
 
     /**
@@ -76,7 +78,7 @@ class SubscriptionManager implements EventSubscriberInterface
      */
     public function followNewSubscriptionAsEntry($event)
     {
-        // TODO update subscription for entry
+        $this->updateLinkedEnumField($event, true);
         $this->triggerErrorForDebug('subscription.new.asEntry',$event);
     }
     /**
@@ -84,8 +86,43 @@ class SubscriptionManager implements EventSubscriberInterface
      */
     public function followRemovedSubscriptionAsEntry($event)
     {
-        // TODO update subscription for entry
+        $this->updateLinkedEnumField($event, false);
         $this->triggerErrorForDebug('subscription.removed.asEntry',$event);
+    }
+
+    /**
+     * update entry for linked EnumField
+     * @param Event $event
+     * @param bool $isAdded
+     */
+    protected function updateLinkedEnumField($event, bool $isAdded)
+    {
+        if ($event instanceof Event){
+            $data = $event->getData();
+            $concernedEntryId = $data['value'] ?? '';
+            $newEntry = $data['entry'] ?? [];
+            if (!empty($concernedEntryId) && !empty($newEntry['id_fiche'])){
+                $entry = $this->entryManager->getOne($concernedEntryId);
+                if (!empty($entry['id_fiche'])
+                    && !in_array($entry['id_fiche'],$this->cacheForEntries)){
+                        $this->cacheForEntries[] = $entry['id_fiche'];
+                        $dataForField = $this->getEnumField($formId,$entry);
+
+                        $enumField = $data['enumField'];
+                        $values = $enumField->getValues($entry);
+                        if (!empty($dataForField)){
+                            $newValues = $values;
+                            if($isAdded){
+                                $newValues[] = $newEntry['id_fiche'];
+                            } else {
+                                $newValues = array_diff($newValues,[$newEntry['id_fiche']]);
+                            }                  
+                            $entry[$enumField->getPropertyName()] = implode(',', $newValues);
+                            $modifiedEntry = $this->saveEntryInDb($entry);
+                        }
+                }
+            }
+        }
     }
 
     /**
@@ -222,6 +259,7 @@ class SubscriptionManager implements EventSubscriberInterface
                 : ['nb' => [$nbSubscriptionField->getPropertyName(),$modifiedEntry[$nbSubscriptionField->getPropertyName()] ?? '']]
             ));
         }
+        // todo
         return array_merge($output,['errorMsg' => 'Part not already supported']);
     }
 
@@ -492,19 +530,19 @@ class SubscriptionManager implements EventSubscriberInterface
     }
 
     /**
-     * find registered entries
+     * searchEnumField
      * @param string $formId
      * @param null|array $entry
-     * @return array string[] $entriesIds
+     * @return null|EnumField
      */
-    protected function findRegisteredEntries(string $formId, ?array $entry): array
-    {
+    protected function getEnumField(string $formId, ?array $entry): ?EnumField
+    {   
         if (empty($entry['id_typeannonce']) || empty($entry['id_fiche'])){
-            return [];
+            return null;
         }
         $form = $this->formManager->getOne($formId);
         if (empty($form['prepared'])){
-            return [];
+            return null;
         }
         $enumField = null;
         foreach ($form['prepared'] as $field) {
@@ -516,13 +554,25 @@ class SubscriptionManager implements EventSubscriberInterface
                 $enumField = $field;   
             }
         }
-        if (empty($enumField)){
+        return empty($enumField) ? null : compact(['enumField','form']);
+    }
+
+    /**
+     * find registered entries
+     * @param string $formId
+     * @param null|array $entry
+     * @return array string[] $entriesIds
+     */
+    protected function findRegisteredEntries(string $formId, ?array $entry): array
+    {
+        $data = $this->getEnumField($formId,$entry);
+        if (empty($data)){
             return [];
         }
         $entries = $this->entryManager->search([
-            'formsIds' => [$form['bn_id_nature']],
+            'formsIds' => [$data['form']['bn_id_nature']],
             'queries' => [
-                $enumField->getPropertyName() => $entry['id_fiche']
+                ($data['enumField'])->getPropertyName() => $entry['id_fiche']
             ],
             false, // filter on read ACL
             false  // use Guard
