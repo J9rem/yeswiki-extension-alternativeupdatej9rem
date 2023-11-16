@@ -70,7 +70,8 @@ const toogleRegistrationForUser = async (entryId,propertyName) => {
                     errorMsg: data?.errorMsg ?? '',
                     isError: data?.isError === true,
                     nb: data?.nb ?? [],
-                    thereIsAvailablePlace: data?.thereIsAvailablePlace === true
+                    thereIsAvailablePlace: data?.thereIsAvailablePlace === true,
+                    values: data?.values ?? {}
                 }
             })
             .finally(()=>{
@@ -89,7 +90,7 @@ window.toogleRegistration = (event,entryId = '',propertyName = '') => {
     const btn = event.target.classList.contains('btn') ? event.target : closest(event.target,'btn')
     btn?.setAttribute('disabled','disabled')
     toogleRegistrationForUser(entryId,propertyName)
-        .then(({registered,isError,errorMsg,nb,thereIsAvailablePlace})=>{
+        .then(({registered,isError,errorMsg,nb,thereIsAvailablePlace,values})=>{
             if (isError){
                 throw new Error(errorMsg)
             }
@@ -121,6 +122,24 @@ window.toogleRegistration = (event,entryId = '',propertyName = '') => {
                 const spanForNB = group.parentNode.querySelector(`[data-id=${nb[0]}] > span.BAZ_texte`)
                 if (spanForNB?.innerText){
                     spanForNB.innerText = nb[1]
+                }
+            }
+            if (typeof values === 'object' && values !== null){
+                const list = group.parentNode.querySelector('.BAZ_rubrique.field-checkboxfiche ul')
+                if (list){
+                    list.innerHTML = ''
+                    Object.entries(values).forEach(([entryId,title])=>{
+                        const li = document.createElement('li')
+                        const sanitizedTitle = title.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+                            return '&#' + i.charCodeAt(0) + ';';
+                          })
+                        li.innerHTML = `<a href="${window.wiki?.url(`?${entryId}/iframe`) ?? '#'}" class="modalbox"
+                            data-size="modal-lg"
+                            data-header="false"
+                            data-iframe="1"
+                            title="Voir la fiche ${sanitizedTitle}">${sanitizedTitle}</a>`
+                        list.append(li)
+                    })
                 }
             }
         })

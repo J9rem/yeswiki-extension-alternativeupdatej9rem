@@ -315,10 +315,20 @@ class SubscriptionManager implements EventSubscriberInterface
         $modifiedEntry = $this->saveEntryInDb($newEntry);
         $nbSubscriptionField = $this->getNbSubscriptionField($modifiedEntry);
         $newValues = $subscribeField->getValues($modifiedEntry);
+        $options = $subscribeField->getOptions();
         return array_merge($output,[
                 'newState' => in_array($currentValue,$newValues),
                 'isError' => false,
-                'thereIsAvailablePlace'=>$this->isThereAvailablePlace($modifiedEntry,$subscribeField)
+                'thereIsAvailablePlace'=>$this->isThereAvailablePlace($modifiedEntry,$subscribeField),
+                'values' => array_combine(
+                    $newValues,
+                    array_map(
+                        function($v) use ($options){
+                            return $options[$v] ?? $v;
+                        },
+                        $newValues
+                    )
+                )
             ]+(
             empty($nbSubscriptionField)
             ? []
