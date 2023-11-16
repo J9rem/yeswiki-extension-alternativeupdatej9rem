@@ -7,7 +7,7 @@
 
 {{ include_javascript('tools/alternativeupdatej9rem/javascripts/button-for-subscription.js',false,true) }}
 {{ include_css('tools/alternativeupdatej9rem/styles/button-for-subscription.css') }}
-<div class="subscription-group {{ hasAcl('+') ? (isRegistered ? 'registered' : 'not-registered') : 'to-connect' }}{{ noPlace ? ' no-place' :'' }}">
+<div class="subscription-group {{ hasAcl('+') ? (isRegistered ? 'registered' : (canRegister ? 'not-registered' : 'create-entry' )) : 'to-connect' }}{{ noPlace ? ' no-place' :'' }}">
     <a class="connection-button btn btn-xs btn-primary" href="#LoginModal" title="{{ _t('AUJ9_CONNECT_TO_REGISTER') }}" data-toggle="modal"><i class="fas fa-sign-in-alt"></i> {{ _t('AUJ9_CONNECT_TO_REGISTER') }}</a>
     <button
         class="register-button btn btn-xs btn-primary"
@@ -29,4 +29,9 @@
         >
         <i class="fas fa-user-minus"></i> {{ _t('AUJ9_UNREGISTER') }}
     </button>
+    <a 
+        class="create-entry-link btn btn-xs btn-primary" 
+        href="{{ url({tag:field.pageToCreateEntry ?? '',params:{incomingurl:url({tag:''})}}) }}" 
+        title="{{ _t('AUJ9_CREATE_ENTRY_TO_REGISTER') }}" 
+        ><i class="far fa-plus-square"></i> {{ _t('AUJ9_CREATE_ENTRY_TO_REGISTER') }}</a>
 </div>

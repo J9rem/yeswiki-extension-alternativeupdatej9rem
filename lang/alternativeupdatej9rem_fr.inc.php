@@ -53,7 +53,8 @@ return [
 
   // fields/SubscribeField.php
   // Feature UUID : auj9-subscribe-to-entry
-  'AUJ9_SIBSCRIBE_BAD_CONFIG_FORM' => 'Le champ "subscribe" est mal configuré car le formulaire associé n\'a pas activé l\'option "restreindre à une seule fiche par utilisateur"',
+  'AUJ9_SUBSCRIBE_BAD_CONFIG_ENTRY_CREATION_PAGE' => 'Le champ "subscribe" est mal configuré car la page de création de fiche liée est mal définie.',
+  'AUJ9_SUBSCRIBE_BAD_CONFIG_FORM' => 'Le champ "subscribe" est mal configuré car le formulaire associé n\'a pas activé l\'option "restreindre à une seule fiche par utilisateur"',
   'AUJ9_SUBSCRIBE_HIDE_LIST' => 'Cacher la liste',
   'AUJ9_SUBSCRIBE_HINT_FOR_MAX' => '-1 = pas de limite',
   'AUJ9_SUBSCRIBE_LABEL_FOR_MAX' => 'Nombre maximum d\'inscriptions',
@@ -225,6 +226,7 @@ return [
   // templates/button-for-subscription.twig
   // Feature UUID : auj9-subscribe-to-entry
   'AUJ9_CONNECT_TO_REGISTER' => 'Se connecter pour s\'inscrire',
+  'AUJ9_CREATE_ENTRY_TO_REGISTER' => 'Créer une fiche pour s\'inscrire',
   'AUJ9_REGISTER' => 'S\'inscrire',
   'AUJ9_REGISTER_NO_PLACE' => 'Il n\'y a plus de place disponible',
   'AUJ9_UNREGISTER' => 'Se désinscrire',

@@ -18,13 +18,16 @@ import {
 const updateEnFormDisplay = (element) => {
   const base = $(element).closest(".subscribe-field.form-field")
   const selectForm = base.find("select[name=form]").closest('.form-group');
+  const inputTxt = base.find("input[name=entrycreationpage]").closest('.form-group');
   const selectTypeSubscription = base.find("select[name=typesubscription]")
 
   const currentValue = selectTypeSubscription.val()
   if (currentValue.trim().length === 0){
     selectForm.hide()
+    inputTxt.hide()
   } else {
     selectForm.show()
+    inputTxt.show()
   }
 }
 
@@ -79,6 +82,10 @@ export default {
         ...listAndFormUserValues
       }
     },
+    entrycreationpage:{
+      label: _t('AUJ9_SUBSCRIBE_ENTRY_CREATION_PAGE_LABEL'),
+      value:''
+    },
     showlist: {
       label: _t('AUJ9_SUBSCRIBE_SHOWLIST'),
       options: {
@@ -97,7 +104,7 @@ export default {
   },
   advancedAttributes: ['read', 'write', 'semantic', 'hint', 'defaultValue'],
   disabledAttributes: ['value'],
-  attributesMapping: { ...listsMapping, ...{ 1: 'form', 4: 'showlist', 7: 'typesubscription' } },
+  attributesMapping: { ...listsMapping, ...{ 1: 'form', 4: 'showlist', 7: 'typesubscription',13:'entrycreationpage' } },
   renderInput() {
     return {
       field: `<span>Liste des inscrits <i class="fas fa-angle-down"></i></span> <button class="btn btn-xs btn-success" disabled><i class="fas fa-user-plus"></i> ${_t('AUJ9_SUBSCRIBE')}</button>`,

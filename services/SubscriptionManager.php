@@ -226,6 +226,38 @@ class SubscriptionManager implements EventSubscriberInterface
     }
 
     /**
+     * check if it is possible to register when as Entry
+     * @param SubscribeField $subscribeField
+     * @return bool
+     */
+    public function canRegister(SubscribeField $subscribeField): bool
+    {
+        $user = $this->authController->getLoggedUser();
+        return !empty($user['name']) && !empty($this->findEntryOwnedByUser($user['name'],$subscribeField->getLinkedObjectName()));
+    }
+
+    /**
+     * find entry Owned by currend user
+     * @param string $userName
+     * @param string $formId
+     * @return array $entry
+     */
+    protected function findEntryOwnedByUser(string $userName,string $formId): array
+    {
+        if (empty($userName) || empty($formId)){
+            return [];
+        }
+        $entries = $this->entryManager->search([
+                'formsIds' => [$formId],
+                'user' => $userName,
+            ],
+            true, // filter on read ACL
+            false  // use Guard
+        );
+        return empty($entries) ? [] : array_pop($entries);
+    }
+
+    /**
      * toogle registration state
      * @param string $entryId
      * @param string $propertyName
@@ -262,36 +294,36 @@ class SubscriptionManager implements EventSubscriberInterface
         if (!$subscribeField->canRead($entry,$user['name']) || !$subscribeField->canEdit($entry)){
             return array_merge($output,['errorMsg' => 'User can not read or write this field']);
         }
+        $values = $subscribeField->getValues($entry);
         if ($subscribeField->getIsUserType()){
-            $values = $subscribeField->getValues($entry);
-            if ($this->isRegistered($subscribeField,$entry)){
-                $newValues = array_filter(
-                    $values,
-                    function($userName) use ($user){
-                        return $userName != $user['name'];
-                    }
-                );
-            } else {
-                $newValues = $values;
-                $newValues[] = $user['name'];
+            $currentValue = $user['name'];
+        } else {
+            $entryForUser = $this->findEntryOwnedByUser($user['name'],$subscribeField->getLinkedObjectName());
+            if (empty($entryForUser['id_fiche'])){
+                return array_merge($output,['errorMsg' => 'User does not have an entry to register']);
             }
-            $newEntry = $entry;
-            $newEntry[$subscribeField->getPropertyName()] = implode(',', $newValues);
-            $modifiedEntry = $this->saveEntryInDb($newEntry);
-            $nbSubscriptionField = $this->getNbSubscriptionField($modifiedEntry);
-            $newValues = $subscribeField->getValues($modifiedEntry);
-            return array_merge($output,[
-                    'newState' => in_array($user['name'],$newValues),
-                    'isError' => false,
-                    'thereIsAvailablePlace'=>$this->isThereAvailablePlace($modifiedEntry,$subscribeField)
-                ]+(
-                empty($nbSubscriptionField)
-                ? []
-                : ['nb' => [$nbSubscriptionField->getPropertyName(),$modifiedEntry[$nbSubscriptionField->getPropertyName()] ?? '']]
-            ));
+            $currentValue = $entryForUser['id_fiche'];
         }
-        // todo
-        return array_merge($output,['errorMsg' => 'Part not already supported']);
+        if ($this->isRegistered($subscribeField,$entry)){
+            $newValues = array_diff($values,[$currentValue]);
+        } else {
+            $newValues = $values;
+            $newValues[] = $currentValue;
+        }
+        $newEntry = $entry;
+        $newEntry[$subscribeField->getPropertyName()] = implode(',', $newValues);
+        $modifiedEntry = $this->saveEntryInDb($newEntry);
+        $nbSubscriptionField = $this->getNbSubscriptionField($modifiedEntry);
+        $newValues = $subscribeField->getValues($modifiedEntry);
+        return array_merge($output,[
+                'newState' => in_array($currentValue,$newValues),
+                'isError' => false,
+                'thereIsAvailablePlace'=>$this->isThereAvailablePlace($modifiedEntry,$subscribeField)
+            ]+(
+            empty($nbSubscriptionField)
+            ? []
+            : ['nb' => [$nbSubscriptionField->getPropertyName(),$modifiedEntry[$nbSubscriptionField->getPropertyName()] ?? '']]
+        ));
     }
 
     /**
@@ -599,13 +631,14 @@ class SubscriptionManager implements EventSubscriberInterface
             return [];
         }
         $entries = $this->entryManager->search([
-            'formsIds' => [$data['form']['bn_id_nature']],
-            'queries' => [
-                ($data['enumField'])->getPropertyName() => $entry['id_fiche']
+                'formsIds' => [$data['form']['bn_id_nature']],
+                'queries' => [
+                    ($data['enumField'])->getPropertyName() => $entry['id_fiche']
+                ],
             ],
             false, // filter on read ACL
             false  // use Guard
-        ]);
+        );
         return empty($entries) ? [] : $entries;
     }
 }

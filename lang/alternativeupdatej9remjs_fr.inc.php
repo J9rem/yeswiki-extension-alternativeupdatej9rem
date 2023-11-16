@@ -85,6 +85,7 @@ return [
   // javascripts/fields/subscribe.js
   // Feature UUID : auj9-subscribe-to-entry
   'AUJ9_SUBSCRIBE' => 'Inscriptions',
+  'AUJ9_SUBSCRIBE_ENTRY_CREATION_PAGE_LABEL' => 'Page pour la création de fiche liée',
   'AUJ9_SUBSCRIBE_SHOWLIST' => 'Afficher la liste',
   'AUJ9_SUBSCRIBE_TYPE' => 'Type',
   'AUJ9_SUBSCRIBE_TYPE_ENTRY' => 'Fiche',

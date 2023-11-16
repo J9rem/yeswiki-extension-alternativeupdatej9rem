@@ -18,6 +18,7 @@ use YesWiki\Alternativeupdatej9rem\Service\SubscriptionManager;
 use YesWiki\Bazar\Field\CheckboxEntryField;
 use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Core\Service\AssetsManager;
+use YesWiki\Core\Service\PageManager;
 use YesWiki\Core\Service\UserManager;
 
 /**
@@ -27,9 +28,11 @@ class SubscribeField extends CheckboxEntryField
 {
     protected const FIELD_SHOWLIST = 4;
     protected const FIELD_TYPE_SUBSCRIPTION = 7;
+    protected const FIELD_ENTRY_CREATION_PAGE = 13;
 
     protected $isUserType;
     protected $optionsNotSecured;
+    protected $pageToCreateEntry;
     protected $showList;
     protected $wiki;
 
@@ -42,7 +45,12 @@ class SubscribeField extends CheckboxEntryField
             || $values[self::FIELD_TYPE_SUBSCRIPTION] !== 'entry';
         $this->showList = empty($values[self::FIELD_SHOWLIST])
             || $values[self::FIELD_SHOWLIST] !== 'no';
+        $this->pageToCreateEntry = (empty($values[self::FIELD_ENTRY_CREATION_PAGE])
+            || !is_string($values[self::FIELD_ENTRY_CREATION_PAGE]))
+            ? ''
+            : trim($values[self::FIELD_ENTRY_CREATION_PAGE]);
         $this->maxChars = '';
+        $this->keywords = '';
         $this->propertyName = $this->type . $this->name . $this->listLabel;
         $this->wiki = $this->getWiki();
 
@@ -139,8 +147,14 @@ class SubscribeField extends CheckboxEntryField
     protected function renderStatic($entry)
     {
         $subscriptionManager = $this->getService(SubscriptionManager::class);
-        if (!$this->isUserType && !$subscriptionManager->checkIfFormIsOnlyOneEntry($this->getLinkedObjectName())){
-            return $this->showErroMessageForForm();
+        if (!$this->isUserType){
+            if (!$subscriptionManager->checkIfFormIsOnlyOneEntry($this->getLinkedObjectName())){
+                return $this->showErroMessageForForm();
+            }
+            if (empty($this->pageToCreateEntry)
+                || empty($this->getService(PageManager::class)->getOne($this->pageToCreateEntry))){
+                return $this->showErroMessageForMissingEntryCreationPage();
+            }
         }
         if (!$this->isUserType){
             $entry = $subscriptionManager->updateEntryWithLinkedValues($entry,$this);
@@ -157,6 +171,7 @@ class SubscribeField extends CheckboxEntryField
             '@alternativeupdatej9rem/button-for-subcription.twig',
             [
                 'isRegistered' => $subscriptionManager->isRegistered($this,$entry),
+                'canRegister' => $this->isUserType ? true : $subscriptionManager->canRegister($this),
                 'entryId' => $entry['id_fiche'] ?? '',
                 'propertyName' => $this->getPropertyName(),
                 'noPlace' => !$subscriptionManager->isThereAvailablePlace($entry,$this)
@@ -233,6 +248,10 @@ class SubscribeField extends CheckboxEntryField
         if (!$subscriptionManager->checkIfFormIsOnlyOneEntry($this->getLinkedObjectName())){
             return $this->showErroMessageForForm();
         }
+        if (empty($this->pageToCreateEntry)
+            || empty($this->getService(PageManager::class)->getOne($this->pageToCreateEntry))){
+            return $this->showErroMessageForMissingEntryCreationPage();
+        }
         $entry = $subscriptionManager->updateEntryWithLinkedValues($entry,$this);
         return $askForLimit.parent::renderInput($entry);
     }
@@ -241,7 +260,15 @@ class SubscribeField extends CheckboxEntryField
     {
         return $this->render('@templates/alert-message.twig',[
             'type' => 'danger',
-            'message' => _t('AUJ9_SIBSCRIBE_BAD_CONFIG_FORM')
+            'message' => _t('AUJ9_SUBSCRIBE_BAD_CONFIG_FORM')
+        ]);
+    }
+
+    protected function showErroMessageForMissingEntryCreationPage():string
+    {
+        return $this->render('@templates/alert-message.twig',[
+            'type' => 'danger',
+            'message' => _t('AUJ9_SUBSCRIBE_BAD_CONFIG_ENTRY_CREATION_PAGE')
         ]);
     }
 
@@ -268,6 +295,10 @@ class SubscribeField extends CheckboxEntryField
     {
         return $this->showList;
     }
+    public function getPageToCreateEntry():string
+    {
+        return $this->pageToCreateEntry;
+    }
 
     // change return of this method to keep compatible with php 7.3 (mixed is not managed)
     #[\ReturnTypeWillChange]
@@ -277,6 +308,7 @@ class SubscribeField extends CheckboxEntryField
             parent::jsonSerialize(),
             [
                 'isUserType' => $this->getIsUserType(),
+                'pageToCreateEntry' => $this->getPageToCreateEntry(),
                 'showList' => $this->getShowList()
             ]
         );

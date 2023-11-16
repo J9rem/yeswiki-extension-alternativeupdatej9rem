@@ -19,8 +19,17 @@
 }
 
 .subscription-group.not-registered .connection-button,
+.subscription-group.create-entry .connection-button,
 .subscription-group.not-registered:not(.no-place) .register-button.no-place,
 .subscription-group.not-registered.no-place .register-button:not(.no-place),
-.subscription-group.not-registered .unregister-button{
+.subscription-group.create-entry .register-button,
+.subscription-group.not-registered .unregister-button,
+.subscription-group.create-entry .unregister-button{
+    display:none;
+}
+
+
+.subscription-group:not(.create-entry) .create-entry-link
+{
     display:none;
 }
