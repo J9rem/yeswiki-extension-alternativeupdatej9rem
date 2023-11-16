@@ -78,7 +78,7 @@ class SubscriptionManager implements EventSubscriberInterface
      */
     public function followNewSubscriptionAsEntry($event)
     {
-        $this->updateLinkedEnumField($event, true);
+        $this->updateLinkedEnumFieldFromEvent($event, true);
         $this->triggerErrorForDebug('subscription.new.asEntry',$event);
     }
     /**
@@ -86,46 +86,60 @@ class SubscriptionManager implements EventSubscriberInterface
      */
     public function followRemovedSubscriptionAsEntry($event)
     {
-        $this->updateLinkedEnumField($event, false);
+        $this->updateLinkedEnumFieldFromEvent($event, false);
         $this->triggerErrorForDebug('subscription.removed.asEntry',$event);
     }
 
     /**
-     * update entry for linked EnumField
+     * update entry for linked EnumField from Event
      * @param Event $event
      * @param bool $isAdded
      */
-    protected function updateLinkedEnumField($event, bool $isAdded)
+    protected function updateLinkedEnumFieldFromEvent($event, bool $isAdded)
     {
         if ($event instanceof Event){
             $data = $event->getData();
             $concernedEntryId = $data['data']['value'] ?? '';
             $newEntry = $data['data']['entry'] ?? [];
             if (!empty($concernedEntryId) && !empty($newEntry['id_fiche'])){
-                $entry = $this->entryManager->getOne($concernedEntryId);
-                if (!empty($entry['id_fiche'])
-                    && !in_array($entry['id_fiche'],$this->cacheForEntries)){
-                        $this->cacheForEntries[] = $entry['id_fiche'];
-                        $dataForField = $this->getEnumField(strval($entry['id_typeannonce']),$newEntry);
-                        if (!empty($dataForField)){
-                            $enumField = $dataForField['enumField'];
-                            $values = $enumField->getValues($entry);
-                            $newValues = $values;
-                            if($isAdded){
-                                if (!in_array($newEntry['id_fiche'],$newValues)){
-                                    $newValues[] = $newEntry['id_fiche'];
-                                }
-                            } else {
-                                $newValues = array_diff($newValues,[$newEntry['id_fiche']]);
-                            }
-                                
-                            if (!$this->arraysAreIdentical($values,$newValues)){
-                                $entry[$enumField->getPropertyName()] = implode(',', $newValues);
-                                $modifiedEntry = $this->saveEntryInDb($entry);
-                            }
-                        }
-                }
+                $this->updateLinkedEnumField($concernedEntryId,$newEntry,$isAdded);
             }
+        }
+    }
+
+    /**
+     * update entry for linked EnumField
+     * @param string $entryId
+     * @param null|array $parentEntry
+     * @param bool $isAdded
+     */
+    protected function updateLinkedEnumField(string $entryId, ?array $parentEntry, bool $isAdded)
+    {
+        if (empty($entryId) || empty($parentEntry)){
+            return;
+        }
+        $entry = $this->entryManager->getOne($entryId);
+        if (!empty($entry['id_fiche'])
+            && !in_array($entry['id_fiche'],$this->cacheForEntries)){
+                $this->cacheForEntries[] = $entry['id_fiche'];
+                $dataForField = $this->getEnumField(strval($entry['id_typeannonce']),$parentEntry);
+                if (!empty($dataForField)){
+                    $enumField = $dataForField['enumField'];
+                    $values = $enumField->getValues($entry);
+                    $newValues = $values;
+                    if($isAdded){
+                        if (!in_array($parentEntry['id_fiche'],$newValues)){
+                            $newValues[] = $parentEntry['id_fiche'];
+                        }
+                    } else {
+                        $newValues = array_diff($newValues,[$parentEntry['id_fiche']]);
+                    }
+                    
+                    if (!$this->arraysAreIdentical($values,$newValues)){
+                        $entry[$enumField->getPropertyName()] = implode(',', $newValues);
+                        $modifiedEntry = $this->saveEntryInDb($entry);
+                    }
+                }
         }
     }
 
@@ -149,7 +163,7 @@ class SubscriptionManager implements EventSubscriberInterface
      */
     protected function triggerErrorForDebug(string $type, $event)
     {
-        trigger_error("$type... ".json_encode($event->getData()));
+        // trigger_error("$type... ".json_encode($event->getData()));
     }
 
     /**
@@ -166,9 +180,6 @@ class SubscriptionManager implements EventSubscriberInterface
         try {
             $output = $this->getNewEntryContentForNbSubscription($entry,$values);
             $this->generateEvents($entry,$values,$subscribeField);
-
-            $values = $this->findRegisteredEntries($subscribeField->getLinkedObjectName(), $entry);
-            $output[$subscribeField->getPropertyName()] = implode(',',$values);
             return $output;
         } catch (Exception $th) {
             return [];
