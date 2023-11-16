@@ -27,6 +27,7 @@ Ajout des champs:
   - `sendmailselector` pour permettre de choisir à qui envoyer une copie de la fiche, choix parmi une liste. _Pratique pour que la copie de la fiche soit envoyé au bon référent local_
   - `customsendmail` permet d'offrir à l'usager la possibilité de recevoir ou non une copie de sa fiche à chaque modification. _Pratique pour éviter l'infobésité des e-mails tout en laissant le choix à l'usager_
   - `choice-display-hidden` permet d'avoir une zone qui se déplie/replie lors de l'affichage d'une fiche. Pour l'utiliser, il faut encapsuler la zone concernée (une seule zone par fiche) dans `<div class="hidden-field-specific">/<div>` (ceci se fait à l'aide des champs `labelhtml`)
+  - `subscribe` qui permet de s'insrire à un évènement, un groupe
 
 ### Handlers
 
@@ -60,7 +61,7 @@ Ajout des champs:
 ||`choice-display-hidden`|[`auj9-choice-display-hidden-field`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-choice-display-hidden-field&type=code)|
 ||`lien_internet` pour les vidéos|[`auj9-video-field`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-video-field&type=code)|
 ||`sendmailselector`|[`auj9-send-mail-selector-field`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-send-mail-selector-field&type=code)|
-||pour `doryphore 4.4.2`|[`auj9-fix-4-4-2`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-2&type=code)|
+||`subscribe`|[`auj9-subscribe-to-entry`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-subscribe-to-entry&type=code)|
 |Handler|`/diff`|[`auj9-diff`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-diff&type=code)|
 ||`/duplicate`|[`auj9-duplicate`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-duplicate&type=code)|
 |Nouvelles fonctionnalités|évènements récurrents|[`auj9-recurrent-events`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-recurrent-events&type=code)|
@@ -74,6 +75,7 @@ Ajout des champs:
 ||corrections la faille de sécurité du handler `lmsraw`|[`auj9-fix-lmsraw-handler`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-lmsraw-handler&type=code)|
 ||correctif au niveau de la suppression des pages via l'api|[`auj9-fix-page-controller`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-page-controller&type=code)|
 ||correction d'un souci avec les champs liés|[`auj9-fix-linkedentry-empty`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-linkedentry-empty&type=code)|
+||pour `doryphore 4.4.2`|[`auj9-fix-4-4-2`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-2&type=code)|
 |Template Bazar|`video.twig`|[`auj9-bazar-list-video-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-video-dynamic&type=code)|
 ||`send-mail.twig`|[`auj9-bazar-list-send-mail-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-send-mail-dynamic&type=code)|
 

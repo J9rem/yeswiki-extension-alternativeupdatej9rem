@@ -24,6 +24,7 @@ use YesWiki\Alternativeupdatej9rem\Controller\ConfigOpenAgendaController ; // Fe
 use YesWiki\Alternativeupdatej9rem\Controller\PageController; // Feature UUID : auj9-fix-page-controller
 use YesWiki\Alternativeupdatej9rem\Service\AutoUpdateService;
 use YesWiki\Alternativeupdatej9rem\Service\CacheService; // Feature UUID : auj9-local-cache
+use YesWiki\Alternativeupdatej9rem\Service\SubscriptionManager; // Feature UUID : auj9-subscribe-to-entry
 use YesWiki\Bazar\Controller\ApiController as BazarApiController; // Feature UUID : auj9-local-cache
 use YesWiki\Core\ApiResponse;
 use YesWiki\Core\Controller\AuthController;
@@ -751,5 +752,31 @@ class ApiController extends YesWikiController
     public function toggleActivation()
     {
         return $this->getService(ConfigOpenAgendaController::class)->toggleActivation();
+    }
+
+    /**
+     * @Route("/api/subscriptions/gettoken", methods={"POST"}, options={"acl":{"public","+"}})
+     * Feature UUID : auj9-subscribe-to-entry
+     */
+    public function getTokenForSubscription()
+    {
+        return new ApiResponse(
+            ['token' => $this->wiki->services->get(CsrfTokenManager::class)->getToken(self::TOKEN_ID)->getValue()],
+            Response::HTTP_OK
+        );
+    }
+
+    /**
+     * @Route("/api/subscriptions/{entryId}/toggleregistration/{fieldName}", methods={"POST"}, options={"acl":{"public","+"}})
+     * Feature UUID : auj9-subscribe-to-entry
+     */
+    public function toggleRegistrationUser($entryId,$fieldName)
+    {
+        return $this->executeInSecureContext(function ($autoUpdateService) use ($entryId,$fieldName){
+            return new ApiResponse(
+                $this->wiki->services->get(SubscriptionManager::class)->toggleRegistrationState($entryId,$fieldName),
+                Response::HTTP_OK
+            );
+        });
     }
 }

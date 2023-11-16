@@ -1,0 +1,35 @@
+/*
+ * This file is part of the YesWiki Extension alternativeupdatej9rem.
+ *
+ * Authors : see README.md file that was distributed with this source code.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ * Feature UUID : auj9-subscribe-to-entry
+ */
+
+.subscription-group.to-connect .register-button,
+.subscription-group.to-connect .unregister-button{
+    display:none;
+}
+
+.subscription-group.registered .connection-button,
+.subscription-group.registered .register-button{
+    display:none;
+}
+
+.subscription-group.not-registered .connection-button,
+.subscription-group.create-entry .connection-button,
+.subscription-group.not-registered:not(.no-place) .register-button.no-place,
+.subscription-group.not-registered.no-place .register-button:not(.no-place),
+.subscription-group.create-entry .register-button,
+.subscription-group.not-registered .unregister-button,
+.subscription-group.create-entry .unregister-button{
+    display:none;
+}
+
+
+.subscription-group:not(.create-entry) .create-entry-link
+{
+    display:none;
+}

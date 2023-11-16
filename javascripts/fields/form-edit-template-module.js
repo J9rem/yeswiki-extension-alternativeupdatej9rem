@@ -17,6 +17,8 @@ import {
     semanticConf
 } from '../../../bazar/presentation/javascripts/form-edit-template/fields/commons/attributes.js'
 import renderHelper from '../../../bazar/presentation/javascripts/form-edit-template/fields/commons/render-helper.js'
+import subscribeField from './subscribe.js'
+import nbSubscriptionField from './nbsubscription.js'
 
 // Feature UUID : auj9-send-mail-selector-field
 registerFieldAsModuleAUJ9rem(getSendMailSelectorField({
@@ -46,4 +48,7 @@ registerFieldAsModuleAUJ9rem(getUrlField({
     semanticConf,
     renderHelper
 }))
+// Feature UUID : auj9-subscribe-to-entry
+registerFieldAsModuleAUJ9rem(subscribeField)
+registerFieldAsModuleAUJ9rem(nbSubscriptionField)
 

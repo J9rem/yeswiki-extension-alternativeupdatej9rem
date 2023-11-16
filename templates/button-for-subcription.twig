@@ -1,0 +1,37 @@
+{# # This file is part of the YesWiki Extension alternativeupdatej9rem.
+# Authors : see README.md file that was distributed with this source code.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+# Feature UUID : auj9-subscribe-to-entry
+#}
+
+{{ include_javascript('tools/alternativeupdatej9rem/javascripts/button-for-subscription.js',false,true) }}
+{{ include_css('tools/alternativeupdatej9rem/styles/button-for-subscription.css') }}
+<div class="subscription-group {{ hasAcl('+') ? (isRegistered ? 'registered' : (canRegister ? 'not-registered' : 'create-entry' )) : 'to-connect' }}{{ noPlace ? ' no-place' :'' }}">
+    <a class="connection-button btn btn-xs btn-primary" href="#LoginModal" title="{{ _t('AUJ9_CONNECT_TO_REGISTER') }}" data-toggle="modal"><i class="fas fa-sign-in-alt"></i> {{ _t('AUJ9_CONNECT_TO_REGISTER') }}</a>
+    <button
+        class="register-button btn btn-xs btn-primary"
+        onClick="typeof toogleRegistration === 'function' ? toogleRegistration(event,{{ entryId|json_encode }},{{ propertyName|json_encode }}) : null"
+        title="{{ _t('AUJ9_REGISTER') }}">
+        <i class="fas fa-user-plus"></i> {{ _t('AUJ9_REGISTER') }}
+    </button>
+    <button
+        class="register-button no-place btn btn-xs btn-primary"
+        title="{{ _t('AUJ9_REGISTER_NO_PLACE') }}"
+        data-toggle="tooltip"
+        disabled>
+        <i class="fas fa-user-plus"></i> {{ _t('AUJ9_REGISTER') }}
+    </button>
+    <button 
+        class="unregister-button btn btn-xs btn-primary"
+        onClick="typeof toogleRegistration === 'function' ? toogleRegistration(event,{{ entryId|json_encode }},{{ propertyName|json_encode }}) : null"
+        title="{{ _t('AUJ9_UNREGISTER') }}"
+        >
+        <i class="fas fa-user-minus"></i> {{ _t('AUJ9_UNREGISTER') }}
+    </button>
+    <a 
+        class="create-entry-link btn btn-xs btn-primary" 
+        href="{{ url({tag:field.pageToCreateEntry ?? '',params:{incomingurl:url({tag:''})}}) }}" 
+        title="{{ _t('AUJ9_CREATE_ENTRY_TO_REGISTER') }}" 
+        ><i class="far fa-plus-square"></i> {{ _t('AUJ9_CREATE_ENTRY_TO_REGISTER') }}</a>
+</div>

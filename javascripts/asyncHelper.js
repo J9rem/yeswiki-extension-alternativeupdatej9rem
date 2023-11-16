@@ -7,12 +7,13 @@
  * file that was distributed with this source code.
  * Feature UUID : auj9-open-agenda-connect
  * Feature UUID : auj9-bazar-list-send-mail-dynamic
+ * Feature UUID : auj9-subscribe-to-entry
  */
 
 /* sync methods */
 
 const manageError = (error) => {
-    if (window.wiki.isDebugEnabled){
+    if (window.wiki.isDebugEnabled === true || window.wiki.isDebugEnabled === 'true'){
         console.error(error)
     }
     return null
