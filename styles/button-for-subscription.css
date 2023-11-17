@@ -8,28 +8,12 @@
  * Feature UUID : auj9-subscribe-to-entry
  */
 
-.subscription-group.to-connect .register-button,
-.subscription-group.to-connect .unregister-button{
+ .subscription-group.to-connect > :not(.connection-button),
+ .subscription-group.create-entry > :not(.create-entry-link),
+ .subscription-group.not-registered > :not(.register-button),
+ .subscription-group.not-registered:not(.no-place) .register-button.no-place,
+ .subscription-group.not-registered.no-place .register-button:not(.no-place),
+ .subscription-group.no-rights-to-register-container > :not(.no-rights-to-register),
+ .subscription-group.registered > :not(.unregister-button){
     display:none;
-}
-
-.subscription-group.registered .connection-button,
-.subscription-group.registered .register-button{
-    display:none;
-}
-
-.subscription-group.not-registered .connection-button,
-.subscription-group.create-entry .connection-button,
-.subscription-group.not-registered:not(.no-place) .register-button.no-place,
-.subscription-group.not-registered.no-place .register-button:not(.no-place),
-.subscription-group.create-entry .register-button,
-.subscription-group.not-registered .unregister-button,
-.subscription-group.create-entry .unregister-button{
-    display:none;
-}
-
-
-.subscription-group:not(.create-entry) .create-entry-link
-{
-    display:none;
-}
+ }

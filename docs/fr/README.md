@@ -27,7 +27,7 @@ Ajout des champs:
   - `sendmailselector` pour permettre de choisir à qui envoyer une copie de la fiche, choix parmi une liste. _Pratique pour que la copie de la fiche soit envoyé au bon référent local_
   - `customsendmail` permet d'offrir à l'usager la possibilité de recevoir ou non une copie de sa fiche à chaque modification. _Pratique pour éviter l'infobésité des e-mails tout en laissant le choix à l'usager_
   - `choice-display-hidden` permet d'avoir une zone qui se déplie/replie lors de l'affichage d'une fiche. Pour l'utiliser, il faut encapsuler la zone concernée (une seule zone par fiche) dans `<div class="hidden-field-specific">/<div>` (ceci se fait à l'aide des champs `labelhtml`)
-  - `subscribe` qui permet de s'insrire à un évènement, un groupe
+  - `subscribe` qui permet de s'insrire à un évènement, un groupe (cf. [documentation ci-dessous](#documentation-pour-le-champ-subscribe))
 
 ### Handlers
 
@@ -114,6 +114,31 @@ Ajout des champs:
 
  - La configuration de cette action se fait en passant par le bouton composants lors de l'édition d'un page
  - Bien penser à attendre l'icône "✔" qui confirme que la modification a été validée puis mettre à jour le code (sinon la modification sera bien enregistrée dans la page mais elle ne sera pas active)
+
+### Documentation pour le champ subscribe
+
+Le champ `subscribe` permet de gérer une liste d'inscription à un groupe ou un évènement.
+
+Pour ceci, il faut ajouter le champ dans le formulaire qui concerne le groupe, l'évènement.
+
+Il existe **deux modes de fonctionnement**:
+ - le mode `user` : la fiche enregistre l'identifiant de l'utilisateur qui clique sur s'enregistrer
+ - le mode `fiche` : l'information est stockée dans un champ `checkboxfiche` contenu dans un autre formulaire.
+   - Ce dernier formulaire doit représenter la ficher personnelle de l'utilisateur.
+   - Il doit être configurer en mode "une seule fiche par utilisateur"
+   - Le champ `checkboxfiche` doit pointer vers le formulaire du groupe ou de l'évènement.
+   - Il faut aussi fournir au champ `subscribe` le nom de la page qui permet de créer une fiche personnelle
+
+Concernant les droits d'accès, il faut que les fiches groupes/évènements soient accessibles en lecture/écriture à toute personne susceptible de s'inscrire.
+
+Une astuce est de mettre tous les autres champs en droits d'écriture `%` ou `@admins`.
+
+Ainsi, il sera possible à une personne connectée de modifier la fiche évènement de façon automatisée pour sauvegarder son inscription.
+
+Il existe aussi la possibilité de **limiter le nombre d'inscription**. Ceci se fait en éditer le groupe/évènement concerné et en choisissant une valeur différente de `-1`. _Les inscriptions déjà faites ne seront pas automatiquement supprimées si elles sont trop nombreuses_.
+
+Enfin, lors de l'ajout du champ `suscribe`, il y a aussi ajout du champ `nbsubscription` qui permet de sauvegarder le nombre d'inscription au groupe. La valeur de ce champ se modifie de façon automatique. Il est possible de supprimer ce champ s'il n'est pas utile pour votre formulaire.  
+_Astuce : utiliser ce champ pour un tri en fonction du nombre d'inscriptions pour `bazarliste`_
 
 ### Documentation Open Agenda
 

@@ -17,6 +17,7 @@ use Psr\Container\ContainerInterface;
 use YesWiki\Alternativeupdatej9rem\Service\SubscriptionManager;
 use YesWiki\Bazar\Field\CheckboxEntryField;
 use YesWiki\Bazar\Service\EntryManager;
+use YesWiki\Core\Service\AclService;
 use YesWiki\Core\Service\AssetsManager;
 use YesWiki\Core\Service\PageManager;
 use YesWiki\Core\Service\UserManager;
@@ -29,7 +30,9 @@ class SubscribeField extends CheckboxEntryField
     protected const FIELD_SHOWLIST = 4;
     protected const FIELD_TYPE_SUBSCRIPTION = 7;
     protected const FIELD_ENTRY_CREATION_PAGE = 13;
+    protected const FIELD_CAN_EDIT_LIST = 15;
 
+    protected $canEditList;
     protected $isUserType;
     protected $optionsNotSecured;
     protected $pageToCreateEntry;
@@ -49,8 +52,16 @@ class SubscribeField extends CheckboxEntryField
             || !is_string($values[self::FIELD_ENTRY_CREATION_PAGE]))
             ? ''
             : trim($values[self::FIELD_ENTRY_CREATION_PAGE]);
+        $this->canEditList = (empty($values[self::FIELD_CAN_EDIT_LIST])
+            || !is_string($values[self::FIELD_CAN_EDIT_LIST]))
+            ? ''
+            : trim($values[self::FIELD_CAN_EDIT_LIST]);
+        if($this->canEditList){
+            $this->canEditList = '%'; // default owner and admins
+        }
         $this->maxChars = '';
         $this->keywords = '';
+        $this->queries = '';
         $this->propertyName = $this->type . $this->name . $this->listLabel;
         $this->wiki = $this->getWiki();
 
@@ -174,7 +185,8 @@ class SubscribeField extends CheckboxEntryField
                 'canRegister' => $this->isUserType ? true : $subscriptionManager->canRegister($this),
                 'entryId' => $entry['id_fiche'] ?? '',
                 'propertyName' => $this->getPropertyName(),
-                'noPlace' => !$subscriptionManager->isThereAvailablePlace($entry,$this)
+                'noPlace' => !$subscriptionManager->isThereAvailablePlace($entry,$this),
+                'canEditEntry' => empty($entry['id_fiche']) || $this->getService(AclService::class)->hasAccess('write',$entry['id_fiche'])
             ]
         );
         return $output;
@@ -213,6 +225,15 @@ class SubscribeField extends CheckboxEntryField
 
     protected function renderInput($entry)
     {
+        if (!$this->getService(AclService::class)
+            ->check(
+                $this->canEditList,
+                null,
+                true,
+                $entry['id_fiche'] ?? '')
+            ){
+            return '';
+        }
         $askForLimit = $this->render(
             '@bazar/inputs/text.twig',
             [
@@ -295,9 +316,15 @@ class SubscribeField extends CheckboxEntryField
     {
         return $this->showList;
     }
+
     public function getPageToCreateEntry():string
     {
         return $this->pageToCreateEntry;
+    }
+
+    public function getCanEditList():string
+    {
+        return $this->canEditList;
     }
 
     // change return of this method to keep compatible with php 7.3 (mixed is not managed)
@@ -309,7 +336,8 @@ class SubscribeField extends CheckboxEntryField
             [
                 'isUserType' => $this->getIsUserType(),
                 'pageToCreateEntry' => $this->getPageToCreateEntry(),
-                'showList' => $this->getShowList()
+                'showList' => $this->getShowList(),
+                'canEditList' => $this->getCanEditList()
             ]
         );
     }

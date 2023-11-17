@@ -227,6 +227,7 @@ return [
   // Feature UUID : auj9-subscribe-to-entry
   'AUJ9_CONNECT_TO_REGISTER' => 'Se connecter pour s\'inscrire',
   'AUJ9_CREATE_ENTRY_TO_REGISTER' => 'Créer une fiche pour s\'inscrire',
+  'AUJ9_NO_WRITE_TO_REGISTER' => 'Vous n\'avez pas les droits suffisants pour vous modifier votre inscription !',
   'AUJ9_REGISTER' => 'S\'inscrire',
   'AUJ9_REGISTER_NO_PLACE' => 'Il n\'y a plus de place disponible',
   'AUJ9_UNREGISTER' => 'Se désinscrire',

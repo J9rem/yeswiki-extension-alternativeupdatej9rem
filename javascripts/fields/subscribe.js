@@ -100,11 +100,19 @@ export default {
     hint: { label: _t('BAZ_FORM_EDIT_HELP'), value: '' },
     read: readConf,
     write: writeconf,
+    canedit: {
+      label: writeconf.label, 
+      options: Object.fromEntries(
+        Object.entries(writeconf.options)
+          .filter(([k,])=>![' * '].includes(k))
+      ),
+      multiple: true 
+    },
     semantic: semanticConf
   },
-  advancedAttributes: ['read', 'write', 'semantic', 'hint', 'defaultValue'],
+  advancedAttributes: ['read', 'write', 'semantic', 'canedit', 'hint', 'defaultValue'],
   disabledAttributes: ['value'],
-  attributesMapping: { ...listsMapping, ...{ 1: 'form', 4: 'showlist', 7: 'typesubscription',13:'entrycreationpage' } },
+  attributesMapping: { ...listsMapping, ...{ 1: 'form', 4: 'showlist', 7: 'typesubscription',13:'entrycreationpage', 15:'canedit' } },
   renderInput() {
     return {
       field: `<span>Liste des inscrits <i class="fas fa-angle-down"></i></span> <button class="btn btn-xs btn-success" disabled><i class="fas fa-user-plus"></i> ${_t('AUJ9_SUBSCRIBE')}</button>`,
