@@ -101,7 +101,7 @@ export default {
     read: readConf,
     write: writeconf,
     canedit: {
-      label: writeconf.label, 
+      label: _t('AUJ9_FORM_EDIT_LIST_CAN_BE_EDITED_BY'), 
       options: Object.fromEntries(
         Object.entries(writeconf.options)
           .filter(([k,])=>![' * '].includes(k))

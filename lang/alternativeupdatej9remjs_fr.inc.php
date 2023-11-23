@@ -84,6 +84,7 @@ return [
   'AUJ9_NB_SUBSCRIPTION' => 'Nombre d\'inscriptions',
   // javascripts/fields/subscribe.js
   // Feature UUID : auj9-subscribe-to-entry
+  'AUJ9_FORM_EDIT_LIST_CAN_BE_EDITED_BY' => 'Liste pouvant être modifiée par',
   'AUJ9_SUBSCRIBE' => 'Inscriptions',
   'AUJ9_SUBSCRIBE_ENTRY_CREATION_PAGE_LABEL' => 'Page pour la création de fiche liée',
   'AUJ9_SUBSCRIBE_SHOWLIST' => 'Afficher la liste',
