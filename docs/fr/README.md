@@ -28,7 +28,7 @@ Ajout des champs:
   - `sendmailselector` pour permettre de choisir à qui envoyer une copie de la fiche, choix parmi une liste. _Pratique pour que la copie de la fiche soit envoyé au bon référent local_
   - `customsendmail` permet d'offrir à l'usager la possibilité de recevoir ou non une copie de sa fiche à chaque modification. _Pratique pour éviter l'infobésité des e-mails tout en laissant le choix à l'usager_
   - `choice-display-hidden` permet d'avoir une zone qui se déplie/replie lors de l'affichage d'une fiche. Pour l'utiliser, il faut encapsuler la zone concernée (une seule zone par fiche) dans `<div class="hidden-field-specific">/<div>` (ceci se fait à l'aide des champs `labelhtml`)
-  - `subscribe` qui permet de s'insrire à un évènement, un groupe (cf. [documentation ci-dessous](#documentation-pour-le-champ-subscribe))
+  - `subscribe` qui permet de s'inscrire à un évènement, un groupe (cf. [documentation ci-dessous](#documentation-pour-le-champ-subscribe))
 
 ### Handlers
 
