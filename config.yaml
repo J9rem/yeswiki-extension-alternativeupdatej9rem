@@ -25,6 +25,7 @@ parameters:
     isActivated: false
     privateApiKeys: null
     associations: null
+  sortListAsDefinedInFilters: false # Feature UUID : auj9-bazarlist-filter-order
   alternativeupdatej9rem_editable_config_params:
     - 'activateEventRepetition' # Feature UUID : auj9-recurrent-events
     - 'canDuplicateEntryIfNotRightToWrite' # Feature UUID : auj9-duplicate
@@ -39,6 +40,7 @@ parameters:
     - 'deletePagesAndEntriesWithUser' # Feature UUID : auj9-feat-user-controller-delete-own-pages
     - openAgenda: # Feature UUID : auj9-open-agenda-connect
       - isActivated
+    - 'sortListAsDefinedInFilters' # Feature UUID : auj9-bazarlist-filter-order
 
 services:
   _defaults:
@@ -60,6 +62,10 @@ services:
   # Feature UUID : auj9-can-force-entry-save-for-admin
   YesWiki\Alternativeupdatej9rem\Service\AssetsManager:
     decorates: YesWiki\Core\Service\AssetsManager
+    decoration_on_invalid: null
+  # Feature UUID : auj9-bazarlist-filter-order
+  YesWiki\Alternativeupdatej9rem\Service\BazarListService:
+    decorates: YesWiki\Bazar\Service\BazarListService
     decoration_on_invalid: null
   # Feature UUID : auj9-fix-4-4-2
   YesWiki\Alternativeupdatej9rem\Controller\IcalFormatter:
