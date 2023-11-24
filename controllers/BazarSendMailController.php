@@ -554,7 +554,8 @@ class BazarSendMailController extends YesWikiController
         $output = $message;
         $entryManager = $this->getService(EntryManager::class);
         if (!$sendtogroup) {
-            if ($entryManager->isEntry($entryId)) {
+            $isEntry = $entryManager->isEntry($entryId);
+            if ($isEntry) {
                 $entry = $entryManager->getOne($entryId);
                 $title = $entry['bf_titre'] ?? $entryId;
             } else {
@@ -569,6 +570,25 @@ class BazarSendMailController extends YesWikiController
                 : [$entryId,"<a href=\"$link\" title=\"$title\" target=\"blank\">$link</a>","<a href=\"$link\" target=\"blank\">$title</a>","<a href=\"$editLink\" target=\"blank\">$editLink</a>","<a href=\"$editLink\" target=\"blank\">"._t('BAZ_MODIFIER_LA_FICHE'). " \"$title\"</a>","<a href=\"$link\" target=\"blank\">"._t('BAZ_SEE_ENTRY'). " \"$title\"</a>"],
                 $output
             );
+            $matches = [];
+            if ($isEntry && preg_match_all('/{entry\\[([A-Za-z0-9-_]+)\\]}/',$output,$matches)){
+                foreach ($matches[0] as $key => $match) {
+                    if (!empty($matches[1][$key])){
+                        $newValue = $entry[$matches[1][$key]] ?? '';
+                        try {
+                            $newValue = strval($newValue);
+                        } catch (Throwable $th) {
+                            $newValue = '';
+                        }
+                        
+                        $output = str_replace(
+                            $match,
+                            $newValue,
+                            $output
+                        );
+                    }
+                }
+            }
         }
         $output = $this->replaceLinksGeneric($output, $modeTxt);
         return $output;

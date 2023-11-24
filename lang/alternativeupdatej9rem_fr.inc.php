@@ -179,7 +179,8 @@ return [
       "{entryLinkWithTitle} => lien vers la fiche avec son titre\n".
       "{entryLinkWithText} => lien vers la fiche avec le texte \"Voir la fiche xxx\"\n".
       "{entryEditLink} => lien vers la modification de la fiche (brut)\n".
-      "{entryEditLinkWithText} => lien vers la modification de la fiche (avec le titre \"Modifier la fiche\")\n",
+      "{entryEditLinkWithText} => lien vers la modification de la fiche (avec le titre \"Modifier la fiche\")\n".
+      "{entry[fieldName]} => valeur du champ fieldName pour cette fiche\n",
   'AUJ9_SEND_MAIL_TEMPLATE_HIDE' => 'Masquer les paramètres avancés',
   'AUJ9_SEND_MAIL_TEMPLATE_HIDE_DONE_FOR_ALL' => 'Réduire la liste',
   'AUJ9_SEND_MAIL_TEMPLATE_LAST_UPDATE' => 'Dernière maj : %{date}',
