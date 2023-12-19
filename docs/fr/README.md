@@ -20,6 +20,7 @@ Quelques actions sympathiques indépendantes comme :
  - `{{editentrypartial}}` qui permet d'avoir un formulaire pour modifier des fiches sur certains champs sélectionnées. _C'est utile pour envoyer un lien aux usagers pour mettre à jour une information sans les noyer dans la relecture de leur fiche en entier (cas des formulaires longs)._ Aide détaillée [ci-dessous](#aide-pour-l39action-editentrypartial)
  - Amélioration de l'**action `{{video}}`** pour permettre une syntaxe plus simple ``{{video url="..."}}` (configurable via composants)
  - `{{autoupdateareas}}` qui permet de générer automatiquement une liste des départements et régions français. _C'est pratique pourl'extension `twolevels` (cf. documentation ci-dessous)_
+ - `{{breadcrumbs}}` qui permet de générer un menu de navigation de type fil d'Ariane
 
 ### Champs bazar
 
@@ -58,6 +59,7 @@ Ajout des champs:
 |Action|`{{autoupdateareas}}`|[`auj9-autoupdateareas-action`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-autoupdateareas-action&type=code)|
 ||`{{editentrypartial}}`|[`auj9-editentrypartial-action`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-editentrypartial-action&type=code)|
 ||`{{listformmeta}}`|[`auj9-listformmeta-action`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-listformmeta-action&type=code)|
+||`{{breadcrumbs}}`|[`auj9-breadcrumbs-action`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-breadcrumbs-action&type=code)|
 |Champ bazar|`customsendmail`|[`auj9-custom-sendmail`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-custom-sendmail&type=code)|
 ||`choice-display-hidden`|[`auj9-choice-display-hidden-field`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-choice-display-hidden-field&type=code)|
 ||`lien_internet` pour les vidéos|[`auj9-video-field`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-video-field&type=code)|

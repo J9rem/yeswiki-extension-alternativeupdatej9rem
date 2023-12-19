@@ -1,0 +1,149 @@
+{# # This file is part of the YesWiki Extension alternativeupdatej9rem.
+# Authors : see README.md file that was distributed with this source code.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+# Feature UUID : auj9-breadcrumbs-action
+#}
+
+{% macro linkattrib(element) %}
+  {% if element.tag is not empty %}
+    href="{{ url({tag:element.tag}) }}"
+    title="{{ _t('TAGS_SEE_PAGE') }} {{ element.tag }}"
+  {% else %}
+    href="{{ element.link }}"
+    title="{{ element.text|striptags }}"
+  {% endif %}
+{% endmacro %}
+
+{% macro txtcontent(element,isFirst=false) %}
+  {{ isFirst ? element.text|raw : element.text }}
+{% endmacro %}
+
+{% macro onlylink(element,isFirst=false) %}
+  {% if element.tag is not empty or element.link is not empty %}
+    <a class="breadcrumbs-item" {{ _self.linkattrib(element) }}>
+      {{ _self.txtcontent(element,isFirst) }}
+    </a>
+  {% else %}
+    <span class="breadcrumbs-item">
+      {{ _self.txtcontent(element,isFirst) }}
+    </span>
+  {% endif %}
+{% endmacro %}
+
+{% macro lilink(element,isActive) %}
+  {% set classes = (isActive ? 'active-link' : '') ~ (isDropDown ? (' dropdown-toggle') : '') %}
+  <a
+    {{ classes is not empty ? "class=\"#{classes}\"" : '' }}
+    {% if not isDropDown and (
+        element.tag is not empty 
+        or (
+          element.link is not empty 
+          and element.link is not same as '#'
+        )
+      ) %}
+      {{ _self.linkattrib(element) }}
+    {% elseif (not isDropDown and element.children is not empty) %}
+      {{ _self.linkattrib(element.children[0]) }}
+    {% else %}
+      href="#"
+      {% if not not isDropDown %}
+        disabled
+      {% else %}
+        data-toggle="dropdown"
+        data-bs-toggle="dropdown"
+      {% endif %}
+    {% endif %}
+    >
+    {{ _self.txtcontent(element) }}
+  </a>
+{% endmacro %}
+
+{% macro licontent(element,isActive) %}
+  <li{{ isActive ? ' class="active"' : '' }}>
+    <a
+      {{ isActive ? 'class="active-link"' : '' }}
+      {% if element.tag is not empty 
+          or (
+            element.link is not empty 
+            and element.link is not same as '#'
+          ) %}
+        {{ _self.linkattrib(element) }}
+      {% elseif (element.children is not empty) %}
+        {{ _self.linkattrib(element.children[0]) }}
+      {% else %}
+        href="#"
+        disabled
+      {% endif %}
+      >
+      {{ _self.txtcontent(element) }}
+    </a>
+  </li>
+{% endmacro %}
+
+{% macro createuldropdown(element,siblings,isLastLevel=false) %}
+  <ul class="dropdown-menu">
+    {% set activeFound = false %}
+    {% for sibling in siblings %}
+      {% set isActive = false %}
+      {% if not activeFound and (element.tag == sibling.tag or element.text == sibling.text) %}
+        {% set activeFound = true %}
+        {% set isActive = true %}
+      {% endif %}
+      {{ _self.licontent(sibling,isActive) }}
+    {% endfor %}
+    {% if not activeFound and isLastLevel %}
+      {{ _self.licontent(element,true) }}
+    {% endif %}
+  </ul>
+{% endmacro %}
+
+{% macro createdropdownwithsiblings(element,siblings,isLastLevel=false) %}
+  <span class="dropdown">
+    <a
+      class="dropdown-toggle breadcrumbs-item"
+      data-toggle="dropdown"
+      data-bs-toggle="dropdown"
+      {{ _self.linkattrib(element) }}
+      >
+      {{ _self.txtcontent(element) }}
+    </a>
+    {{ _self.createuldropdown(element,siblings,isLastLevel) }}
+  </span>
+{% endmacro %}
+
+{% macro createdropdownwithchildren(element,children,separator) %}
+  <span class="dropdown">
+    <a
+      class="dropdown-toggle"
+      data-toggle="dropdown"
+      data-bs-toggle="dropdown"
+      href="#"
+      >
+      {{ separator|raw }}
+    </a>
+    {{ _self.createuldropdown({tag:'unknown/tag',text:'unknown'},children) }}
+  </span>
+{% endmacro %}
+
+{% if path is not empty %}
+  <div class="breadcrumbs-menu">
+    {% for element in path %}
+      {% set isLastLevel = path[loop.index0+1] is empty %}
+      {% if loop.first %}
+        {{ _self.onlylink(element,true) }}
+      {% else %}
+        {{ (separator ?? '>')|raw }}
+        {% set siblings = path[loop.index0-1].children %}
+        {% if siblings|length == 1 %}
+          {{ _self.onlylink(element) }}
+        {% else %}
+          {{ _self.createdropdownwithsiblings(element,siblings,isLastLevel) }}
+        {% endif %}
+      {% endif %}
+      {% if isLastLevel and element.children is not empty %}
+        {{ _self.createdropdownwithchildren(element,element.children,separator ?? '>') }}
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}

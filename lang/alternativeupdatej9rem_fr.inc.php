@@ -88,6 +88,11 @@ return [
   // Feature UUID : auj9-bazar-list-video-dynamic
   'AUJ9_BAZARVIDEO_ACTION_LABEL' => 'Affichage des vidéos par bloc',
   'AUJ9_BAZARVIDEO_ACTION_VIDEO_LINK_LABEL' => 'Champ lien',
+  // Feature UUID : auj9-breadcrumbs-action
+  'AUJ9_BREADCRUMBS_LABEL' => 'Menu de type fil d\'Ariane',
+  'AUJ9_BREADCRUMBS_SEPARATOR_LABEL' => 'Séparateur',
+  'AUJ9_BREADCRUMBS_SEPARATOR_HINT' => 'Syntaxe particulière : soit une chaîne de caractères, soit la syntaxe "span.nom-classe:contenu:span" (fonctionne aussi pour les icones "i.icon-class::i" ou "b:texte en gras:b")',
+  'AUJ9_BREADCRUMBS_PAGE_LABEL' => 'Page contenant le menu',
 
   // templates/bazar/fields/date.twig
   'EVENT_IS_RECURRENT' => 'Cet évènement est récurrent : %{repetition}, %{nb} fois maximum',

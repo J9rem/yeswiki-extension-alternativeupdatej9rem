@@ -186,6 +186,29 @@ trait ActionsBuilderServiceCommon
                 }
             }
             /* === end of Feature UUID : auj9-bazar-list-send-mail-dynamic === */
+            
+            /* === Feature UUID : auj9-breadcrumbs-action === */
+            if (isset($this->data['action_groups']['advanced-actions']['actions'])) {
+                $this->data['action_groups']['advanced-actions']['actions']['breadcrumbs'] = [
+                    'label' => _t('AUJ9_BREADCRUMBS_LABEL'),
+                    'properties' => [
+                        'separator' => [
+                            'label' => _t('AUJ9_BREADCRUMBS_SEPARATOR_LABEL'),
+                            'hint' => _t('AUJ9_BREADCRUMBS_SEPARATOR_HINT'),
+                            'type' => 'text',
+                            'required' => true,
+                            'default' => 'span.breadcrumbs-item:i.fas.fa-chevron-right::i:span'
+                        ],
+                        'page' => [
+                            'label' => _t('AUJ9_BREADCRUMBS_PAGE_LABEL'),
+                            'advanced' => true,
+                            'type' => 'page-list',
+                            'default' => 'PageMenuHaut'
+                        ]
+                    ]
+                ];
+            }
+            /* === end of Feature UUID : auj9-breadcrumbs-action === */
         }
         return $this->data;
     }
