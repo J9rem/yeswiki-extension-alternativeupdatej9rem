@@ -56,7 +56,8 @@ class BreadcrumbsAction extends YesWikiAction
                 )
                 ? $arg['page']
                 : 'PageMenuHaut',
-            'separator' => $separator
+            'separator' => $separator,
+            'displaydropdown' => $this->formatBoolean($arg,true,'displaydropdown'),
         ];
     }
     public function run()
@@ -86,7 +87,8 @@ class BreadcrumbsAction extends YesWikiAction
             $path = $this->getCurrentPath($currentTag,$tree);
             $output = $this->render('@alternativeupdatej9rem/breadcrumbs-action.twig',[
                 'path' => $path,
-                'separator' => $this->arguments['separator']
+                'separator' => $this->arguments['separator'],
+                'displaydropdown' => $this->arguments['displaydropdown']
             ]);
         } catch (Throwable $th) {
             // do nothing;

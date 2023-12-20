@@ -89,6 +89,7 @@ return [
   'AUJ9_BAZARVIDEO_ACTION_LABEL' => 'Affichage des vidéos par bloc',
   'AUJ9_BAZARVIDEO_ACTION_VIDEO_LINK_LABEL' => 'Champ lien',
   // Feature UUID : auj9-breadcrumbs-action
+  'AUJ9_BREADCRUMBS_DISPLAY_DROPDOWN_LABEL' => 'Afficher les menus déroulants',
   'AUJ9_BREADCRUMBS_LABEL' => 'Menu de type fil d\'Ariane',
   'AUJ9_BREADCRUMBS_SEPARATOR_LABEL' => 'Séparateur',
   'AUJ9_BREADCRUMBS_SEPARATOR_HINT' => 'Syntaxe particulière : soit une chaîne de caractères, soit la syntaxe "span.nom-classe:contenu:span" (fonctionne aussi pour les icones "i.icon-class::i" ou "b:texte en gras:b")',

@@ -199,6 +199,14 @@ trait ActionsBuilderServiceCommon
                             'required' => true,
                             'default' => 'span.breadcrumbs-item:i.fas.fa-chevron-right::i:span'
                         ],
+                        'displaydropdown' => [
+                            'label' => _t('AUJ9_BREADCRUMBS_DISPLAY_DROPDOWN_LABEL'),
+                            'advanced' => true,
+                            'type' => 'checkbox',
+                            'default' => 'true',
+                            'checkedvalue' => 'true',
+                            'uncheckedvalue' => 'false'
+                        ],
                         'page' => [
                             'label' => _t('AUJ9_BREADCRUMBS_PAGE_LABEL'),
                             'advanced' => true,

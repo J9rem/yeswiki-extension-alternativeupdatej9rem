@@ -32,27 +32,19 @@
 {% endmacro %}
 
 {% macro lilink(element,isActive) %}
-  {% set classes = (isActive ? 'active-link' : '') ~ (isDropDown ? (' dropdown-toggle') : '') %}
   <a
-    {{ classes is not empty ? "class=\"#{classes}\"" : '' }}
-    {% if not isDropDown and (
-        element.tag is not empty 
+    {{ isActive ? 'class="active-link"' : '' }}
+    {% if element.tag is not empty 
         or (
           element.link is not empty 
           and element.link is not same as '#'
-        )
-      ) %}
+        ) %}
       {{ _self.linkattrib(element) }}
-    {% elseif (not isDropDown and element.children is not empty) %}
+    {% elseif (element.children is not empty) %}
       {{ _self.linkattrib(element.children[0]) }}
     {% else %}
       href="#"
-      {% if not not isDropDown %}
-        disabled
-      {% else %}
-        data-toggle="dropdown"
-        data-bs-toggle="dropdown"
-      {% endif %}
+      disabled
     {% endif %}
     >
     {{ _self.txtcontent(element) }}
@@ -61,23 +53,7 @@
 
 {% macro licontent(element,isActive) %}
   <li{{ isActive ? ' class="active"' : '' }}>
-    <a
-      {{ isActive ? 'class="active-link"' : '' }}
-      {% if element.tag is not empty 
-          or (
-            element.link is not empty 
-            and element.link is not same as '#'
-          ) %}
-        {{ _self.linkattrib(element) }}
-      {% elseif (element.children is not empty) %}
-        {{ _self.linkattrib(element.children[0]) }}
-      {% else %}
-        href="#"
-        disabled
-      {% endif %}
-      >
-      {{ _self.txtcontent(element) }}
-    </a>
+    {{ _self.lilink(element,isActive) }}
   </li>
 {% endmacro %}
 
@@ -137,11 +113,13 @@
         {% set siblings = path[loop.index0-1].children %}
         {% if siblings|length == 1 %}
           {{ _self.onlylink(element) }}
+        {% elseif not displaydropdown %}
+          {{ _self.lilink(element,false) }}
         {% else %}
           {{ _self.createdropdownwithsiblings(element,siblings,isLastLevel) }}
         {% endif %}
       {% endif %}
-      {% if isLastLevel and element.children is not empty %}
+      {% if displaydropdown and isLastLevel and element.children is not empty %}
         {{ _self.createdropdownwithchildren(element,element.children,separator ?? '>') }}
       {% endif %}
     {% endfor %}
