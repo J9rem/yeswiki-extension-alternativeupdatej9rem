@@ -7,7 +7,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * Feature UUID : auj9-autoupdate-system
+ * Feature UUID : auj9-open-agenda-connect
  */
 
 namespace YesWiki\Alternativeupdatej9rem\Service;
@@ -867,6 +867,8 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             $steps = [0]; // seconds
             if (!empty($entry['bf_date_fin_evenement_data']['isRecurrent'])
                 && $entry['bf_date_fin_evenement_data']['isRecurrent'] == "1"){
+                // unset cache
+                $GLOBALS['_BAZAR_'] = [];
                 $linkedEntries = $this->entryManager->search([
                         'formsIds' => [$entry['id_typeannonce']],
                         'queries' => [
