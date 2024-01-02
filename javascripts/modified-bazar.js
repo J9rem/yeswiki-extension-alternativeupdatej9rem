@@ -873,7 +873,9 @@ $(document).ready(() => {
     })
   })
 
-  $.extend($.fn.typeahead.Constructor.prototype, { val() {} })
+  if ($.fn.typeahead){
+    $.extend($.fn.typeahead.Constructor.prototype, { val() {} })
+  }
 
   // on envoie la valeur au submit
   $('#formulaire').on('submit', function() {
