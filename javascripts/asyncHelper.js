@@ -125,5 +125,6 @@ const localFetch = async (url,mode = 'get',dataToSend = {}) => {
 
 export default {
     fetch: localFetch,
-    manageError
+    manageError,
+    post
 }
