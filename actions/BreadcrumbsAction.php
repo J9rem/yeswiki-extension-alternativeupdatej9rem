@@ -58,6 +58,7 @@ class BreadcrumbsAction extends YesWikiAction
                 : 'PageMenuHaut',
             'separator' => $separator,
             'displaydropdown' => $this->formatBoolean($arg,true,'displaydropdown'),
+            'displaydropdownonlyforlast' => $this->formatBoolean($arg,true,'displaydropdownonlyforlast'),
         ];
     }
     public function run()
@@ -88,7 +89,8 @@ class BreadcrumbsAction extends YesWikiAction
             $output = $this->render('@alternativeupdatej9rem/breadcrumbs-action.twig',[
                 'path' => $path,
                 'separator' => $this->arguments['separator'],
-                'displaydropdown' => $this->arguments['displaydropdown']
+                'displaydropdown' => $this->arguments['displaydropdown'],
+                'displaydropdownonlyforlast' => $this->arguments['displaydropdownonlyforlast']
             ]);
         } catch (Throwable $th) {
             // do nothing;

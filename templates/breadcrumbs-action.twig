@@ -113,7 +113,11 @@
         {% set siblings = path[loop.index0-1].children %}
         {% if siblings|length == 1 %}
           {{ _self.onlylink(element) }}
-        {% elseif not displaydropdown %}
+        {% elseif not displaydropdown or (
+            displaydropdown
+            and displaydropdownonlyforlast
+            and not isLastLevel
+            ) %}
           {{ _self.lilink(element,false) }}
         {% else %}
           {{ _self.createdropdownwithsiblings(element,siblings,isLastLevel) }}
