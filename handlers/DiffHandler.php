@@ -21,6 +21,7 @@ use YesWiki\Core\Service\PageManager;
 
 class DiffHandler extends YesWikiHandler
 {
+    protected $aclService;
     protected $diffService;
     protected $entryManager;
     protected $pageManager;
@@ -28,12 +29,12 @@ class DiffHandler extends YesWikiHandler
     public function run()
     {
         // getServices
-        $aclService = $this->getService(AclService::class);
+        $this->aclService = $this->getService(AclService::class);
         $this->diffService = $this->getService(DiffService::class);
         $this->entryManager = $this->wiki->services->get(EntryManager::class);
         $this->pageManager = $this->wiki->services->get(PageManager::class);
 
-        if (!$aclService->hasAccess('read')){
+        if (!$this->aclService->hasAccess('read')){
             return $this->renderInSquelette('@templates/alert-message.twig',[
                 'type' => 'warning',
                 'message' => 'Vous n\'avez pas accès à cette page.'
@@ -61,8 +62,8 @@ class DiffHandler extends YesWikiHandler
             if (
                 empty($pageA['tag']) || !is_string($pageA['tag'])
                 || empty($pageB['tag']) || !is_string($pageB['tag'])
-                || !$aclService->hasAccess('read',$pageA['tag'])
-                || !$aclService->hasAccess('read',$pageB['tag'])
+                || !$this->aclService->hasAccess('read',$pageA['tag'])
+                || !$this->aclService->hasAccess('read',$pageB['tag'])
                 ){
                 return $this->renderInSquelette('@templates/alert-message.twig',[
                     'type' => 'warning',
