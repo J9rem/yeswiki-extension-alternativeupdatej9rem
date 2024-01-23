@@ -58,6 +58,17 @@ class DiffHandler extends YesWikiHandler
             // load pages
             $pageA = $this->pageManager->getById($get["a"]);
             $pageB = $this->pageManager->getById($get["b"]);
+            if (
+                empty($pageA['tag']) || !is_string($pageA['tag'])
+                || empty($pageB['tag']) || !is_string($pageB['tag'])
+                || !$aclService->hasAccess('read',$pageA['tag'])
+                || !$aclService->hasAccess('read',$pageB['tag'])
+                ){
+                return $this->renderInSquelette('@templates/alert-message.twig',[
+                    'type' => 'warning',
+                    'message' => 'Vous n\'avez pas accès à cette page.'
+                ]);
+            } 
 
             $isEntry = $this->entryManager->isEntry($this->wiki->tag);
             if ($isEntry) {
