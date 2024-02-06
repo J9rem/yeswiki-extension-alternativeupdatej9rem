@@ -133,7 +133,15 @@ let appParams = {
                 if ( endDateLimitTime < 0
                      || nextStartDate.getTime() <= endDateLimitTime
                     ){
-                    except.push(date.toISOString().slice(0,10))
+                    // work in UTC because ISO string is splitted
+                    except.push((new Date(Date.UTC(
+                        date.getFullYear(),
+                        date.getMonth(),
+                        date.getDate(),
+                        date.getHours(),
+                        date.getMinutes(),
+                        date.getSeconds()
+                    ))).toISOString().slice(0,10))
                 }            }
             return except
         },
