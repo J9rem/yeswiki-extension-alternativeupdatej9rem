@@ -159,8 +159,8 @@ class DateService implements EventSubscriberInterface
             if ($nbmax > self::MAXIMUM_REPETITION){
                 $nbax = self::MAXIMUM_REPETITION;
             }
-            $newStartDate = DateTimeImmutable::createFromInterface($currentStartDate);
-            $newEndDate = DateTimeImmutable::createFromInterface($currentEndDate);
+            $newStartDate = clone $currentStartDate;
+            $newEndDate = clone $currentEndDate;
             $days = $this->getDays($data);
             if (empty($days)){
                 $days = [intval($newStartDate->format('N'))];
