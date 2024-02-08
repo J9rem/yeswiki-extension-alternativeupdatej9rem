@@ -32,6 +32,7 @@ use YesWiki\Wiki;
 class DateService implements EventSubscriberInterface
 {
     protected const MAXIMUM_REPETITION = 300;
+    protected const PREFIX_ERROR = "RecurentEvents: ";
 
     protected $authController;
     protected $entryManager;
@@ -41,6 +42,7 @@ class DateService implements EventSubscriberInterface
     protected $pageManager;
     protected $params;
     protected $securityController;
+    protected $triggerError;
     protected $tripleStore;
     protected $wiki;
     
@@ -71,6 +73,7 @@ class DateService implements EventSubscriberInterface
         $this->params = $params;
         $this->isActivated = $this->params->get('activateEventRepetition') === true;
         $this->securityController = $securityController;
+        $this->triggerError = $this->params->get('eventRepetitionTriggerErrorsForAdmins') === true;
         $this->tripleStore = $tripleStore;
         $this->wiki = $wiki;
     }
@@ -145,40 +148,44 @@ class DateService implements EventSubscriberInterface
         if (empty($extract)){
             return;
         }
-        list(
-            'data'=>$data,
-            'currentStartDate'=>$currentStartDate,
-            'currentEndDate'=>$currentEndDate
-            ) = $extract;
-        $step = intval($data['step']);
-        $nbmax = intval($data['nbmax']);
-        if ($nbmax > self::MAXIMUM_REPETITION){
-            $nbax = self::MAXIMUM_REPETITION;
-        }
-        $newStartDate = DateTimeImmutable::createFromInterface($currentStartDate);
-        $newEndDate = DateTimeImmutable::createFromInterface($currentEndDate);
-        $days = $this->getDays($data);
-        if (empty($days)){
-            $days = [intval($newStartDate->format('N'))];
-        }
-        $selectedMonth = $this->getMonth($data);
-        if (empty($selectedMonth)){
-            $selectedMonth = intval($newStartDate->format('n'));
-        }
-        for ($i=1; $i <= $nbmax; $i++) {
-            $calculateNewStartDate = $this->calculateNextDate(
-                $newStartDate,
-                $selectedMonth,
-                $days,
-                $step,
-                $data
-            );
-            if (!empty($calculateNewStartDate) && $calculateNewStartDate->diff(new DateTimeImmutable('1970-01-01'))->invert === 1){
-                $delta = $newStartDate->diff($calculateNewStartDate);
-                $newStartDate = $calculateNewStartDate;
-                $newEndDate= $newEndDate->add($delta);
-                $this->createEntryIfPossible($data,$newStartDate,$newEndDate,$entry);
+        try {
+            list(
+                'data'=>$data,
+                'currentStartDate'=>$currentStartDate,
+                'currentEndDate'=>$currentEndDate
+                ) = $extract;
+            $step = intval($data['step']);
+            $nbmax = intval($data['nbmax']);
+            if ($nbmax > self::MAXIMUM_REPETITION){
+                $nbax = self::MAXIMUM_REPETITION;
             }
+            $newStartDate = DateTimeImmutable::createFromInterface($currentStartDate);
+            $newEndDate = DateTimeImmutable::createFromInterface($currentEndDate);
+            $days = $this->getDays($data);
+            if (empty($days)){
+                $days = [intval($newStartDate->format('N'))];
+            }
+            $selectedMonth = $this->getMonth($data);
+            if (empty($selectedMonth)){
+                $selectedMonth = intval($newStartDate->format('n'));
+            }
+            for ($i=1; $i <= $nbmax; $i++) {
+                $calculateNewStartDate = $this->calculateNextDate(
+                    $newStartDate,
+                    $selectedMonth,
+                    $days,
+                    $step,
+                    $data
+                );
+                if (!empty($calculateNewStartDate) && $calculateNewStartDate->diff(new DateTimeImmutable('1970-01-01'))->invert === 1){
+                    $delta = $newStartDate->diff($calculateNewStartDate);
+                    $newStartDate = $calculateNewStartDate;
+                    $newEndDate= $newEndDate->add($delta);
+                    $this->createEntryIfPossible($data,$newStartDate,$newEndDate,$entry);
+                }
+            }
+        } catch(Throwable $th){
+            $this->triggerNoticeErrorIfPossible("{$th->getMessage()} in file '".basename($th->getFile())."' on line {$th->getLine()}");
         }
     }
 
@@ -380,12 +387,17 @@ class DateService implements EventSubscriberInterface
         if(empty($entry['bf_date_fin_evenement_data'])
             || empty($entry['bf_date_fin_evenement'])
             || empty($entry['bf_date_debut_evenement'])){
+            $this->triggerNoticeErrorIfPossible("for '{$entry['id_fiche']}', ".
+                "'bf_date_fin_evenement_data', 'bf_date_fin_evenement' and 'bf_date_debut_evenement' ".
+                "should not be empty !");
             return [];
         }
         try {
             $currentStartDate = $this->getDateTimeWithRightTimeZone($entry['bf_date_debut_evenement']);
             $currentEndDate = $this->getDateTimeWithRightTimeZone($entry['bf_date_fin_evenement']);
         } catch (Throwable $th) {
+            $this->triggerNoticeErrorIfPossible("for '{$entry['id_fiche']}', ".
+                "{$th->getMessage()} from {$th->getFile()} on line {$th->getLine()}");
             return [];
         }
         $data = $entry['bf_date_fin_evenement_data'];
@@ -394,9 +406,11 @@ class DateService implements EventSubscriberInterface
         }
         // check repetition format
         if (empty($data['repetition']) || !in_array($data['repetition'],['d','w','m','y'],true)){
+            $this->triggerCheckDataErrorIfPossible($entry,'repetition');
             return [];
         }
         if (in_array($data['repetition'],['m','y'],true) && (empty($data['whenInMonth']) || !is_string($data['whenInMonth']))){
+            $this->triggerCheckDataErrorIfPossible($entry,'whenInMonth');
             return [];
         }
         if (!empty($data['whenInMonth']) 
@@ -407,23 +421,28 @@ class DateService implements EventSubscriberInterface
                 || intval($data['nth']) < 1
                 || intval($data['nth']) > 31
             )){
+            $this->triggerCheckDataErrorIfPossible($entry,'nth');
             return [];
         }
         // check step format
         if (empty($data['step']) || !is_scalar($data['step']) || intval($data['step']) <= 0){
+            $this->triggerCheckDataErrorIfPossible($entry,'step');
             return [];
         }
         // check nbmax format
         if (empty($data['nbmax']) || !is_scalar($data['nbmax']) || intval($data['nbmax']) <= 0){
+            $this->triggerCheckDataErrorIfPossible($entry,'nbmax');
             return [];
         }
         // check limitdate format
         if (!empty($data['limitdate'])){
             if(!is_string($data['limitdate'])){
+                $this->triggerCheckDataErrorIfPossible($entry,'limitdate');
                 return [];
             }
             $dateTimeObj = new DateTimeImmutable($data['limitdate']);
             if (!$dateTimeObj){
+                $this->triggerCheckDataErrorIfPossible($entry,'limitdate');
                 return [];
             }
             $data['limitdate'] = $dateTimeObj;
@@ -431,6 +450,7 @@ class DateService implements EventSubscriberInterface
         // check except
         if (!empty($data['except'])){
             if(!is_array($data['except'])){
+                $this->triggerCheckDataErrorIfPossible($entry,'except');
                 return [];
             }
             $data['except'] = array_map(
@@ -454,6 +474,29 @@ class DateService implements EventSubscriberInterface
             );
         }
         return compact(['data','currentStartDate','currentEndDate']);
+    }
+
+    /**
+     * trigger notice error if possible forCheckData
+     * @param array $entry
+     * @param string $paramName
+     */
+    protected function triggerCheckDataErrorIfPossible(array $entry, string $paramName)
+    {
+        if ($this->triggerError && !empty($entry) && !empty($paramName)){
+            $this->triggerNoticeErrorIfPossible("::checkData for {$entry['id_fiche']}, '\$data['$paramName']' is not correct !");
+        }
+    }
+
+    /**
+     * trigger notice error if possible
+     * @param string $message
+     */
+    protected function triggerNoticeErrorIfPossible(string $message)
+    {
+        if (!empty($message) && $this->triggerError){
+            trigger_error(self::PREFIX_ERROR.$message);
+        }
     }
 
     protected function getDays(array $data): array

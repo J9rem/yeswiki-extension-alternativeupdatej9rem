@@ -6,6 +6,7 @@ parameters:
   alternative_yeswiki_repository: # auj9-autoupdate-system
     J9rem: "https://repository.oui-wiki.pro/"
   activateEventRepetition: false # Feature UUID : auj9-recurrent-events
+  eventRepetitionTriggerErrorsForAdmins: false # Feature UUID : auj9-recurrent-events
   canDuplicateEntryIfNotRightToWrite: false # Feature UUID : auj9-duplicate
   sendMail:
     activated: false            # Feature UUID : auj9-bazar-list-send-mail-dynamic
@@ -28,6 +29,7 @@ parameters:
   sortListAsDefinedInFilters: false # Feature UUID : auj9-bazarlist-filter-order
   alternativeupdatej9rem_editable_config_params:
     - 'activateEventRepetition' # Feature UUID : auj9-recurrent-events
+    - 'eventRepetitionTriggerErrorsForAdmins' # Feature UUID : auj9-recurrent-events
     - 'canDuplicateEntryIfNotRightToWrite' # Feature UUID : auj9-duplicate
     - localCache:               # Feature UUID : auj9-local-cache
       - 'activated'

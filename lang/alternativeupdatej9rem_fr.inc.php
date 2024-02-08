@@ -150,6 +150,8 @@ return [
   'EDIT_CONFIG_HINT_DELETEPAGESANDENTRIESWITHUSER' => 'En supprimant un utilisateur, supprimer aussi les pages et fiches liées ? (true/false)',
   // Feature UUID : auj9-bazarlist-filter-order 
   'EDIT_CONFIG_HINT_SORTLISTASDEFINEDINFILTERS' => 'Garder l\'ordre des listes dans les filtres bazar',
+  // Feature UUID : auj9-recurrent-events 
+  'EDIT_CONFIG_HINT_EVENTREPETITIONTRIGGERERRORSFORADMINS' => 'Déclencher les erreurs PHP sur les évènements récurrents pour les admins uniquement (true/false)',
 
   // docs/actions/bazarliste.yaml via templates/aceditor/actions-builder.tpl.html
   // Feature UUID : auj9-bazar-list-send-mail-dynamic
