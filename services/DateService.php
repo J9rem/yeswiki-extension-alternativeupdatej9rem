@@ -387,9 +387,7 @@ class DateService implements EventSubscriberInterface
         if(empty($entry['bf_date_fin_evenement_data'])
             || empty($entry['bf_date_fin_evenement'])
             || empty($entry['bf_date_debut_evenement'])){
-            $this->triggerNoticeErrorIfPossible("for '{$entry['id_fiche']}', ".
-                "'bf_date_fin_evenement_data', 'bf_date_fin_evenement' and 'bf_date_debut_evenement' ".
-                "should not be empty !");
+            // this entry is not recurrent : return
             return [];
         }
         try {
