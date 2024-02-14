@@ -187,7 +187,10 @@ class DateService implements EventSubscriberInterface
                     }
                     $newStartDate = $calculateNewStartDate;
                     $newEndDate= $newEndDate->add($delta);
-                    $this->createEntryIfPossible($data,$newStartDate,$newEndDate,$entry);
+                    if ($this->createEntryIfPossible($data,$newStartDate,$newEndDate,$entry)){
+                        // stop repetition when limit date is reached
+                        break;
+                    }
                 }
             }
         } catch(Throwable $th){
@@ -201,25 +204,27 @@ class DateService implements EventSubscriberInterface
      * @param DateTimeInterface $newStartDate
      * @param DateTimeInterface $newEndDate
      * @param array $entry
+     * @param bool $limitDateIsReached
      */
     protected function createEntryIfPossible(
         array $data,
         DateTimeInterface $newStartDate,
         DateTimeInterface $newEndDate,
         array $entry
-    )
+    ): bool
     {
         if (
-            (
-                empty($data['limitdate'])
-                || (
-                    ($data['limitdate'])->diff($newEndDate)->invert == 1
-                    && ($data['limitdate'])->diff($newStartDate)->invert == 1
-                    )
-            ) && (
-                empty($data['except'])
-                || !in_array($newStartDate->format('Y-m-d'),$data['except'])
-            )
+            !empty($data['limitdate'])
+            && (
+                ($data['limitdate'])->diff($newEndDate)->invert == 0
+                || ($data['limitdate'])->diff($newStartDate)->invert == 0
+                )
+        ) {
+            return true;
+        }
+        if (
+            empty($data['except'])
+            || !in_array($newStartDate->format('Y-m-d'),$data['except'])
             ){
             $newEntry = $entry;
             $newEntry['id_fiche'] = $entry['id_fiche'].$newStartDate->format('Ymd');
@@ -244,6 +249,7 @@ class DateService implements EventSubscriberInterface
             );
             $_FILES = $savedFiles;
         }
+        return false;
     }
 
     /**
