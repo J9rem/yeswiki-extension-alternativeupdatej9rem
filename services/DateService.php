@@ -179,6 +179,12 @@ class DateService implements EventSubscriberInterface
                 );
                 if (!empty($calculateNewStartDate) && $calculateNewStartDate->diff(new DateTimeImmutable('1970-01-01'))->invert === 1){
                     $delta = $newStartDate->diff($calculateNewStartDate);
+                    if ($delta->invert === 1){
+                        throw new Exception('Error : calculated delta is negative for '
+                            ."newStartDate:{$newStartDate->format('c')} and "
+                            ."calculateNewStartDate:{$calculateNewStartDate->format('c')}"
+                        );    
+                    }
                     $newStartDate = $calculateNewStartDate;
                     $newEndDate= $newEndDate->add($delta);
                     $this->createEntryIfPossible($data,$newStartDate,$newEndDate,$entry);
