@@ -49,7 +49,7 @@ Ajout des champs:
  - **La possibilité de gérer des évènements récurrents** (cf. [Aide](#%C3%89v%C3%A8nements-r%C3%A9currents))
  - possibilité de supprimer toutes les pages et fiches possédées par un utilisateur lors de la suppression de cet utilisateur (à activer dans [GererConfig](?GererConfig ':ignore'))
  - **La possibilité de connecter un formulaire à [Open Agenda](https://openagenda.com)** (cf. documentation [ci-dessous](#documentation-open-agenda))
- - possibilité de forcer la sauvegarde d'une fiche incomplète pour les administrateurices
+ - possibilité de forcer la sauvegarde d'une fiche incomplète pour les membres d'un groupe spécifique
 
 ----
 **Identification des fonctionnalités dans le code source**
@@ -73,7 +73,7 @@ Ajout des champs:
 ||système de mises à jour|[`auj9-autoupdate-system`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-autoupdate-system&type=code)|
 ||système de cache local des requêtes SQL|[`auj9-local-cache`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-local-cache&type=code)|
 ||suppression d'un utilisateur ET des pages et fiches possédées|[`auj9-fix-edit-metadata`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-edit-metadata&type=code)|
-||possibilité pour un admin de forcer la sauvegarde d'une fiche incomplète|[`auj9-can-force-entry-save-for-admin`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-can-force-entry-save-for-admin&type=code)|
+||possibilité pour un groupe spécifique de forcer la sauvegarde d'une fiche incomplète|[`auj9-can-force-entry-save-for-specific-group`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-can-force-entry-save-for-specific-group&type=code)|
 |Correctifs|corrections concernant les metadonnées|[`auj9-feat-user-controller-delete-own-pages`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-feat-user-controller-delete-own-pages&type=code)|
 ||corrections la faille de sécurité du handler `lmsraw`|[`auj9-fix-lmsraw-handler`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-lmsraw-handler&type=code)|
 ||correctif au niveau de la suppression des pages via l'api|[`auj9-fix-page-controller`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-page-controller&type=code)|

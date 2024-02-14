@@ -6,7 +6,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * Feature UUID : auj9-can-force-entry-save-for-admin
+ * Feature UUID : auj9-can-force-entry-save-for-specific-group
  */
 
 $(document).ready(() => {
@@ -415,7 +415,8 @@ $(document).ready(() => {
     },
     displayErrorMessage(str = '') {
       const msg = str.length > 0 ? str : this.errorMessage
-      if (userIsAdmin){
+      if (userIsAuthorizedToForceEntrySaving){
+        // specific lines for Feature UUID : auj9-can-force-entry-save-for-specific-group
         if (confirm(_t('AUJ9_BAZAR_ERROR_FOR_ADMINS',{msg}))){
           throw 'canForceSave'
         }
@@ -477,6 +478,7 @@ $(document).ready(() => {
           return false
         }
       } catch (error) {
+        // specific lines for Feature UUID : auj9-can-force-entry-save-for-specific-group
         if (error !== 'canForceSave'){
           return false
         }

@@ -152,6 +152,8 @@ return [
   'EDIT_CONFIG_HINT_SORTLISTASDEFINEDINFILTERS' => 'Garder l\'ordre des listes dans les filtres bazar',
   // Feature UUID : auj9-recurrent-events 
   'EDIT_CONFIG_HINT_EVENTREPETITIONTRIGGERERRORSFORADMINS' => 'Déclencher les erreurs PHP sur les évènements récurrents pour les admins uniquement (true/false)',
+  // Feature UUID : auj9-can-force-entry-save-for-specific-group 
+  'EDIT_CONFIG_HINT_AUTHORIZEDGROUPTOFORCEENTRYSAVING' => 'Groupe pouvant forcer la sauvegarde d\'une fiche bazar (syntaxe nomDuGroupe sans le @), un seul nom de groupe possible',
 
   // docs/actions/bazarliste.yaml via templates/aceditor/actions-builder.tpl.html
   // Feature UUID : auj9-bazar-list-send-mail-dynamic
