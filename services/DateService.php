@@ -294,16 +294,14 @@ class DateService implements EventSubscriberInterface
                 );
                 break;
             case 'w':
-                $currentStartYear = intval($newStartDate->format('Y'));
-                $currentStartWeek = intval($newStartDate->format('W'));
+                $currentStartYear = intval($newStartDate->format('o')); // ISO 8601 year
+                $currentStartWeek = intval($newStartDate->format('W')); // ISO 8601 week
                 $currentStartDay = intval($newStartDate->format('N'));
                 if (!in_array($currentStartDay,$days) || $currentStartDay === max($days)){
                     $nextWantedDay = min($days);
-                    $nextStartWeek = $currentStartWeek + $step;
-                    if ($nextStartWeek > 52){
-                        $nextStartWeek = $nextStartWeek - 52;
-                        $currentStartYear = $currentStartYear + 1;
-                    }
+                    $tmpDate = $newStartDate->add(new DateInterval('P'.strval(7 * $step).'D'));
+                    $currentStartYear = intval($tmpDate->format('o')); // ISO 8601 year
+                    $nextStartWeek = intval($tmpDate->format('W')); // ISO 8601 week
                 } else {
                     $nextStartWeek = $currentStartWeek;
                     $nextWantedDay = min(
