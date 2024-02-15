@@ -228,6 +228,15 @@ class DateService implements EventSubscriberInterface
             ){
             $newEntry = $entry;
             $newEntry['id_fiche'] = $entry['id_fiche'].$newStartDate->format('Ymd');
+            if (!empty($this->entryManager->getOne($newEntry['id_fiche']))){
+                $newName = genere_nom_wiki($newEntry['id_fiche']);
+                if (empty($newName)){
+                    // does not create this repetition
+                    $this->triggerNoticeErrorIfPossible("not possible to find an `id_fiche` from '{$newEntry['id_fiche']}'");
+                    return false;
+                }
+                $newEntry['id_fiche'] = $newName;
+            }
             foreach([
                 'bf_date_debut_evenement' => $newStartDate,
                 'bf_date_fin_evenement' => $newEndDate,
