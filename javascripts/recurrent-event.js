@@ -55,7 +55,7 @@ let appParams = {
             availableExcept: [],
             datePickerForLimitInternal:null,
             days:['mon'],
-            endDateLimitLimit: -1,
+            endDateLimitTime: -1,
             except:[],
             month:'',
             newExcept:'',
@@ -195,7 +195,7 @@ let appParams = {
                 }
                 if (nextStartDate === null
                     || nextStartDate.toString() === 'Invalid Date'){
-                    return []
+                    return except
                 }
                 date = nextStartDate
                 if ( this.endDateLimitTime < 0
@@ -356,11 +356,11 @@ let appParams = {
     mounted(){
         const data = JSON.parse(this.dataset)
         const limitdate =  data?.limitdate ?? ''
+        $(this.datePickerForLimit).on('changeDate',(event)=>{
+            this.updateEndDateLimitTime(event.date)
+        })
         if (limitdate && 'value' in this.datePickerForLimit){
             this.datePickerForLimit.value = limitdate
-            $(this.datePickerForLimit).on('changeDate',(event)=>{
-                this.updateEndDateLimitTime(event.date)
-            })
             this.updateEndDateLimitTime()
         }
         if (data?.isRecurrent !== '1'){
