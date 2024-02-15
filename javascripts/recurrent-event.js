@@ -367,6 +367,8 @@ let appParams = {
         if (limitdate && 'value' in this.datePickerForLimit){
             this.datePickerForLimit.value = limitdate
             this.updateEndDateLimitTime()
+        } else {
+            this.updateAvailableExcept()
         }
         if (data?.isRecurrent !== '1'){
             this.recurrenceBaseId = (
@@ -422,6 +424,7 @@ let appParams = {
             if (repetition !== 'w' && this.days?.length > 1){
                 this.days = [this.days[0]]
             }
+            this.updateAvailableExceptUpdatingNbMax()
         },
         repetitionInternal(){
             this.setCurrentDayIfWeek()
