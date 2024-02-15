@@ -304,7 +304,7 @@ let appParams = {
         registerChangeOnStartDateInput(){
             this.startDateInput.addEventListener('blur',()=>{
                 setTimeout(()=>{this.setCurrentDayIfWeek()},200)
-                this.updateAvailableExcept()
+                this.updateAvailableExceptUpdatingNbMax()
             })
         },
         setCurrentDayIfWeek(){
@@ -333,6 +333,16 @@ let appParams = {
         updateAvailableExcept(){
             this.availableExcept = this.calculateAvailableExcept()
         },
+        updateAvailableExceptUpdatingNbMax(){
+            const newAvailableExcept = this.calculateAvailableExcept(true)
+            if (this.endDateLimitTime > 0
+                && this.nbmax < 300
+                && newAvailableExcept.length > this.nbmax){
+                this.nbmax = Math.min(300, newAvailableExcept.length)
+            } else {
+                this.updateAvailableExcept()
+            }
+        },
         updateEndDateLimitTime(newVal = null){
             const endDateLimit = (newVal === null)
                 ? (
@@ -345,12 +355,7 @@ let appParams = {
                 || endDateLimit.toString() === 'Invalid Date')
                 ? -1
                 : endDateLimit.getTime()
-            const newAvailableExcept = this.calculateAvailableExcept(true)
-            if (this.nbmax < 300 && newAvailableExcept.length > this.nbmax){
-                this.nbmax = Math.min(300, newAvailableExcept.length)
-            } else {
-                this.updateAvailableExcept()
-            }
+            this.updateAvailableExceptUpdatingNbMax()
         }
     },
     mounted(){
@@ -396,13 +401,13 @@ let appParams = {
     },
     watch: {
         days(){
-            this.updateAvailableExcept()
+            this.updateAvailableExceptUpdatingNbMax()
         },
         month(){
-            this.updateAvailableExcept()
+            this.updateAvailableExceptUpdatingNbMax()
         },
         nbmax(){
-            this.updateAvailableExcept()
+            this.updateAvailableExceptUpdatingNbMax()
         },
         newExcept(newValue){
             if (newValue.length > 0){
@@ -422,7 +427,7 @@ let appParams = {
             this.setCurrentDayIfWeek()
         },
         step(){
-            this.updateAvailableExcept()
+            this.updateAvailableExceptUpdatingNbMax()
         }
     }
 }
