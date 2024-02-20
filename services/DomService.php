@@ -179,7 +179,7 @@ class DomService
         $tree = [];
         $mainLi = ($domXpath['xpath'])->query('/html/body/div/ul/li');
         foreach ($mainLi as $element) {
-            $data = $this->convertElementToTreeRecursive($element);
+            $data = $this->convertElementToTreeRecursive($element, $domXpath);
             if (!empty($data)){
                 $tree[] = $data;
             }
@@ -190,9 +190,10 @@ class DomService
     /**
      * convert element to tree
      * @param DOMElement $element
+     * @param array $domXpath
      * @return array [['text'=>string,'tag'=>string,'link'=> string,'children'=>array]]
      */
-    protected function convertElementToTreeRecursive(DOMElement $element): array
+    protected function convertElementToTreeRecursive(DOMElement $element, array $domXpath): array
     {
         $link = null;
         $text = '';
@@ -215,9 +216,17 @@ class DomService
             }
             // save children from ul if needed
             if (empty($children) && !empty($link) && $node->nodeName === 'ul'){
-                foreach ($node->childNodes as $childNode) {
+                if ($node->className === 'fake-ul'){
+                    $nodePath =$node->getNodePath();
+                    if ($nodePath){
+                        $childNodes = ($domXpath['xpath'])->query("$nodePath/li/div/div/ul/li");
+                    }
+                } else {
+                    $childNodes = $node->childNodes;
+                }
+                foreach ($childNodes as $childNode) {
                     if ($childNode->nodeName === 'li'){
-                        $childData = $this->convertElementToTreeRecursive($childNode);
+                        $childData = $this->convertElementToTreeRecursive($childNode, $domXpath);
                         if (!empty($childData)){
                             $children[] = $childData;
                         }
