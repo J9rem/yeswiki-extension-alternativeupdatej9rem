@@ -31,7 +31,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro lilink(element,isActive) %}
+{% macro lilink(element,isActive,addBreadcrumbsItemClass = false) %}
   <a
     {{ isActive ? 'class="active-link"' : '' }}
     {% if element.tag is not empty 
@@ -46,6 +46,7 @@
       href="#"
       disabled
     {% endif %}
+    {% if addBreadcrumbsItemClass %}class="breadcrumbs-item"{% endif %}
     >
     {{ _self.txtcontent(element) }}
   </a>
@@ -118,7 +119,7 @@
             and displaydropdownonlyforlast
             and not isLastLevel
             ) %}
-          {{ _self.lilink(element,false) }}
+          {{ _self.lilink(element,false,true) }}
         {% else %}
           {{ _self.createdropdownwithsiblings(element,siblings,isLastLevel) }}
         {% endif %}
