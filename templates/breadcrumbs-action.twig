@@ -124,7 +124,10 @@
           {{ _self.createdropdownwithsiblings(element,siblings,isLastLevel) }}
         {% endif %}
       {% endif %}
-      {% if displaydropdown and isLastLevel and element.children is not empty %}
+      {% if displaydropdown
+        and displaydropdownforchildrenoflastlevel
+        and isLastLevel
+        and element.children is not empty %}
         {{ _self.createdropdownwithchildren(element,element.children,separator ?? '>') }}
       {% endif %}
     {% endfor %}

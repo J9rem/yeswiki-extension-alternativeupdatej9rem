@@ -59,6 +59,7 @@ class BreadcrumbsAction extends YesWikiAction
             'separator' => $separator,
             'displaydropdown' => $this->formatBoolean($arg,true,'displaydropdown'),
             'displaydropdownonlyforlast' => $this->formatBoolean($arg,true,'displaydropdownonlyforlast'),
+            'displaydropdownforchildrenoflastlevel' => $this->formatBoolean($arg,false,'displaydropdownforchildrenoflastlevel'),
         ];
     }
     public function run()
@@ -90,7 +91,8 @@ class BreadcrumbsAction extends YesWikiAction
                 'path' => $path,
                 'separator' => $this->arguments['separator'],
                 'displaydropdown' => $this->arguments['displaydropdown'],
-                'displaydropdownonlyforlast' => $this->arguments['displaydropdownonlyforlast']
+                'displaydropdownonlyforlast' => $this->arguments['displaydropdownonlyforlast'],
+                'displaydropdownforchildrenoflastlevel' => $this->arguments['displaydropdownforchildrenoflastlevel']
             ]);
         } catch (Throwable $th) {
             // do nothing;

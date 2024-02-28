@@ -216,6 +216,15 @@ trait ActionsBuilderServiceCommon
                             'uncheckedvalue' => 'false',
                             'showif' => 'displaydropdown'
                         ],
+                        'displaydropdownforchildrenoflastlevel' => [
+                            'label' => _t('AUJ9_BREADCRUMBS_DISPLAY_DROPDOWN_FOR_CHILDREN_OF_LAST_LEVEL_LABEL'),
+                            'advanced' => true,
+                            'type' => 'checkbox',
+                            'default' => 'false',
+                            'checkedvalue' => 'true',
+                            'uncheckedvalue' => 'false',
+                            'showif' => 'displaydropdown'
+                        ],
                         'page' => [
                             'label' => _t('AUJ9_BREADCRUMBS_PAGE_LABEL'),
                             'advanced' => true,

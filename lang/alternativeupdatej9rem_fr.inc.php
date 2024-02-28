@@ -90,6 +90,7 @@ return [
   'AUJ9_BAZARVIDEO_ACTION_VIDEO_LINK_LABEL' => 'Champ lien',
   // Feature UUID : auj9-breadcrumbs-action
   'AUJ9_BREADCRUMBS_DISPLAY_DROPDOWN_LABEL' => 'Afficher les menus déroulants',
+  'AUJ9_BREADCRUMBS_DISPLAY_DROPDOWN_FOR_CHILDREN_OF_LAST_LEVEL_LABEL' => 'Afficher les menus déroulants pour les sous-niveaux du dernier niveau',
   'AUJ9_BREADCRUMBS_DISPLAY_DROPDOWN_ONLY_FOR_LAST_LABEL' => 'Afficher les menus déroulants uniquement pour le dernier niveau',
   'AUJ9_BREADCRUMBS_LABEL' => 'Menu de type fil d\'Ariane',
   'AUJ9_BREADCRUMBS_SEPARATOR_LABEL' => 'Séparateur',
