@@ -30,7 +30,12 @@
         or hasAcl(config.default_write_acl)
         ) %}
   {% set anchor = '<div class="BAZ_actions_fiche">' %}
-  {% set button = '<a class="btn btn-entry-action btn-sm btn-default" title="' ~ _t('AUJ9_DUPLICATE') ~ '" href="' ~ url({handler:isInIframe ? 'duplicateiframe' : 'duplicate'}) ~ '"><i class="fas fa-copy"></i></a>'%}
+  {% set button = '<a class="btn btn-entry-action btn-sm btn-default" title="' 
+    ~ _t('AUJ9_DUPLICATE') 
+    ~ '" href="' ~ url({
+      tag:entryId,
+      handler:isInIframe ? 'duplicateiframe' : 'duplicate'
+    }) ~ '"><i class="fas fa-copy"></i></a>'%}
   {{ include(listOfTemplates)|replace({(anchor):anchor ~ button})|raw }}
 {% else %}
   {{ include(listOfTemplates) }}
