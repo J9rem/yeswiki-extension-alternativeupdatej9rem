@@ -87,7 +87,7 @@ class AutoUpdateService
             ? $this->params->get("updatablePackagesViaAlternative")
             : [];
         $this->updatablePackagesViaAlternative = is_array($this->updatablePackagesViaAlternative)
-            ? array_filter($this->updatablePackagesViaAlternative,'is_string')
+            ? array_filter($this->updatablePackagesViaAlternative, 'is_string')
             : [];
         $this->cacheRepo = [];
     }
@@ -340,9 +340,9 @@ class AutoUpdateService
     protected function getAffectedToolsNames(Repository $repository): array
     {
         
-        list('packagesNames'=>$packagesNames) = $this->getReposRaw(['tools'],$repository);
+        list('packagesNames'=>$packagesNames) = $this->getReposRaw(['tools'], $repository);
 
-        return array_map('strtolower',$packagesNames);
+        return array_map('strtolower', $packagesNames);
     }
 
     /**
@@ -352,9 +352,9 @@ class AutoUpdateService
      */
     protected function getAffectedThemesNames(Repository $repository): array
     {
-        list('packagesNames'=>$packagesNames) = $this->getReposRaw(['themes'],$repository);
+        list('packagesNames'=>$packagesNames) = $this->getReposRaw(['themes'], $repository);
 
-        return array_map('strtolower',$packagesNames);
+        return array_map('strtolower', $packagesNames);
     }
 
     /**
@@ -392,15 +392,15 @@ class AutoUpdateService
             return null;
         }
 
-        if (!in_array($packageName,$this->updatablePackagesViaAlternative)
+        if (!in_array($packageName, $this->updatablePackagesViaAlternative)
             && !empty($repository->getPackage($packageName))) {
             // leave core manage it
             return null;
         }
         list('key' => $key, 'package' => $package) = $repository->getAlternativePackage($packageName);
         if (empty($package) || (
-            !in_array($packageName,$this->updatablePackagesViaAlternative) && get_class($package) === PackageCollection::CORE_CLASS
-            )) {
+            !in_array($packageName, $this->updatablePackagesViaAlternative) && get_class($package) === PackageCollection::CORE_CLASS
+        )) {
             // not found for alternative repository or core
             return null;
         }
@@ -492,8 +492,7 @@ class AutoUpdateService
     public function deleteAlternativeOrLocal(
         Repository $repository,
         string $packageName
-    ) :?Messages
-    {
+    ) :?Messages {
         if (empty($packageName) || $packageName == "yeswiki") {
             return null;
         }
@@ -553,7 +552,7 @@ class AutoUpdateService
      */
     public function getReposForAlternative(Repository $repository, $callable = null): array
     {
-        list('repos'=>$repos) = $this->getReposRaw(['themes','tools'],$repository,$callable);
+        list('repos'=>$repos) = $this->getReposRaw(['themes','tools'], $repository, $callable);
         return $repos;
     }
 
@@ -564,17 +563,17 @@ class AutoUpdateService
      * @param null|callable $callable
      * @return array [$repos,$packagesNames]
      */
-    public function getReposRaw(array $types,Repository $repository, $callable = null): array
+    public function getReposRaw(array $types, Repository $repository, $callable = null): array
     {
         $repos = [];
         $packagesNames = [];
         foreach ($types as $type) {
-            if (!empty(self::FUNCTIONS_NAMES[$type])){
+            if (!empty(self::FUNCTIONS_NAMES[$type])) {
                 $info = self::FUNCTIONS_NAMES[$type];
                 $corePackages = $repository->{$info['function']}();
                 $packagesNames = [];
                 foreach ($corePackages as $package) {
-                    if (!in_array($package->name,$this->updatablePackagesViaAlternative)){
+                    if (!in_array($package->name, $this->updatablePackagesViaAlternative)) {
                         $packagesNames[] = $package->name;
                     }
                 }

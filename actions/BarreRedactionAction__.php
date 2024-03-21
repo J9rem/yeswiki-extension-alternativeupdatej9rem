@@ -21,13 +21,14 @@ class BarreRedactionAction__ extends YesWikiAction
     {
         $release = $this->params->get('yeswiki_release');
         if (is_string($release)
-            && preg_match('/^4\.(?:[0-3]\.[0-9]|4\.[0-2])$/',$release)
-            && $this->canShowDuplicate()){
-            $anchor = preg_quote('class="link-edit"><i class="fa fa-pencil-alt"></i><span>'. html_entity_decode(_t('TEMPLATE_EDIT_THIS_PAGE')) .'</span></a>','/');
+            && preg_match('/^4\.(?:[0-3]\.[0-9]|4\.[0-2])$/', $release)
+            && $this->canShowDuplicate()) {
+            $anchor = preg_quote('class="link-edit"><i class="fa fa-pencil-alt"></i><span>'. html_entity_decode(_t('TEMPLATE_EDIT_THIS_PAGE')) .'</span></a>', '/');
             $anchor = str_replace(
                 '>',
                 '>\\s*',
-                $anchor);
+                $anchor
+            );
             $button = '<a title="' . _t('AUJ9_DUPLICATE') . '" href="' . $this->wiki->Href('duplicate'.testUrlInIframe()) . '"><i class="fas fa-copy"></i></a>';
             $match = [];
             $this->output = preg_replace(
@@ -49,7 +50,7 @@ class BarreRedactionAction__ extends YesWikiAction
         $tag = $this->wiki->tag;
         return (
             empty($tag)
-            || empty($_GET['wiki']) 
+            || empty($_GET['wiki'])
             || !is_string($_GET['wiki'])
             || !(substr($_GET['wiki'], 0, strlen($tag)) === $tag)
             || empty($_GET['vue'])

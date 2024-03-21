@@ -134,7 +134,7 @@ class UserController extends CoreUserController
 
         $firstAdmin = $this->getFirstAdmin();
 
-        if ($this->params->get('deletePagesAndEntriesWithUser') === true){
+        if ($this->params->get('deletePagesAndEntriesWithUser') === true) {
             // imported from tools/templates/actions/GerereDroitsAction.php::getFilterAndSearch
             $specialsPagesNames = [
                 'BazaR',
@@ -163,15 +163,15 @@ class UserController extends CoreUserController
             $specialsPagesNames[] = $this->params->get('root_page');
             $pagesToDelete = array_filter(
                 $pagesWhereOwner,
-                function ($tag) use ($specialsPagesNames){
-                    return !in_array($tag,$specialsPagesNames);
+                function ($tag) use ($specialsPagesNames) {
+                    return !in_array($tag, $specialsPagesNames);
                 }
             );
             $entryController = $this->getService(EntryController::class);
             $entryManager = $this->getService(EntryManager::class);
             foreach ($pagesToDelete as $tag) {
                 // check if not already deleted while deleting other entry
-                $page = $this->pageManager->getOne($tag,null,false); // no cache
+                $page = $this->pageManager->getOne($tag, null, false); // no cache
                 $deleted = empty($page)
                     ? true
                     : (
@@ -179,10 +179,10 @@ class UserController extends CoreUserController
                         ? $entryController->delete($tag)
                         : $this->pageManager->deleteOrphaned($tag)
                     );
-                if ($deleted){
+                if ($deleted) {
                     $pagesWhereOwner = array_filter(
                         $pagesWhereOwner,
-                        function($tagToFilter) use($tag){
+                        function ($tagToFilter) use ($tag) {
                             return $tagToFilter != $tag;
                         }
                     );

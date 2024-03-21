@@ -67,19 +67,19 @@ class UpdateHandler__ extends YesWikiHandler
             'dkim' => true,
             'featexternalbazarservicecorrespondancefor431' => true
         ];
-        if (preg_match('/^([5-9]\.[0-9]+\.[0-9]+|4\.[3-9]+\.[0-9]+)$/',$this->params->get('yeswiki_release'))){
+        if (preg_match('/^([5-9]\.[0-9]+\.[0-9]+|4\.[3-9]+\.[0-9]+)$/', $this->params->get('yeswiki_release'))) {
             $foldersToRemove['zfuture43'] = false;
         }
-        if (preg_match('/^([5-9]\.[0-9]+\.[0-9]+|4\.[5-9]+\.[0-9]+|4\.4\.[1-9][0-9]*)$/',$this->params->get('yeswiki_release'))){
+        if (preg_match('/^([5-9]\.[0-9]+\.[0-9]+|4\.[5-9]+\.[0-9]+|4\.4\.[1-9][0-9]*)$/', $this->params->get('yeswiki_release'))) {
             $foldersToRemove['tabdyn'] = false;
         }
-        if (array_key_exists('maintenance',$this->wiki->extensions)){
+        if (array_key_exists('maintenance', $this->wiki->extensions)) {
             $foldersToRemove['multideletepages'] = false;
         }
-        foreach($foldersToRemove as $folderName => $deactivate){
-            if (file_exists("tools/$folderName")){
-                if ($deactivate || $this->shouldDeactivateInsteadOfDeleting($folderName)){
-                    if (is_file("tools/$folderName/desc.xml")){
+        foreach($foldersToRemove as $folderName => $deactivate) {
+            if (file_exists("tools/$folderName")) {
+                if ($deactivate || $this->shouldDeactivateInsteadOfDeleting($folderName)) {
+                    if (is_file("tools/$folderName/desc.xml")) {
                         $messages[] = $this->isActive($folderName)
                             ? (
                                 "ℹ️ Deactivating folder <em>tools/$folderName</em>... "
@@ -106,7 +106,7 @@ class UpdateHandler__ extends YesWikiHandler
 
         /* === Feature UUID : auj9-fix-edit-metadata === */
         /* Clean unused metadata */
-        if (in_array($this->params->get('cleanUnusedMetadata'),[true,'true'],true)){
+        if (in_array($this->params->get('cleanUnusedMetadata'), [true,'true'], true)) {
             $messages[] = 'ℹ️ Clean unused metadata';
             $selectSQL = <<<SQL
             SELECT `id`,`resource` FROM {$dbService->prefixTable('triples')}
@@ -116,13 +116,13 @@ class UpdateHandler__ extends YesWikiHandler
                   ))
             SQL;
             $triples = $dbService->loadAll($selectSQL);
-            if (empty($triples)){
+            if (empty($triples)) {
                 $messages[] = '✅ No triple to delete !';
             } else {
                 $messages[] = '&nbsp;&nbsp;ℹ️ '.count($triples).' triples to delete !';
                 $message = '';
-                for ($i=0; $i < count($triples) && $i <= 10; $i++) { 
-                    if ($i == 10){
+                for ($i=0; $i < count($triples) && $i <= 10; $i++) {
+                    if ($i == 10) {
                         $message .= <<<HTML
                         <li>...</li>
                         HTML;
@@ -147,7 +147,7 @@ class UpdateHandler__ extends YesWikiHandler
                     //throw $th;
                 }
                 $triples = $dbService->loadAll($selectSQL);
-                if (empty($triples)){
+                if (empty($triples)) {
                     $messages[] = '&nbsp;&nbsp;✅ All triples deleted !';
                 } else {
                     $messages[] = '&nbsp;&nbsp;❌ Error : '.count($riples).' triples are not deleted !';
@@ -159,21 +159,22 @@ class UpdateHandler__ extends YesWikiHandler
         /* === Feature UUID : auj9-video-field === */
         $formManager = $this->getService(FormManager::class);
         $forms = $formManager->getAll();
-        foreach($forms as $form){
-            if (!empty($form['template']) && is_array($form['template'])){
+        foreach($forms as $form) {
+            if (!empty($form['template']) && is_array($form['template'])) {
                 $toSave = false;
-                foreach($form['template'] as $key => $fieldTemplate){
-                    if ($fieldTemplate[0] === 'video'){
+                foreach($form['template'] as $key => $fieldTemplate) {
+                    if ($fieldTemplate[0] === 'video') {
                         $toSave = true;
                     }
                 }
-                if ($toSave){
+                if ($toSave) {
                     $messages[] = "ℹ️ Converting videofield to urlfield in form {$form['bn_id_nature']}";
-                    $separator = preg_quote('***','/');
+                    $separator = preg_quote('***', '/');
                     $form['bn_template'] = preg_replace(
                         "/\nvideo$separator([^*]+)$separator([^|]+)$separator([^*]+)$separator([^*]+)$separator([^|]+)$separator([^*]+)((?:{$separator}[^*]+){4}(?:$separator(?:[^*]+| \\* )){2}(?:{$separator}[^*]*){4,}\r?\n)/",
                         "\nlien_internet***$1***$2***displayvideo*** ***$5***$3|$4|$6$7",
-                        $form['bn_template']);
+                        $form['bn_template']
+                    );
                     $formManager->update($form);
                     $messages[] = "&nbsp;&nbsp; ✅";
                 }
@@ -182,8 +183,8 @@ class UpdateHandler__ extends YesWikiHandler
         }
         /* === end of Feature UUID : auj9-video-field === */
         
-        if (!empty($messages)){
-            $message = implode('<br/>',$messages);
+        if (!empty($messages)) {
+            $message = implode('<br/>', $messages);
             $output = <<<HTML
             <strong>Extension AlternativeUpdateJ9rem</strong><br/>
             $message<br/>
@@ -200,7 +201,7 @@ class UpdateHandler__ extends YesWikiHandler
         return null;
     }
 
-        /**
+    /**
      * retrieve info from desc file for tools
      * @param string $dirName
      * @return array

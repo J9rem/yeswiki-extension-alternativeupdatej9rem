@@ -23,8 +23,8 @@ class AssetsManager extends CoreAssetsManager
 
     public function AddJavascriptFile($file, $first = false, $module = false)
     {
-        if (substr($file,-strlen(self::BAZAR_JS_OLD_PATH)) === self::BAZAR_JS_OLD_PATH){
-            $file = str_replace(self::BAZAR_JS_OLD_PATH,self::BAZAR_JS_ALTERNATIVE_PATH,$file);
+        if (substr($file, -strlen(self::BAZAR_JS_OLD_PATH)) === self::BAZAR_JS_OLD_PATH) {
+            $file = str_replace(self::BAZAR_JS_OLD_PATH, self::BAZAR_JS_ALTERNATIVE_PATH, $file);
 
             $aclService = $this->wiki->services->get(AclService::class);
             $params = $this->wiki->services->get(ParameterBagInterface::class);

@@ -43,7 +43,7 @@ class DateField extends CoreDateField
                 list($hour, $minute) = array_map('intval', explode(':', $result[1]));
                 $day = $result[0];
             } else {
-                $day = substr($day,0,10);
+                $day = substr($day, 0, 10);
             }
         } elseif (!empty($this->default)) {
             // Default value when new entry
@@ -69,17 +69,17 @@ class DateField extends CoreDateField
     public function formatValuesBeforeSave($entry)
     {
         $return = [];
-        if ($this->getPropertyname() === 'bf_date_fin_evenement'){
+        if ($this->getPropertyname() === 'bf_date_fin_evenement') {
             if(!empty($entry['id_fiche'])
-                    && is_string($entry['id_fiche'])){
+                    && is_string($entry['id_fiche'])) {
                 $this->getService(DateService::class)->followId($entry['id_fiche']);
             }
-            if (!$this->getService(DateService::class)->canRegisterMultipleEntries($entry)){
+            if (!$this->getService(DateService::class)->canRegisterMultipleEntries($entry)) {
                 // clean data from entry because not possible to create repetition
                 unset($entry['bf_date_fin_evenement_data']);
-            } elseif (!empty($entry['bf_date_fin_evenement_data']['other'])){
+            } elseif (!empty($entry['bf_date_fin_evenement_data']['other'])) {
                 unset($entry['bf_date_fin_evenement_data']['other']);
-                if (!empty($entry['bf_date_fin_evenement_data'])){
+                if (!empty($entry['bf_date_fin_evenement_data'])) {
                     $return['bf_date_fin_evenement_data'] = $entry['bf_date_fin_evenement_data'];
                 }
             }
@@ -95,7 +95,7 @@ class DateField extends CoreDateField
             $this->propertyName . '_hour',
             $this->propertyName . '_minutes'
         ];
-        if (empty($entry['bf_date_fin_evenement_data'])){
+        if (empty($entry['bf_date_fin_evenement_data'])) {
             $return['fields-to-remove'][] = 'bf_date_fin_evenement_data';
         }
         return $return;
@@ -117,12 +117,12 @@ class DateField extends CoreDateField
         $matches = [];
         $recurrenceBaseId = '';
         $data = [];
-        if ($this->getPropertyname() === 'bf_date_fin_evenement' 
-                && !empty($entry['bf_date_fin_evenement_data'])){
+        if ($this->getPropertyname() === 'bf_date_fin_evenement'
+                && !empty($entry['bf_date_fin_evenement_data'])) {
             if(is_string($entry['bf_date_fin_evenement_data'])
-                && preg_match('/\{\\"recurrentParentId\\":\\"([^"]+)\\"\}/',$entry['bf_date_fin_evenement_data'],$matches)){
+                && preg_match('/\{\\"recurrentParentId\\":\\"([^"]+)\\"\}/', $entry['bf_date_fin_evenement_data'], $matches)) {
                 $recurrenceBaseId = $matches[1];
-            } elseif (is_array($entry['bf_date_fin_evenement_data'])){
+            } elseif (is_array($entry['bf_date_fin_evenement_data'])) {
                 $data = $entry['bf_date_fin_evenement_data'];
             }
         }
@@ -133,7 +133,7 @@ class DateField extends CoreDateField
         ]);
     }
 
-    /** 
+    /**
      * changes for duplicateHandler
      */
 

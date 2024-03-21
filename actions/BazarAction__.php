@@ -26,7 +26,7 @@ class BazarAction__ extends YesWikiAction
             && $this->wiki->UserIsAdmin()
             && isset($this->arguments[BazarAction::VARIABLE_VOIR]) && $this->arguments[BazarAction::VARIABLE_VOIR] === BazarAction::VOIR_FORMULAIRE
             && isset($this->arguments[BazarAction::VARIABLE_ACTION]) && in_array($this->arguments[BazarAction::VARIABLE_ACTION], [BazarAction::ACTION_FORM_CREATE,BazarAction::ACTION_FORM_EDIT], true)
-            ) {
+        ) {
             $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/form-edit-template-register-field.js');
             // Feature UUID : auj9-send-mail-selector-field
             $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/sendmailselectorfield.js');
@@ -34,7 +34,7 @@ class BazarAction__ extends YesWikiAction
             $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/customsendmailfield.js');
             // Feature UUID : auj9-video-field
             $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/urlfield.js');
-            if (file_exists('tools/bazar/presentation/javascripts/form-edit-template/fields/commons/render-helper.js')){
+            if (file_exists('tools/bazar/presentation/javascripts/form-edit-template/fields/commons/render-helper.js')) {
                 $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/form-edit-template-module.js', false, true);
             } else {
                 $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/fields/form-edit-template.js');

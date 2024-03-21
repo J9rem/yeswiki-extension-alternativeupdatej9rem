@@ -77,8 +77,8 @@ class CacheService implements EventSubscriberInterface
         $this->dbService = $dbService;
         $this->params = $params;
         $this->phpFileCacheArray = [];
-        if (!is_dir(self::DB_CACHE_DIRECTORY)){
-            mkdir(self::DB_CACHE_DIRECTORY,0777,true);
+        if (!is_dir(self::DB_CACHE_DIRECTORY)) {
+            mkdir(self::DB_CACHE_DIRECTORY, 0777, true);
         }
         $this->securityController = $securityController;
         $this->tripleStore = $tripleStore;
@@ -88,7 +88,7 @@ class CacheService implements EventSubscriberInterface
             : '';
         $this->limitedGroups = !is_string($this->limitedGroups)
             ? ''
-            : str_replace(',',"\n",$this->limitedGroups);
+            : str_replace(',', "\n", $this->limitedGroups);
     }
 
     /**
@@ -98,23 +98,23 @@ class CacheService implements EventSubscriberInterface
     public function updateFormIdTimestampFromEvent($event)
     {
         $entry = $this->getEntry($event);
-        if (!empty($entry['id_typeannonce'])){
+        if (!empty($entry['id_typeannonce'])) {
             $this->updateFormIdTimestamp(strval($entry['id_typeannonce']));
         }
     }
 
     /**
-     * update formid timestamp 
+     * update formid timestamp
      * @param string $id
      */
     public function updateFormIdTimestamp(string $id)
     {
         if (!$this->securityController->isWikiHibernated()) {
             $value = $this->getFormIdTimestamp($id);
-            if (empty($value)){
-                $this->tripleStore->create($id,self::TRIPLE_KEY_FOR_FORM_ID,time(),'','');
+            if (empty($value)) {
+                $this->tripleStore->create($id, self::TRIPLE_KEY_FOR_FORM_ID, time(), '', '');
             } else {
-                $this->tripleStore->update($id,self::TRIPLE_KEY_FOR_FORM_ID,$value,time(),'','');
+                $this->tripleStore->update($id, self::TRIPLE_KEY_FOR_FORM_ID, $value, time(), '', '');
             }
         }
     }
@@ -125,14 +125,16 @@ class CacheService implements EventSubscriberInterface
      */
     public function clear(string $folderName)
     {
-        if(is_dir(self::DB_CACHE_DIRECTORY)){
+        if(is_dir(self::DB_CACHE_DIRECTORY)) {
             $directory = $this->constructFolderPath($folderName);
-            if (is_dir($directory)){
+            if (is_dir($directory)) {
                 $it = new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS);
-                $files = new RecursiveIteratorIterator($it,
-                            RecursiveIteratorIterator::CHILD_FIRST);
+                $files = new RecursiveIteratorIterator(
+                    $it,
+                    RecursiveIteratorIterator::CHILD_FIRST
+                );
                 foreach($files as $file) {
-                    if ($file->isDir()){
+                    if ($file->isDir()) {
                         rmdir($file->getRealPath());
                     } else {
                         unlink($file->getRealPath());
@@ -164,26 +166,26 @@ class CacheService implements EventSubscriberInterface
     protected function getPhpFileCache(string $folderName, bool $getDataCache = false): PhpFileCache
     {
         $key = $getDataCache ? 'data' : 'cache';
-        if (empty($this->phpFileCacheArray[$folderName][$key])){
-            if (empty($folderName)){
+        if (empty($this->phpFileCacheArray[$folderName][$key])) {
+            if (empty($folderName)) {
                 throw new Exception('folderName could not be empty !');
             }
-            if (strpos($folderName,'/') !== false){
+            if (strpos($folderName, '/') !== false) {
                 throw new Exception('folderName could not contain "/" !');
             }
-            if (empty($this->phpFileCacheArray[$folderName])){
+            if (empty($this->phpFileCacheArray[$folderName])) {
                 $this->phpFileCacheArray[$folderName] = [];
             }
             $directory = $this->constructFolderPath($folderName);
-            if (!is_dir($directory)){
-                mkdir($directory,0777,true);
+            if (!is_dir($directory)) {
+                mkdir($directory, 0777, true);
             }
             $htaccessFilePath = $directory.'/.htaccess';
-            if (!is_file($htaccessFilePath)){
-                file_put_contents($htaccessFilePath,"DENY FROM ALL\n");
+            if (!is_file($htaccessFilePath)) {
+                file_put_contents($htaccessFilePath, "DENY FROM ALL\n");
             }
             $this->phpFileCacheArray[$folderName][$key] = $getDataCache
-                ? new PhpFileCache($directory,'.docdatacache.php')
+                ? new PhpFileCache($directory, '.docdatacache.php')
                 : new PhpFileCache($directory)
             ;
         }
@@ -198,7 +200,7 @@ class CacheService implements EventSubscriberInterface
     protected function constructFolderPath(string $folderName):string
     {
         $directory = self::DB_CACHE_DIRECTORY;
-        if (substr(self::DB_CACHE_DIRECTORY,-1) != '/'){
+        if (substr(self::DB_CACHE_DIRECTORY, -1) != '/') {
             $directory .= '/';
         }
         $directory .= $folderName;
@@ -225,32 +227,31 @@ class CacheService implements EventSubscriberInterface
         bool $followWakkaConfigTimestamp = false,
         bool $disconnectDB = false,
         bool $gzResult = false
-    ): ?array
-    {
+    ): ?array {
         $localId = $this->getLocalCacheId($key);
-        if (empty($localId)){
-           throw new Exception('It is not possible to obtain an local id from key !');
+        if (empty($localId)) {
+            throw new Exception('It is not possible to obtain an local id from key !');
         }
         $cachedData = null;
         $cachedResult = [];
         $toSave = true;
         $eTag = '';
-        try{
+        try {
             // get Cache if possible
-            $dataForCacheService = $this->getPhpFileCache($folderName,true);
-            $cacheService = $this->getPhpFileCache($folderName,false);
+            $dataForCacheService = $this->getPhpFileCache($folderName, true);
+            $cacheService = $this->getPhpFileCache($folderName, false);
             
             $cachedData = $dataForCacheService->fetch($localId);
             if (!empty($cachedData)
-                && !$this->needRefresh($cachedData,$formsIdsToFollow,$followWakkaConfigTimestamp)){
+                && !$this->needRefresh($cachedData, $formsIdsToFollow, $followWakkaConfigTimestamp)) {
                 $data = $cacheService->fetch($localId);
-                if ($data !==null){
-                    if ($disconnectDB){
+                if ($data !==null) {
+                    if ($disconnectDB) {
                         $this->disconnectDb();
                     }
                     $eTag = $this->generateEtag($localId, $cachedData);
-                    if (($cachedData['compressed'] ?? false) && function_exists('gzinflate') && function_exists('gzdeflate')){
-                        $data = json_decode(gzinflate(base64_decode($data)),true);
+                    if (($cachedData['compressed'] ?? false) && function_exists('gzinflate') && function_exists('gzdeflate')) {
+                        $data = json_decode(gzinflate(base64_decode($data)), true);
                     }
                     return compact(['eTag','data']);
                 }
@@ -262,38 +263,38 @@ class CacheService implements EventSubscriberInterface
             $curDir = getcwd();
             $curDir = $curDir === false ? '.' : $curDir;
             $curPath = realpath($curDir);
-            if (disk_free_space($curPath) < (self::MINIMUM_SPACE_MB * 1024 * 1024)){
+            if (disk_free_space($curPath) < (self::MINIMUM_SPACE_MB * 1024 * 1024)) {
                 // by security keep more than 100 MB of free space
                 throw new Exception('Not enough place for cache');
             }
 
             // authorized to create cache
-            if (!empty($this->limitedGroups) && !$this->aclService->check($this->limitedGroups,null,false)){
+            if (!empty($this->limitedGroups) && !$this->aclService->check($this->limitedGroups, null, false)) {
                 throw new Exception('Not authorized to create cache');
             }
 
-            if (empty($cachedData) || !$this->isAlreadyRunning($cachedData)){
-                $cachedData = $this->setAlreadyRunning($localId,$dataForCacheService,true);
+            if (empty($cachedData) || !$this->isAlreadyRunning($cachedData)) {
+                $cachedData = $this->setAlreadyRunning($localId, $dataForCacheService, true);
             }
-        } catch (Throwable $th){
+        } catch (Throwable $th) {
             $toSave = false;
         }
 
         // TODO manage async reload if running from more than 2 minutes
-        if (!is_callable($action)){
+        if (!is_callable($action)) {
             throw new Exception('Action is not callable !');
         }
         $data = $action();
 
-        if ($toSave){
+        if ($toSave) {
             $dataToSave = $data;
             $compressed= false;
-            if ($gzResult && function_exists('gzinflate') && function_exists('gzdeflate')){
-                $dataToSave = base64_encode(gzdeflate(json_encode($dataToSave),2)); // level 2; faster
+            if ($gzResult && function_exists('gzinflate') && function_exists('gzdeflate')) {
+                $dataToSave = base64_encode(gzdeflate(json_encode($dataToSave), 2)); // level 2; faster
                 $compressed= true;
             }
-            $cacheService->save($localId,$dataToSave);
-            $newCachedData = $this->saveCachedData($localId,$dataForCacheService,$formsIdsToFollow,$followWakkaConfigTimestamp,$compressed);
+            $cacheService->save($localId, $dataToSave);
+            $newCachedData = $this->saveCachedData($localId, $dataForCacheService, $formsIdsToFollow, $followWakkaConfigTimestamp, $compressed);
             $eTag = $this->generateEtag($localId, $newCachedData);
         }
         return compact(['eTag','data']);
@@ -308,21 +309,21 @@ class CacheService implements EventSubscriberInterface
      */
     protected function needRefresh(array $data, array $formsIdsToFollow, bool $followWakkaConfigTimestamp): bool
     {
-        if (!empty($formsIdsToFollow)){
+        if (!empty($formsIdsToFollow)) {
             foreach ($formsIdsToFollow as $id) {
-                if (empty($data['forms'][$id])){
+                if (empty($data['forms'][$id])) {
                     return true;
                 }
                 $savedFormIdTimeStamp = $this->getFormIdTimestamp(strval($id));
-                if (empty($savedFormIdTimeStamp) || $savedFormIdTimeStamp != $data['forms'][$id]){
+                if (empty($savedFormIdTimeStamp) || $savedFormIdTimeStamp != $data['forms'][$id]) {
                     return true;
                 }
             }
         }
-        if (empty($data['acls']['read']) || $data['acls']['read'] != $this->params->get('default_read_acl')){
+        if (empty($data['acls']['read']) || $data['acls']['read'] != $this->params->get('default_read_acl')) {
             return true;
         }
-        if (empty($data['acls']['write']) || $data['acls']['write'] != $this->params->get('default_write_acl')){
+        if (empty($data['acls']['write']) || $data['acls']['write'] != $this->params->get('default_write_acl')) {
             return true;
         }
         if ($followWakkaConfigTimestamp
@@ -330,7 +331,7 @@ class CacheService implements EventSubscriberInterface
                     empty($data['configFileTime'])
                     || $data['configFileTime'] != filemtime(self::CONFIG_FILE)
                 )
-            ){
+        ) {
             return true;
         }
         return false;
@@ -385,13 +386,12 @@ class CacheService implements EventSubscriberInterface
         string $key,
         array $formsIdsToFollow = [],
         bool $followWakkaConfigTimestamp = false
-    ): string
-    {
+    ): string {
         $localId = $this->getLocalCacheId($key);
-        if (empty($localId)){
+        if (empty($localId)) {
             return '';
         }
-        $dataForCacheService = $this->getPhpFileCache($folderName,true);
+        $dataForCacheService = $this->getPhpFileCache($folderName, true);
         
         $cachedData = $dataForCacheService->fetch($localId);
         return $this->generateEtag($localId, $cachedData);
@@ -429,14 +429,14 @@ class CacheService implements EventSubscriberInterface
      * @param bool $running
      * @return array
      */
-    protected function setAlreadyRunning(string $localId,PhpFileCache $dataForCacheService, bool $running): array
+    protected function setAlreadyRunning(string $localId, PhpFileCache $dataForCacheService, bool $running): array
     {
         $data = $dataForCacheService->fetch($localId);
-        if (empty($data)){
+        if (empty($data)) {
             $data = [];
         }
         $data['running'] = $running;
-        $dataForCacheService->save($localId,$data);
+        $dataForCacheService->save($localId, $data);
         return $data;
     }
 
@@ -444,7 +444,7 @@ class CacheService implements EventSubscriberInterface
      * save new data in data cache
      * @param string $localId
      * @param PhpFileCache $dataForCacheService
-     * @param array $formsIdsToFollow 
+     * @param array $formsIdsToFollow
      * @param bool $followWakkaConfigTimestamp
      * @param bool $compressed
      * @return array $data
@@ -455,21 +455,20 @@ class CacheService implements EventSubscriberInterface
         array $formsIdsToFollow,
         bool $followWakkaConfigTimestamp,
         bool $compressed
-    ): array
-    {
+    ): array {
         $data = [
             'acls' => [],
             'compressed' => $compressed
         ];
-        if (!empty($formsIdsToFollow)){
+        if (!empty($formsIdsToFollow)) {
             foreach ($formsIdsToFollow as $id) {
                 $savedFormIdTimeStamp = $this->getFormIdTimestamp(strval($id));
-                if (empty($savedFormIdTimeStamp)){
+                if (empty($savedFormIdTimeStamp)) {
                     $this->updateFormIdTimestamp(strval($id));
                     $savedFormIdTimeStamp = $this->getFormIdTimestamp(strval($id));
                 }
-                if (!empty($savedFormIdTimeStamp)){
-                    if (empty($data['forms'])){
+                if (!empty($savedFormIdTimeStamp)) {
+                    if (empty($data['forms'])) {
                         $data['forms'] = [];
                     }
                     $data['forms'][strval($id)] = $savedFormIdTimeStamp;
@@ -478,14 +477,14 @@ class CacheService implements EventSubscriberInterface
         }
         $data['acls']['read'] = $this->params->get('default_read_acl');
         $data['acls']['write'] = $this->params->get('default_write_acl');
-        if ($followWakkaConfigTimestamp){
+        if ($followWakkaConfigTimestamp) {
             $fileTime = filemtime(self::CONFIG_FILE);
-            if (!empty($fileTime)){
+            if (!empty($fileTime)) {
                 $data['configFileTime'] = $fileTime;
             }
         }
         $data['time'] = time();
-        $dataForCacheService->save($localId,$data);
+        $dataForCacheService->save($localId, $data);
         return $data;
     }
 }

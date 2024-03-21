@@ -10,12 +10,12 @@
  * Feature UUID : auj9-choice-display-hidden-field
  */
 
- /* to use with in form
+/* to use with in form
 choicedisplayhidden*** *** *** *** *** *** *** *** *** *** ***@admins***@admins*** *** *** ***
 labelhtml***<div class="hidden-field-specific" style="display:none;">*** ***<div class="hidden-field-specific" style="display:none;">***
 ...
 labelhtml***</div>*** ***</div>***
-  */
+ */
 
 namespace YesWiki\alternativeupdatej9rem\Field;
 
@@ -37,11 +37,11 @@ class ChoiceDisplayHiddenField extends BazarField
 
     protected function renderInput($entry)
     {
-        return $this->render('@bazar/fields/choice-display-hidden.twig',[]);
+        return $this->render('@bazar/fields/choice-display-hidden.twig', []);
     }
     
     protected function renderStatic($entry)
     {
-        return $this->render('@bazar/fields/choice-display-hidden.twig',[]);
+        return $this->render('@bazar/fields/choice-display-hidden.twig', []);
     }
 }

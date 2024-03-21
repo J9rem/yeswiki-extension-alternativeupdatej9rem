@@ -49,10 +49,11 @@ class ConfigOpenAgendaController extends YesWikiController
     /**
      * render form to configure openagenda api
      */
-    public function configOpenAgendaHTML(){  
-        if (!$this->wiki->UserIsAdmin()){
+    public function configOpenAgendaHTML()
+    {
+        if (!$this->wiki->UserIsAdmin()) {
             return new Response(
-                $this->renderInSquelette('@templates/alert-message.twig',[
+                $this->renderInSquelette('@templates/alert-message.twig', [
                     'type' => 'danger',
                     'message' => _t('DENY_READ')
                 ]),
@@ -65,7 +66,7 @@ class ConfigOpenAgendaController extends YesWikiController
             'tag' => 'api'
         ];
         $openAgendaParams = $this->params->get('openAgenda');
-        $content = $this->renderInSquelette('@alternativeupdatej9rem/open-agenda-config.twig',[
+        $content = $this->renderInSquelette('@alternativeupdatej9rem/open-agenda-config.twig', [
             'data' => [
                 'privateApiKeys' => $openAgendaParams['privateApiKeys'] ?? [],
                 'associations' => $openAgendaParams['associations'] ?? [],
@@ -87,15 +88,15 @@ class ConfigOpenAgendaController extends YesWikiController
      */
     public function testkey(string $key)
     {
-        $this->csrfTokenController->checkToken(self::TOKEN_ID, 'POST', 'token',false);
+        $this->csrfTokenController->checkToken(self::TOKEN_ID, 'POST', 'token', false);
         try {
             $data = $this->configOpenAgendaService->getAccessToken($key);
-            if (empty($data['token'])){
+            if (empty($data['token'])) {
                 throw new Exception('token not found!');
             }
             return new ApiResponse(
                 ['test' => 'ok'],
-                 Response::HTTP_OK
+                Response::HTTP_OK
             );
         } catch (Throwable $th) {
             return new ApiResponse(
@@ -111,7 +112,7 @@ class ConfigOpenAgendaController extends YesWikiController
      */
     public function testPublickey(string $formId)
     {
-        $this->csrfTokenController->checkToken(self::TOKEN_ID, 'POST', 'token',false);
+        $this->csrfTokenController->checkToken(self::TOKEN_ID, 'POST', 'token', false);
         $data = $this->configOpenAgendaService->getEvents($formId);
         return new ApiResponse(
             empty($data['success']) ? ['error'=>$data['error'] ?? '!!!'] : $data,
@@ -125,13 +126,13 @@ class ConfigOpenAgendaController extends YesWikiController
      */
     public function toggleActivation()
     {
-        $this->csrfTokenController->checkToken(self::TOKEN_ID, 'POST', 'token',false);
+        $this->csrfTokenController->checkToken(self::TOKEN_ID, 'POST', 'token', false);
 
-        list('config' => $config,'openAgenda' => $openAgenda) = $this->configOpenAgendaService->getOpenAgendaFromConfig();
+        list('config' => $config, 'openAgenda' => $openAgenda) = $this->configOpenAgendaService->getOpenAgendaFromConfig();
 
-        if (empty($openAgenda['isActivated'])){
+        if (empty($openAgenda['isActivated'])) {
             $openAgenda['isActivated'] = true;
-        } elseif (isset($openAgenda['isActivated'])){
+        } elseif (isset($openAgenda['isActivated'])) {
             unset($openAgenda['isActivated']);
         }
 
@@ -152,7 +153,7 @@ class ConfigOpenAgendaController extends YesWikiController
      */
     public function setKey()
     {
-        return $this->manageParam(false,false);
+        return $this->manageParam(false, false);
     }
 
     /**
@@ -160,7 +161,7 @@ class ConfigOpenAgendaController extends YesWikiController
      */
     public function removeKey()
     {
-        return $this->manageParam(false,true);
+        return $this->manageParam(false, true);
     }
 
     /**
@@ -168,7 +169,7 @@ class ConfigOpenAgendaController extends YesWikiController
      */
     public function setAssociation()
     {
-        return $this->manageParam(true,false);
+        return $this->manageParam(true, false);
     }
 
     /**
@@ -176,7 +177,7 @@ class ConfigOpenAgendaController extends YesWikiController
      */
     public function removeAssociation()
     {
-        return $this->manageParam(true,true);
+        return $this->manageParam(true, true);
     }
 
     /**
@@ -186,7 +187,7 @@ class ConfigOpenAgendaController extends YesWikiController
      */
     protected function manageParam(bool $association, bool $delete)
     {
-        $this->csrfTokenController->checkToken(self::TOKEN_ID, 'POST', 'token',false);
+        $this->csrfTokenController->checkToken(self::TOKEN_ID, 'POST', 'token', false);
         if ($this->securityController->isWikiHibernated()) {
             return new ApiResponse(
                 ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate'=> true],
@@ -195,56 +196,56 @@ class ConfigOpenAgendaController extends YesWikiController
         }
         $error = '';
         $params = [];
-        if (!$association || !$delete){
+        if (!$association || !$delete) {
             $params['name'] = '/^[A-Za-z][A-Za-z0-9_\-]{2,}$/';
         }
-        if ($association){
+        if ($association) {
             $params['id'] = $delete ? '/.+/' : '/^[0-9]+$/';
-            if (!$delete){
+            if (!$delete) {
                 $params['public'] = '/^[a-f0-9]{10,}$/';
             }
         }
-        if (!$delete){
+        if (!$delete) {
             $params['value'] = $association
                 ? '/^[0-9]{4,}$/'
                 : '/^[a-f0-9]{10,}$/';
         }
-        foreach($params as $key => $search){
-            if (empty($error)){
-                if (empty($_POST[$key])){
+        foreach($params as $key => $search) {
+            if (empty($error)) {
+                if (empty($_POST[$key])) {
                     $error = "\$_POST['$key'] should not be empty";
-                } elseif (!is_string($_POST[$key])){
+                } elseif (!is_string($_POST[$key])) {
                     $error = "\$_POST['$key'] should be a string";
-                } elseif (!preg_match($search,$_POST[$key])){
+                } elseif (!preg_match($search, $_POST[$key])) {
                     $error = "\$_POST['$key'] is badly formatted";
                 }
             }
         }
-        if (!empty($error)){
+        if (!empty($error)) {
             return new ApiResponse(
                 ['error' => $error],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        list('config' => $config,'openAgenda' => $openAgenda) = $this->configOpenAgendaService->getOpenAgendaFromConfig();
+        list('config' => $config, 'openAgenda' => $openAgenda) = $this->configOpenAgendaService->getOpenAgendaFromConfig();
         $currentParamName = $association ? 'associations' : 'privateApiKeys';
         $keyForParam = $association ? $_POST['id'] : $_POST['name'];
-        if (!isset($openAgenda[$currentParamName])){
+        if (!isset($openAgenda[$currentParamName])) {
             $openAgenda[$currentParamName] = [];
         }
-        if (!$delete){
-            $openAgenda[$currentParamName][$keyForParam] = $association 
+        if (!$delete) {
+            $openAgenda[$currentParamName][$keyForParam] = $association
                 ? [
                     'key' => $_POST['name'],
                     'id' => $_POST['value'],
                     'public' => $_POST['public']
                 ]
                 : $_POST['value'];
-        } elseif (isset($openAgenda[$currentParamName][$keyForParam])){
+        } elseif (isset($openAgenda[$currentParamName][$keyForParam])) {
             unset($openAgenda[$currentParamName][$keyForParam]);
         }
-        if (empty($openAgenda[$currentParamName])){
+        if (empty($openAgenda[$currentParamName])) {
             unset($openAgenda[$currentParamName]);
         }
         $config->openAgenda = $openAgenda;

@@ -11,7 +11,7 @@
  */
 
 
- namespace YesWiki\Alternativeupdatej9rem\Field;
+namespace YesWiki\Alternativeupdatej9rem\Field;
 
 use Psr\Container\ContainerInterface;
 use YesWiki\Bazar\Field\EnumField;

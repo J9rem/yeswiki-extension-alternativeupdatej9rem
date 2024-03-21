@@ -31,7 +31,7 @@ class __AclsHandler extends YesWikiHandler
             )
             && $_POST) {
             $entry = $entryManager->getOne($this->wiki->GetPageTag());
-            if (!empty($entry['id_typeannonce'])){
+            if (!empty($entry['id_typeannonce'])) {
                 $this->getService(CacheService::class)->updateFormIdTimestamp(strval($entry['id_typeannonce'])) ;
             }
         }

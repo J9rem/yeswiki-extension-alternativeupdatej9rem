@@ -7,7 +7,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * Feature UUID : auj9-diff
  */
 
@@ -34,17 +34,17 @@ class DiffHandler extends YesWikiHandler
         $this->entryManager = $this->wiki->services->get(EntryManager::class);
         $this->pageManager = $this->wiki->services->get(PageManager::class);
 
-        if (!$this->aclService->hasAccess('read')){
-            return $this->renderInSquelette('@templates/alert-message.twig',[
+        if (!$this->aclService->hasAccess('read')) {
+            return $this->renderInSquelette('@templates/alert-message.twig', [
                 'type' => 'warning',
                 'message' => 'Vous n\'avez pas accès à cette page.'
             ]);
         } else {
-            if (!empty($_REQUEST['a']) && !empty($_REQUEST['b'])){
+            if (!empty($_REQUEST['a']) && !empty($_REQUEST['b'])) {
                 return $this->compare($_REQUEST);
             }
             $pages = $this->pageManager->getRevisions($this->wiki->tag);
-            return $this->renderInSquelette('@alternativeupdatej9rem/revisions-handler.twig',[
+            return $this->renderInSquelette('@alternativeupdatej9rem/revisions-handler.twig', [
                 'pages' => $pages
             ]);
         }
@@ -54,7 +54,7 @@ class DiffHandler extends YesWikiHandler
     {
         if (!empty($get["fastdiff"])) {
             return $this->fastDiff($get);
-        } else {        
+        } else {
             
             // load pages
             $pageA = $this->pageManager->getById($get["a"]);
@@ -62,14 +62,14 @@ class DiffHandler extends YesWikiHandler
             if (
                 empty($pageA['tag']) || !is_string($pageA['tag'])
                 || empty($pageB['tag']) || !is_string($pageB['tag'])
-                || !$this->aclService->hasAccess('read',$pageA['tag'])
-                || !$this->aclService->hasAccess('read',$pageB['tag'])
-                ){
-                return $this->renderInSquelette('@templates/alert-message.twig',[
+                || !$this->aclService->hasAccess('read', $pageA['tag'])
+                || !$this->aclService->hasAccess('read', $pageB['tag'])
+            ) {
+                return $this->renderInSquelette('@templates/alert-message.twig', [
                     'type' => 'warning',
                     'message' => 'Vous n\'avez pas accès à cette page.'
                 ]);
-            } 
+            }
 
             $isEntry = $this->entryManager->isEntry($this->wiki->tag);
             if ($isEntry) {
@@ -83,11 +83,11 @@ class DiffHandler extends YesWikiHandler
                 $pageB['html'] = '';
                 $pageB['code'] = $pageB['body'];
             }
-            $diff = $this->diffService->getPageDiff($pageB,$pageA);
-            if (!$isEntry){
-                $diff = str_replace("\n",'<br/>',$diff);
+            $diff = $this->diffService->getPageDiff($pageB, $pageA);
+            if (!$isEntry) {
+                $diff = str_replace("\n", '<br/>', $diff);
             }
-            return $this->renderInSquelette('@alternativeupdatej9rem/code-diff.twig',[
+            return $this->renderInSquelette('@alternativeupdatej9rem/code-diff.twig', [
                 'pageA' => $pageA,
                 'pageB' => $pageB,
                 'diff' => $diff
@@ -102,7 +102,7 @@ class DiffHandler extends YesWikiHandler
 
         // prepare bodies
         $isEntry = $this->entryManager->isEntry($this->wiki->tag);
-        if ($isEntry){
+        if ($isEntry) {
             $bodyA = explode(",\\\"", $pageA["body"]);
             $bodyB = explode(",\\\"", $pageB["body"]);
         } else {
@@ -114,11 +114,11 @@ class DiffHandler extends YesWikiHandler
         $deleted = array_diff($bodyB, $bodyA);
 
         $this->wiki->RegisterInclusion($this->wiki->GetPageTag());
-        $output = $this->renderInSquelette('@alternativeupdatej9rem/fast-diff.twig',[
+        $output = $this->renderInSquelette('@alternativeupdatej9rem/fast-diff.twig', [
             'pageA' => $pageA,
             'pageB' => $pageB,
-            'added' => implode($isEntry ? ",\n\\\"" : "\n",$added),
-            'deleted' => implode($isEntry ? ",\n\\\"" : "\n",$deleted),
+            'added' => implode($isEntry ? ",\n\\\"" : "\n", $added),
+            'deleted' => implode($isEntry ? ",\n\\\"" : "\n", $deleted),
         ]);
         $this->wiki->UnregisterLastInclusion();
 

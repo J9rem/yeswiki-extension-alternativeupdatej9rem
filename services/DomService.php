@@ -69,7 +69,8 @@ class DomService
      * convert div ul li ul to dropdowns
      * @param array $domXpath [DOMDocument $dom,DOMXpath $xpath]
      */
-    public function convertDivUlLiULToDropdown(array $domXpath){
+    public function convertDivUlLiULToDropdown(array $domXpath)
+    {
         $dropdowns = ($domXpath['xpath'])->query('*/div/ul/li/ul');
         if (!is_null($dropdowns)) {
             foreach ($dropdowns as $element) {
@@ -101,9 +102,9 @@ class DomService
      * @param array $domXpath [DOMDocument $dom,DOMXpath $xpath]
      * @param array $nodesList
      */
-    public function updateNodesContent(array $domXpath,array $nodesList)
+    public function updateNodesContent(array $domXpath, array $nodesList)
     {
-        foreach($nodesList as $element){
+        foreach($nodesList as $element) {
             $nodes = $element->childNodes;
             foreach ($nodes as $node) {
                 // we search for #text child or a link, if we accessed the dropdown menu, we break
@@ -141,7 +142,8 @@ class DomService
      * add class to parent of active link
      * @param array $domXpath [DOMDocument $dom,DOMXpath $xpath]
      */
-    public function addClassToParentOfActiveLink(array $domXpath){
+    public function addClassToParentOfActiveLink(array $domXpath)
+    {
         $activelinks = ($domXpath['xpath'])->query("//a[contains(@class, 'active-link')]");
         if (!is_null($activelinks)) {
             foreach ($activelinks as $activelink) {
@@ -180,7 +182,7 @@ class DomService
         $mainLi = ($domXpath['xpath'])->query('/html/body/div/ul/li');
         foreach ($mainLi as $element) {
             $data = $this->convertElementToTreeRecursive($element, $domXpath);
-            if (!empty($data)){
+            if (!empty($data)) {
                 $tree[] = $data;
             }
         }
@@ -201,33 +203,33 @@ class DomService
         $children = [];
         foreach ($element->childNodes as $node) {
             // save link if needed
-            if (empty($link) && $node->nodeName === 'a'){
+            if (empty($link) && $node->nodeName === 'a') {
                 $data = $this->convertLinkToTextAndTag($node);
-                if (!empty($data['text'])){
-                    list('tag'=>$tag,'text'=>$text,'link'=>$link) = $data;
+                if (!empty($data['text'])) {
+                    list('tag'=>$tag, 'text'=>$text, 'link'=>$link) = $data;
                 }
             }
             // save txt if needed
-            if (empty($text) && empty($link)){
+            if (empty($text) && empty($link)) {
                 $nodeTxt = trim($node->textContent);
-                if (!empty($nodeTxt)){
+                if (!empty($nodeTxt)) {
                     $text = $nodeTxt;
                 }
             }
             // save children from ul if needed
-            if (empty($children) && !empty($link) && $node->nodeName === 'ul'){
-                if ($node->className === 'fake-ul'){
+            if (empty($children) && !empty($link) && $node->nodeName === 'ul') {
+                if ($node->className === 'fake-ul') {
                     $nodePath =$node->getNodePath();
-                    if ($nodePath){
+                    if ($nodePath) {
                         $childNodes = ($domXpath['xpath'])->query("$nodePath/li/div/div/ul/li");
                     }
                 } else {
                     $childNodes = $node->childNodes;
                 }
                 foreach ($childNodes as $childNode) {
-                    if ($childNode->nodeName === 'li'){
+                    if ($childNode->nodeName === 'li') {
                         $childData = $this->convertElementToTreeRecursive($childNode, $domXpath);
-                        if (!empty($childData)){
+                        if (!empty($childData)) {
                             $children[] = $childData;
                         }
                     }
@@ -248,11 +250,11 @@ class DomService
         $tag = '';
         $link = '';
         $href = $linkElement->getAttribute('href');
-        if (!empty($href)){
+        if (!empty($href)) {
             $link = $href;
-            $quotedBaseUrl = preg_quote($this->params->get('base_url'),'/');
+            $quotedBaseUrl = preg_quote($this->params->get('base_url'), '/');
             $match = [];
-            if (preg_match("/^$quotedBaseUrl(.+)$/",$href,$match)){
+            if (preg_match("/^$quotedBaseUrl(.+)$/", $href, $match)) {
                 $extractedLink = $this->wiki->extractLinkParts($match[1]);
                 $tag = $extractedLink['tag'] ?? '';
             }

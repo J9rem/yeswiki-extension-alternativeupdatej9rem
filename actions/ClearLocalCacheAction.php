@@ -35,13 +35,13 @@ class ClearLocalCacheAction extends YesWikiAction
         $this->csrfTokenManager = $this->getService(CsrfTokenManager::class);
         $this->securityController = $this->getService(SecurityController::class);
 
-        if (!$this->wiki->UserIsAdmin()){
-            return $this->render("@templates/alert-message.twig",[
+        if (!$this->wiki->UserIsAdmin()) {
+            return $this->render("@templates/alert-message.twig", [
                 'type' => 'danger',
                 'message' => _t('AUJ9_CLEAR_LOCAL_CACHE_RESERVED_TO_ADMIN')
             ]);
         } elseif ($this->securityController->isWikiHibernated()) {
-            return $this->render("@templates/alert-message.twig",[
+            return $this->render("@templates/alert-message.twig", [
                 'type' => 'danger',
                 'message' => _t('WIKI_IN_HIBERNATION')
             ]);
@@ -49,17 +49,17 @@ class ClearLocalCacheAction extends YesWikiAction
 
         // clear local cache
         if (!empty($_GET[self::ANTI_CSRF_TOKEN_KEY]) &&
-            is_string($_GET[self::ANTI_CSRF_TOKEN_KEY])){
-            return $this->render("@templates/alert-message.twig",$this->clearLocalCache());
+            is_string($_GET[self::ANTI_CSRF_TOKEN_KEY])) {
+            return $this->render("@templates/alert-message.twig", $this->clearLocalCache());
         }
 
         $text = _t('AUJ9_CLEAR_LOCAL_CACHE_TEXT');
         $token = $this->csrfTokenManager->getToken(self::ANTI_CSRF_TOKEN)->getValue();
-        return $this->callAction('button',[
-            'link' => $this->wiki->Href('render',null,[
+        return $this->callAction('button', [
+            'link' => $this->wiki->Href('render', null, [
                 'content' => "{{clearlocalcache}}",
                 self::ANTI_CSRF_TOKEN_KEY => $token
-            ],false),
+            ], false),
             'text' => $text,
             'title' => $text,
             'class' => 'btn-secondary-2 new-window'

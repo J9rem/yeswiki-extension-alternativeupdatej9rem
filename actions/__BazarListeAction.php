@@ -14,7 +14,7 @@ class __BazarListeAction extends YesWikiAction
         $newArgs = [];
 
         /* === Feature UUID : auj9-bazar-list-video-dynamic === */
-        if (($arg['template'] ?? '') === 'video'){
+        if (($arg['template'] ?? '') === 'video') {
             $newArgs['dynamic'] = true;
         }
         /* === end of Feature UUID : auj9-bazar-list-video-dynamic === */
@@ -27,7 +27,8 @@ class __BazarListeAction extends YesWikiAction
         return $newArgs;
     }
 
-    public function run(){
+    public function run()
+    {
 
     }
 }

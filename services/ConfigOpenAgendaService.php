@@ -85,9 +85,9 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      */
     public function followEntryCreation($event)
     {
-        if ($this->isActivated){
+        if ($this->isActivated) {
             $entry = $this->getEntry($event);
-            if ($this->shouldFollowEntry($entry)){
+            if ($this->shouldFollowEntry($entry)) {
                 try {
                     $this->createEvent($entry);
                 } catch (Throwable $th) {
@@ -102,9 +102,9 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      */
     public function followEntryChange($event)
     {
-        if ($this->isActivated){
+        if ($this->isActivated) {
             $entry = $this->getEntry($event);
-            if ($this->shouldFollowEntry($entry)){
+            if ($this->shouldFollowEntry($entry)) {
                 try {
                     $this->updateEvent($entry);
                 } catch (Throwable $th) {
@@ -119,9 +119,9 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      */
     public function followEntryDeletion($event)
     {
-        if ($this->isActivated){
+        if ($this->isActivated) {
             $entryBeforeDeletion = $this->getEntry($event);
-            if (!empty($entryBeforeDeletion) && $this->shouldFollowEntry($entryBeforeDeletion, false)){
+            if (!empty($entryBeforeDeletion) && $this->shouldFollowEntry($entryBeforeDeletion, false)) {
                 try {
                     $this->deleteEvent($entryBeforeDeletion);
                 } catch (Throwable $th) {
@@ -159,11 +159,11 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      * @param bool $testDate
      * @return bool
      */
-    protected function shouldFollowEntry(array $entry,bool $testDate = false): bool
+    protected function shouldFollowEntry(array $entry, bool $testDate = false): bool
     {
         return !empty($entry['id_typeannonce'])
             && !empty($entry['id_fiche'])
-            && in_array($entry['id_typeannonce'],$this->followedFormsIds)
+            && in_array($entry['id_typeannonce'], $this->followedFormsIds)
             && (
                 !$testDate
                 || (
@@ -183,10 +183,10 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
     public function getAccessToken(string $keyName): array
     {
         $code = $this->openAgendaParams['privateApiKeys'][$keyName] ?? '';
-        if (empty($code)){
+        if (empty($code)) {
             throw new Exception('Unknown key !');
         }
-        if (empty($this->cacheTokens[$code])){
+        if (empty($this->cacheTokens[$code])) {
             $data = $this->getRouteApi(
                 'https://api.openagenda.com/v2/requestAccessToken',
                 'requestAccessToken',
@@ -195,7 +195,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
                     'code' => $code
                 ]
             );
-            if (empty($data['access_token']) || empty($data['expires_in'])){
+            if (empty($data['access_token']) || empty($data['expires_in'])) {
                 trigger_error(json_encode($data));
                 throw new Exception('badly formatted response !');
             }
@@ -209,20 +209,20 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
     /**
      * get events
      * @param string $formId
-     * @return array 
+     * @return array
      * @throws Exception
      */
     public function getEvents(string $formId): array
     {
         $association = $this->openAgendaParams['associations'][$formId] ?? '';
-        if (empty($association)){
+        if (empty($association)) {
             throw new Exception('Unknown id !');
         }
         $data = $this->getRouteApi(
             "https://api.openagenda.com/v2/agendas/{$association['id']}/events?key={$association['public']}",
             'getEvents'
         );
-        if (!is_array($data) || empty($data)){
+        if (!is_array($data) || empty($data)) {
             throw new Exception('badly formatted response !');
         }
         return $data;
@@ -240,12 +240,12 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      */
     protected function getRouteApi(string $url, string $type, $postData = [], array $headersFromExt = [], string $customRequest = '')
     {
-        $headers = array_filter($headersFromExt,'is_string') ;
+        $headers = array_filter($headersFromExt, 'is_string') ;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         if (!empty($postData) && (is_string($postData) || is_array($postData))) {
             curl_setopt($ch, CURLOPT_POST, true);
-            if (is_array($postData)){
+            if (is_array($postData)) {
                 $headers[] = 'Content-Type: application/json';
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
             } else {
@@ -253,7 +253,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             }
         } else {
             curl_setopt($ch, CURLOPT_POST, false);
-            if (!empty($customRequest) && in_array($customRequest,['PATCH','PUT','GET','DELETE','HEAD','CONNECT'])){
+            if (!empty($customRequest) && in_array($customRequest, ['PATCH','PUT','GET','DELETE','HEAD','CONNECT'])) {
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $customRequest);
             }
         }
@@ -272,14 +272,14 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             throw new Exception("Error when getting $type via API : $error (httpcode: $httpCode)");
         }
         try {
-            if (empty($results)){
+            if (empty($results)) {
                 throw new Exception("Empty result when getting '$url' for '$type'");
             }
             $output = json_decode($results, true, 512, JSON_THROW_ON_ERROR);
         } catch (Throwable $th) {
-            throw new Exception("Json Decode Error : {$th->getMessage()}".($th->getCode() == 4 ? " ; output : '".strval($results)."'": ''), $th->getCode(),$th);
+            throw new Exception("Json Decode Error : {$th->getMessage()}".($th->getCode() == 4 ? " ; output : '".strval($results)."'": ''), $th->getCode(), $th);
         }
-        if (is_null($output)){
+        if (is_null($output)) {
             throw new Exception('Output is not json '.strval($results));
         }
         return $output;
@@ -299,11 +299,10 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         string $formId,
         string $type,
         array $data
-    ):array
-    {
+    ):array {
         $association = $this->openAgendaParams['associations'][$formId];
 
-        list('token' => $token,'expiresIn'=> $expiresIn) = 
+        list('token' => $token, 'expiresIn'=> $expiresIn) =
             $this->getAccessToken($association['key']);
 
         $results = $this->getRouteApi(
@@ -315,7 +314,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
                 'data' => $data
             ]
         );
-        $this->triggerErrorsIfNeeded("openAgenda$name",$results);
+        $this->triggerErrorsIfNeeded("openAgenda$name", $results);
         return $results;
     }
 
@@ -331,11 +330,10 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         string $name,
         string $formId,
         string $type
-    ):array
-    {
+    ):array {
         $association = $this->openAgendaParams['associations'][$formId];
 
-        list('token' => $token,'expiresIn'=> $expiresIn) = 
+        list('token' => $token, 'expiresIn'=> $expiresIn) =
             $this->getAccessToken($association['key']);
 
         $results = $this->getRouteApi(
@@ -348,7 +346,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             ],
             'DELETE'
         );
-        $this->triggerErrorsIfNeeded("openAgenda$name",$results);
+        $this->triggerErrorsIfNeeded("openAgenda$name", $results);
         return $results;
     }
 
@@ -366,8 +364,8 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             $this->prepareEntryData($entry)
         );
 
-        if (!empty($data['event']['uid'])){
-            $this->registerUid($entry['id_fiche'],$data['event']['uid']);
+        if (!empty($data['event']['uid'])) {
+            $this->registerUid($entry['id_fiche'], $data['event']['uid']);
         }
     }
     
@@ -379,7 +377,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
     protected function updateEvent(array $entry)
     {
         $uid = $this->getUid($entry['id_fiche']);
-        if (empty($uid)){
+        if (empty($uid)) {
             $this->createEvent($entry);
         } else {
             $data = $this->postToOpenAgenda(
@@ -399,13 +397,13 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
     protected function deleteEvent(array $entry)
     {
         $uid = $this->getUid($entry['id_fiche']);
-        if (!empty($uid)){
+        if (!empty($uid)) {
             // first update with empty data
             $data = $this->postToOpenAgenda(
                 'setEventToDeleted',
                 $entry['id_typeannonce'],
                 "events/$uid",
-                $this->prepareEntryData(array_merge($entry,[
+                $this->prepareEntryData(array_merge($entry, [
                     'bf_titre' => '==DELETED=='
                 ]))
             );
@@ -429,7 +427,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         $entryTitle = $entry['bf_titre'] ?? $entry['id_fiche'];
         $data = [
             'title' => [
-                $entryLang => substr(strip_tags($entryTitle),0,140)
+                $entryLang => substr(strip_tags($entryTitle), 0, 140)
             ],
             'state' => 2, // published, 1= not published controller, 0 = to control
             'featured' => false // to display in head
@@ -441,19 +439,19 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
 
         $data['description'] = [
             $entryLang => empty($desc['description'])
-                ? substr(strip_tags($entryTitle),0,140)
-                : substr($desc['description'],0,199).(strlen($desc['description'])>199?'…':'')
+                ? substr(strip_tags($entryTitle), 0, 140)
+                : substr($desc['description'], 0, 199).(strlen($desc['description'])>199?'…':'')
         ];
-        if (!empty($desc['longDescriptionMarkdown'])){
+        if (!empty($desc['longDescriptionMarkdown'])) {
             $data['longDescription'] = [
-                $entryLang => substr($desc['longDescriptionMarkdown'],0,9995).(strlen($desc['longDescriptionMarkdown'])>9995?'…':'')
+                $entryLang => substr($desc['longDescriptionMarkdown'], 0, 9995).(strlen($desc['longDescriptionMarkdown'])>9995?'…':'')
             ];
         }
         if (!empty($entryImage)
-            && preg_match('/\.(?:png|jpg|jpeg|bmp|webp)$/i',$entryImage)
-        ){
-            $baseUrl = explode('?',$this->params->get('base_url'))[0];
-            if (!preg_match('/^http?:\\/\\/localhost\\//',$baseUrl)){
+            && preg_match('/\.(?:png|jpg|jpeg|bmp|webp)$/i', $entryImage)
+        ) {
+            $baseUrl = explode('?', $this->params->get('base_url'))[0];
+            if (!preg_match('/^http?:\\/\\/localhost\\//', $baseUrl)) {
                 $data['image'] = [
                     'url' => "{$baseUrl}files/$entryImage"
                 ];
@@ -462,7 +460,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         $data['timings'] = $this->getTimings($entry);
         
         $entryPlace = $this->getPlace($entry);
-        if (empty($entryPlace)){
+        if (empty($entryPlace)) {
             $entryPlace = $this->createPlace($entry);
         }
         $data['locationUid'] = $entryPlace['uid'] ?? 0;
@@ -485,16 +483,16 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             'state' => 1, // verified by default,
             'countryCode' => 'FR' // TODO manage country code
         ];
-        if (!empty($extract['town'])){
+        if (!empty($extract['town'])) {
             $data['city'] = $extract['town'];
         }
-        if (!empty($extract['postalCode'])){
+        if (!empty($extract['postalCode'])) {
             $data['postalCode'] = $extract['postalCode'];
         }
-        if (!empty($extract['latitude'])){
+        if (!empty($extract['latitude'])) {
             $data['latitude'] = floatval($extract['latitude']);
         }
-        if (!empty($extract['longitude'])){
+        if (!empty($extract['longitude'])) {
             $data['longitude'] = floatval($extract['longitude']);
         }
 
@@ -523,12 +521,12 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             "https://api.openagenda.com/v2/agendas/{$association['id']}/locations?key={$association['public']}&search=".urlencode($extract['name']),
             'getPlace'
         );
-        $this->triggerErrorsIfNeeded('openAgendaGetPlace',$data);
+        $this->triggerErrorsIfNeeded('openAgendaGetPlace', $data);
         $places = empty($data['locations'])
             ? []
             : array_filter(
                 $data['locations'],
-                function($place) use($extract){
+                function ($place) use ($extract) {
                     return ($place['name'] ?? '') === $extract['name'];
                 }
             );
@@ -543,7 +541,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
     protected function extractAddress(array $entry): array
     {
         $mapField = $this->getMapField($entry['id_typeannonce']);
-        $defaultFieldsNames =  [    
+        $defaultFieldsNames =  [
             'street' => MapField::DEFAULT_FIELDNAME_STREET,
             'street1' => MapField::DEFAULT_FIELDNAME_STREET1,
             'street2' => MapField::DEFAULT_FIELDNAME_STREET2,
@@ -555,36 +553,37 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             ? $defaultFieldsNames
             : $mapField->getAutocompleteFieldnames();
         $geolocationFieldNames = empty($mapField)
-            ? [    
+            ? [
                 'latitude' => 'bf_latitude',
                 'longitude' => 'bf_longitude'
             ]
-            : [    
+            : [
                 'latitude' => $mapField->getLatitudeField(),
                 'longitude' => $mapField->getLongitudeField()
             ];
 
         $extract = [];
-        foreach(array_keys($defaultFieldsNames) as $key){
-            $extract[$key] = (!empty($fieldNames[$key])
+        foreach(array_keys($defaultFieldsNames) as $key) {
+            $extract[$key] = (
+                !empty($fieldNames[$key])
                     && !empty($entry[$fieldNames[$key]])
                     && is_string($entry[$fieldNames[$key]])
-                )
+            )
                 ? trim($entry[$fieldNames[$key]])
                 : '';
         }
         
-        $name = implode(',',array_filter(
+        $name = implode(',', array_filter(
             $extract,
-            function($str){
+            function ($str) {
                 return !empty($str);
             }
         ));
 
-        $extract['name'] = empty($name) ? self::UNKNOWN_PLACE_NAME : substr($name,0,100);
-        $extract['address'] = empty($name) ? self::UNKNOWN_PLACE_NAME : substr($name,0,255);
+        $extract['name'] = empty($name) ? self::UNKNOWN_PLACE_NAME : substr($name, 0, 100);
+        $extract['address'] = empty($name) ? self::UNKNOWN_PLACE_NAME : substr($name, 0, 255);
 
-        foreach($geolocationFieldNames as $key => $fieldName){
+        foreach($geolocationFieldNames as $key => $fieldName) {
             $extract[$key] = empty($fieldName)
                 ? ''
                 : ($entry[$fieldName] ?? $entry['geolocation'][$fieldName] ?? '');
@@ -600,25 +599,24 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
     protected function triggerErrorsIfNeeded(string $name, array $data)
     {
         $errors = [];
-        if (!empty($data['message'])){
+        if (!empty($data['message'])) {
             $errors[] = $data['message'];
         }
-        if (!empty($data['errors'])){
+        if (!empty($data['errors'])) {
             $errors[] = implode(
                 ';',
                 array_map(
-                    function($e){
+                    function ($e) {
                         return 'code:'.($e['code']??'???')
                             .'=>'.($e['message']??'???')
                             .' (field:'.($e['field'] ?? '??').')';
                     },
-                
                     $data['errors']
                 )
             );
         }
-        if (!empty($errors)){
-            trigger_error("$name: ".implode('...',$errors));
+        if (!empty($errors)) {
+            trigger_error("$name: ".implode('...', $errors));
         }
     }
 
@@ -628,7 +626,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      */
     protected function generateNonce(): int
     {
-        return random_int(0,pow(2, 31));
+        return random_int(0, pow(2, 31));
     }
 
     /**
@@ -638,13 +636,13 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      */
     protected function getMapField(string $formId): ?MapField
     {
-        if (!array_key_exists($formId,$this->cacheMapField)){
+        if (!array_key_exists($formId, $this->cacheMapField)) {
             $form = $this->formManager->getOne($formId);
             $this->cacheMapField[$formId] = null;
-            if (!empty($form['prepared'])){
-                foreach($form['prepared'] as $field){
+            if (!empty($form['prepared'])) {
+                foreach($form['prepared'] as $field) {
                     if (empty($this->cacheMapField[$formId])
-                        && $field instanceof MapField){
+                        && $field instanceof MapField) {
                         $this->cacheMapField[$formId] = $field;
                     }
                 }
@@ -660,22 +658,22 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      */
     protected function getDescriptionField(string $formId)
     {
-        if (!array_key_exists($formId,$this->cacheDescriptionPropertyName)){
+        if (!array_key_exists($formId, $this->cacheDescriptionPropertyName)) {
             $form = $this->formManager->getOne($formId);
             $this->cacheDescriptionPropertyName[$formId] = null;
-            if (!empty($form['prepared'])){
-                foreach($form['prepared'] as $field){
+            if (!empty($form['prepared'])) {
+                foreach($form['prepared'] as $field) {
                     if (
                         $field instanceof TextareaField
                         && (
                             empty($this->cacheDescriptionPropertyName[$formId])
                             || $field->getPropertyName() === 'bf_description'
                         )
-                    ){
+                    ) {
                         $this->cacheDescriptionPropertyName[$formId] = $field;
                     }
                 }
-                if (empty($this->cacheDescriptionPropertyName[$formId])){
+                if (empty($this->cacheDescriptionPropertyName[$formId])) {
                     $this->cacheDescriptionPropertyName[$formId] = 'bf_description';
                 }
             }
@@ -690,15 +688,15 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      */
     protected function getImagePropertyName(string $formId): string
     {
-        if (!array_key_exists($formId,$this->cacheImagePropertyName)){
+        if (!array_key_exists($formId, $this->cacheImagePropertyName)) {
             $form = $this->formManager->getOne($formId);
             $this->cacheImagePropertyName[$formId] = '';
-            if (!empty($form['prepared'])){
-                foreach($form['prepared'] as $field){
+            if (!empty($form['prepared'])) {
+                foreach($form['prepared'] as $field) {
                     if (
                         empty($this->cacheImagePropertyName[$formId])
                         && $field instanceof ImageField
-                    ){
+                    ) {
                         $this->cacheImagePropertyName[$formId] = $field->getPropertyName();
                     }
                 }
@@ -719,10 +717,10 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
         $renderedDescriptionFromFrield = is_string($descriptionField)
             ? ($entry[$descriptionField] ?? '')
             : $descriptionField->renderStaticIfPermitted($entry);
-        $renderedDescriptionHtml = (strpos($renderedDescriptionFromFrield,'<span class="BAZ_texte">') === false)
+        $renderedDescriptionHtml = (strpos($renderedDescriptionFromFrield, '<span class="BAZ_texte">') === false)
             ? $renderedDescriptionFromFrield
-            : preg_replace('/[\s\S]*<span class="BAZ_texte">([\s\S]*)<\\/span>\\s*<\\/div>\\s*$/','$1',$renderedDescriptionFromFrield);
-        $renderedDescriptionHtml = preg_replace('/^   \s*/','',$renderedDescriptionHtml);
+            : preg_replace('/[\s\S]*<span class="BAZ_texte">([\s\S]*)<\\/span>\\s*<\\/div>\\s*$/', '$1', $renderedDescriptionFromFrield);
+        $renderedDescriptionHtml = preg_replace('/^   \s*/', '', $renderedDescriptionHtml);
         
         $description = trim(strip_tags($renderedDescriptionHtml));
 
@@ -760,10 +758,10 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             ],
             $renderedDescriptionHtmlCleaned
         );
-        $longDescriptionMarkdown = trim(strip_tags($longDescriptionMarkdown),"\x00..\x1F");
-        $url = $this->wiki->Href('',$entry['id_fiche']);
+        $longDescriptionMarkdown = trim(strip_tags($longDescriptionMarkdown), "\x00..\x1F");
+        $url = $this->wiki->Href('', $entry['id_fiche']);
         $longDescriptionMarkdown .= (empty($longDescriptionMarkdown) ? '' : "  \n")."Source: [$url]($url)";
-        $longDescriptionMarkdown = trim(trim($longDescriptionMarkdown),"\x00..\x1F");
+        $longDescriptionMarkdown = trim(trim($longDescriptionMarkdown), "\x00..\x1F");
 
         return compact(['description','longDescriptionMarkdown']);
     }
@@ -774,18 +772,18 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      * @param string $entryId
      * @param int $uid
      */
-    protected function registerUid(string $entryId,int $uid)
+    protected function registerUid(string $entryId, int $uid)
     {
-        $triples = $this->tripleStore->getAll($entryId,self::TRIPLE_PROPERTY,'','');
-        if (empty($triples)){
-            $this->tripleStore->create($entryId,self::TRIPLE_PROPERTY,$uid,'','');
+        $triples = $this->tripleStore->getAll($entryId, self::TRIPLE_PROPERTY, '', '');
+        if (empty($triples)) {
+            $this->tripleStore->create($entryId, self::TRIPLE_PROPERTY, $uid, '', '');
         } elseif (count($triples) > 1) {
             for ($i=1; $i < count($triples); $i++) {
-                $this->tripleStore->delete($entryId,self::TRIPLE_PROPERTY,$triples[$i]['value'],'','');
+                $this->tripleStore->delete($entryId, self::TRIPLE_PROPERTY, $triples[$i]['value'], '', '');
             }
-            $this->registerUid($entryId,$uid);
+            $this->registerUid($entryId, $uid);
         } else {
-            $this->tripleStore->update($entryId,self::TRIPLE_PROPERTY,$triples[0]['value'],$uid,'','');
+            $this->tripleStore->update($entryId, self::TRIPLE_PROPERTY, $triples[0]['value'], $uid, '', '');
         }
     }
 
@@ -796,7 +794,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      */
     protected function getUid(string $entryId): int
     {
-        $value = $this->tripleStore->getOne($entryId,self::TRIPLE_PROPERTY,'','');
+        $value = $this->tripleStore->getOne($entryId, self::TRIPLE_PROPERTY, '', '');
         return empty($value) ? 0 : intval($value);
     }
 
@@ -806,7 +804,7 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
      */
     protected function deleteAllUid(string $entryId)
     {
-        $this->tripleStore->delete($entryId,self::TRIPLE_PROPERTY,null,'','');
+        $this->tripleStore->delete($entryId, self::TRIPLE_PROPERTY, null, '', '');
     }
 
     /**
@@ -822,18 +820,18 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             $firstBeginning = new DateTimeImmutable($entry['bf_date_debut_evenement']);
             try {
                 $firstEnd = new DateTimeImmutable($entry['bf_date_fin_evenement']);
-                if (strlen($entry['bf_date_fin_evenement']) < 11){
+                if (strlen($entry['bf_date_fin_evenement']) < 11) {
                     // set to midnight of next day
-                    $firstEnd = $firstEnd->add(new DateInterval('P1D'))->setTime(0,0);
+                    $firstEnd = $firstEnd->add(new DateInterval('P1D'))->setTime(0, 0);
                 }
-                if ($firstBeginning->diff($firstEnd)->invert > 0){
+                if ($firstBeginning->diff($firstEnd)->invert > 0) {
                     throw new Exception('End should be after beginning !');
                 }
             } catch (Throwable $th) {
                 $firstEnd = $firstBeginning->add(new DateInterval('PT1H'));
             }
             $beginPlus24h = $firstBeginning->add(new DateInterval('PT24H'));
-            if ($firstEnd->diff($beginPlus24h)->invert === 0){
+            if ($firstEnd->diff($beginPlus24h)->invert === 0) {
                 // less than 24 h or 24h
                 $timingsForMaster[] = [
                     'begin' => $firstBeginning->add(new DateInterval("PT0S")),
@@ -841,21 +839,21 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
                 ];
             } else {
                 // first day
-                $nextDayMidnight = $beginPlus24h->setTime(0,0);
+                $nextDayMidnight = $beginPlus24h->setTime(0, 0);
                 $timingsForMaster[] = [
                     'begin' => $firstBeginning->add(new DateInterval("PT0S")),
                     'end' =>  $nextDayMidnight->add(new DateInterval("PT0S"))
                 ];
 
                 $currentDayMidnight = $nextDayMidnight;
-                $nextDayMidnight = $nextDayMidnight->add(new DateInterval('P1D'))->setTime(0,0);
+                $nextDayMidnight = $nextDayMidnight->add(new DateInterval('P1D'))->setTime(0, 0);
                 while ($firstEnd->diff($nextDayMidnight)->invert > 0) {
                     $timingsForMaster[] = [
                         'begin' => $currentDayMidnight->add(new DateInterval("PT0S")),
                         'end' =>  $nextDayMidnight->add(new DateInterval("PT0S"))
                     ];
                     $currentDayMidnight = $nextDayMidnight;
-                    $nextDayMidnight = $nextDayMidnight->add(new DateInterval('P1D'))->setTime(0,0);
+                    $nextDayMidnight = $nextDayMidnight->add(new DateInterval('P1D'))->setTime(0, 0);
                 }
 
                 // last day
@@ -866,24 +864,25 @@ class ConfigOpenAgendaService implements EventSubscriberInterface
             }
             $steps = [0]; // seconds
             if (!empty($entry['bf_date_fin_evenement_data']['isRecurrent'])
-                && $entry['bf_date_fin_evenement_data']['isRecurrent'] == "1"){
+                && $entry['bf_date_fin_evenement_data']['isRecurrent'] == "1") {
                 // unset cache
                 $GLOBALS['_BAZAR_'] = [];
-                $linkedEntries = $this->entryManager->search([
+                $linkedEntries = $this->entryManager->search(
+                    [
                         'formsIds' => [$entry['id_typeannonce']],
                         'queries' => [
                             'bf_date_fin_evenement_data' => "{\"recurrentParentId\":\"{$entry['id_fiche']}\"}"
                         ]
                     ],
                     false, // filter on read Acl
-                    false // useGuard 
+                    false // useGuard
                 );
-                if (!empty($linkedEntries)){
-                    foreach($linkedEntries as $linkedEntry){
-                        if (!empty($linkedEntry['bf_date_debut_evenement'])){
+                if (!empty($linkedEntries)) {
+                    foreach($linkedEntries as $linkedEntry) {
+                        if (!empty($linkedEntry['bf_date_debut_evenement'])) {
                             try {
                                 $currentBegin = new DateTimeImmutable($linkedEntry['bf_date_debut_evenement']);
-                                if ($firstBeginning->diff($currentBegin)->invert === 0){
+                                if ($firstBeginning->diff($currentBegin)->invert === 0) {
                                     $steps[] = $currentBegin->getTimestamp() - $firstBeginning->getTimestamp();
                                 }
                             } catch (Throwable $th) {

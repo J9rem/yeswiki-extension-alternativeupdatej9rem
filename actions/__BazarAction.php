@@ -28,7 +28,7 @@ class __BazarAction extends YesWikiAction
             && strval($_GET['vue']) === 'saisir'
             && !empty($_GET['action'])
             && is_scalar($_GET['action'])
-            && strval($_GET['action']) === 'supprimer'){
+            && strval($_GET['action']) === 'supprimer') {
             $_GET['vue'] = 'formulaire';
             $_GET['action'] = '';
             $newArgs['vue'] = 'formulaire';
@@ -37,20 +37,21 @@ class __BazarAction extends YesWikiAction
         return $newArgs;
     }
 
-    public function run(){
+    public function run()
+    {
         /*
          * Feature UUID : auj9-local-cache
          */
-        $view = $this->sanitizedGet('vue',function(){
+        $view = $this->sanitizedGet('vue', function () {
             return $this->arguments['vue'] ?? null;
         });
-        $action = $this->sanitizedGet('action',function(){
+        $action = $this->sanitizedGet('action', function () {
             return $this->arguments['action'] ?? 'formulaire';
         });
         if (isset($_POST['valider'])
             && $view === 'formulaire'
-            && in_array($action,['new','modif'],true)
-            && !empty($_POST['bn_id_nature'])){
+            && in_array($action, ['new','modif'], true)
+            && !empty($_POST['bn_id_nature'])) {
             $this->getService(CacheService::class)->updateFormIdTimestamp(strval($_POST['bn_id_nature']));
         }
     }
@@ -62,7 +63,7 @@ class __BazarAction extends YesWikiAction
      * @return scalar
      * Feature UUID : auj9-local-cache
      */
-    protected function sanitizedGet(string $key,$callback)
+    protected function sanitizedGet(string $key, $callback)
     {
         return (isset($_GET[$key]) && is_scalar($_GET[$key]))
             ? $_GET[$key]

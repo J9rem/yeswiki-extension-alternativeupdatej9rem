@@ -22,7 +22,7 @@ class BazarListService extends CoreBazarListService
     public function formatFilters($options, $entries, $forms) : array
     {
         $params = $this->wiki->services->get(ParameterBagInterface::class);
-        if (!$params->has('sortListAsDefinedInFilters') || $params->get('sortListAsDefinedInFilters') !== true){
+        if (!$params->has('sortListAsDefinedInFilters') || $params->get('sortListAsDefinedInFilters') !== true) {
             return parent::formatFilters($options, $entries, $forms);
         }
 
@@ -127,7 +127,7 @@ class BazarListService extends CoreBazarListService
 
             $filters[$idkey]['index'] = $i;
 
-            # sort facette labels 
+            # sort facette labels
             /* natcasesort($list['label']); // commented line because changing order */
             foreach ($list['label'] as $listkey => $label) {
                 if (!empty($facettables[$id][$listkey])) {

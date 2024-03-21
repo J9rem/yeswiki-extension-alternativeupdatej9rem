@@ -149,7 +149,7 @@ class ApiController extends YesWikiController
                         if (!empty($version) && is_string($version)) {
                             $repository = $autoUpdateService->initRepository($version, $_POST['packages']);
                             
-                            $repos = $autoUpdateService->getReposForAlternative($repository,function($package){
+                            $repos = $autoUpdateService->getReposForAlternative($repository, function ($package) {
                                 return $this->toArray($package);
                             });
 
@@ -344,11 +344,11 @@ class ApiController extends YesWikiController
                             Response::HTTP_INTERNAL_SERVER_ERROR
                         );
                     }
-                    $activation = in_array($activation,[1,"1",true,"true"],true);
+                    $activation = in_array($activation, [1,"1",true,"true"], true);
 
                     $repository = $autoUpdateService->initRepository("", $packages);
 
-                    if($autoUpdateService->activationLocal($repository, $packageName,$activation)){
+                    if($autoUpdateService->activationLocal($repository, $packageName, $activation)) {
                         return new ApiResponse(
                             [],
                             Response::HTTP_OK
@@ -430,9 +430,9 @@ class ApiController extends YesWikiController
      * @Route("/api/alternativeupdatej9rem/set-edit-entry-partial-params/{resource}/{id}/{fields}", methods={"POST"}, options={"acl":{"public", "@admins"}})
      * Feature UUID : auj9-editentrypartial-action
      */
-    public function setEditEntryPartialParams($resource,$id,$fields)
+    public function setEditEntryPartialParams($resource, $id, $fields)
     {
-        $this->wiki->services->get(CsrfTokenController::class)->checkToken('admin-token', 'POST', 'anti-csrf-token',true);
+        $this->wiki->services->get(CsrfTokenController::class)->checkToken('admin-token', 'POST', 'anti-csrf-token', true);
         if ($this->wiki->services->get(SecurityController::class)->isWikiHibernated()) {
             return new ApiResponse(
                 ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate'=> true],
@@ -449,11 +449,11 @@ class ApiController extends YesWikiController
         $tripleStore = $this->wiki->services->get(TripleStore::class);
 
         // find previous triples
-        $previousTriples = $tripleStore->getAll($resource,'https://yeswiki.net/triple/EditEntryPartialParams','','');
-        if (!empty($previousTriples)){
-            if (count($previousTriples) > 1){
+        $previousTriples = $tripleStore->getAll($resource, 'https://yeswiki.net/triple/EditEntryPartialParams', '', '');
+        if (!empty($previousTriples)) {
+            if (count($previousTriples) > 1) {
                 // delete duplicate
-                for ($i=1; $i <= count($previousTriples); $i++) { 
+                for ($i=1; $i <= count($previousTriples); $i++) {
                     $tripleStore->delete(
                         $resource,
                         'https://yeswiki.net/triple/EditEntryPartialParams',
@@ -468,7 +468,7 @@ class ApiController extends YesWikiController
                 $resource,
                 'https://yeswiki.net/triple/EditEntryPartialParams',
                 $previousTriples[0]['value'],
-                $this->formatEditEntryPartialValue($id,$fields),
+                $this->formatEditEntryPartialValue($id, $fields),
                 '',
                 ''
             );
@@ -476,7 +476,7 @@ class ApiController extends YesWikiController
             $tripleStore->create(
                 $resource,
                 'https://yeswiki.net/triple/EditEntryPartialParams',
-                $this->formatEditEntryPartialValue($id,$fields),
+                $this->formatEditEntryPartialValue($id, $fields),
                 '',
                 ''
             );
@@ -487,7 +487,7 @@ class ApiController extends YesWikiController
             '',
             ''
         );
-        $sha1 = empty($triple) ? '' : (json_decode($triple,true)['sha1'] ?? '');
+        $sha1 = empty($triple) ? '' : (json_decode($triple, true)['sha1'] ?? '');
         return new ApiResponse(
             ['sha1' => $sha1],
             Response::HTTP_OK
@@ -497,7 +497,7 @@ class ApiController extends YesWikiController
     /**
      * Feature UUID : auj9-editentrypartial-action
      */
-    protected function formatEditEntryPartialValue($id,$fields): string
+    protected function formatEditEntryPartialValue($id, $fields): string
     {
         return json_encode([
             'sha1' => sha1("$id-$fields")
@@ -527,19 +527,19 @@ class ApiController extends YesWikiController
             ? $this->getService(GroupmanagementApiController::class)
             : $this->getService(BazarApiController::class);
         $localCacheParam = $params->get('localCache');
-        if (!empty($_GET) & !empty($localCacheParam['activated']) && in_array($localCacheParam['activated'],[1,'1',true,'true'])){
+        if (!empty($_GET) & !empty($localCacheParam['activated']) && in_array($localCacheParam['activated'], [1,'1',true,'true'])) {
             $cacheService = $this->getService(CacheService::class);
             $fomsIds = [];
-            if (!empty($_GET['idtypeannonce']) && is_array($_GET['idtypeannonce'])){
+            if (!empty($_GET['idtypeannonce']) && is_array($_GET['idtypeannonce'])) {
                 $fomsIds = $_GET['idtypeannonce'];
             }
 
-            list('data'=>$data,'eTag'=>$eTag) = $cacheService->getFromCache(
+            list('data'=>$data, 'eTag'=>$eTag) = $cacheService->getFromCache(
                 'bazarlist',
                 json_encode($_GET),
-                function() use ($bazarApiController){
+                function () use ($bazarApiController) {
                     $response = $bazarApiController->getBazarListData();
-                    return json_decode($response->getContent(),true);
+                    return json_decode($response->getContent(), true);
                 },
                 $fomsIds,
                 false, // $followWakkaConfigTimestamp
@@ -547,7 +547,7 @@ class ApiController extends YesWikiController
                 true // $gzResult
             );
             $headers = [];
-            if (!empty($eTag)){
+            if (!empty($eTag)) {
                 // configured BUT $.getJSON does not sent If-Not-Match header
                 header_remove('Cache-Control');
                 header_remove('Expires');
@@ -577,7 +577,7 @@ class ApiController extends YesWikiController
         $code = Response::HTTP_INTERNAL_SERVER_ERROR;
         try {
             $csrfTokenController = $this->wiki->services->get(CsrfTokenController::class);
-            $csrfTokenController->checkToken('main', 'POST', 'csrfToken',false);
+            $csrfTokenController->checkToken('main', 'POST', 'csrfToken', false);
         } catch (TokenNotFoundException $th) {
             $code = Response::HTTP_UNAUTHORIZED;
             $result = [
@@ -770,11 +770,11 @@ class ApiController extends YesWikiController
      * @Route("/api/subscriptions/{entryId}/toggleregistration/{fieldName}", methods={"POST"}, options={"acl":{"public","+"}})
      * Feature UUID : auj9-subscribe-to-entry
      */
-    public function toggleRegistrationUser($entryId,$fieldName)
+    public function toggleRegistrationUser($entryId, $fieldName)
     {
-        return $this->executeInSecureContext(function ($autoUpdateService) use ($entryId,$fieldName){
+        return $this->executeInSecureContext(function ($autoUpdateService) use ($entryId, $fieldName) {
             return new ApiResponse(
-                $this->wiki->services->get(SubscriptionManager::class)->toggleRegistrationState($entryId,$fieldName),
+                $this->wiki->services->get(SubscriptionManager::class)->toggleRegistrationState($entryId, $fieldName),
                 Response::HTTP_OK
             );
         });

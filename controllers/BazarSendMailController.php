@@ -46,11 +46,11 @@ class BazarSendMailController extends YesWikiController
 
     public function previewEmail()
     {
-        if (!$this->isActivated()){
+        if (!$this->isActivated()) {
             throw new Exception("Send mail is not activated");
         }
         extract($this->getParams());
-        if (empty($contacts) && !$this->wiki->UserIsAdmin()){
+        if (empty($contacts) && !$this->wiki->UserIsAdmin()) {
             $html = _t('AUJ9_SEND_MAIL_TEMPLATE_NOCONTACTS');
             $size = strlen($html);
             return new ApiResponse(['html' => $html,'size'=>$size]);
@@ -77,15 +77,15 @@ class BazarSendMailController extends YesWikiController
             $replyto[] = $senderEmail;
         }
         $hiddenEmails = $receivehiddencopy ? [$senderEmail] : [];
-        if (!$sendtogroup && $groupinhiddencopy){
+        if (!$sendtogroup && $groupinhiddencopy) {
             foreach (array_values($contacts) as $contact) {
-                if (!in_array($contact,$hiddenEmails)){
+                if (!in_array($contact, $hiddenEmails)) {
                     $hiddenEmails[] = $contact;
                 }
             }
             $contacts = [];
         }
-        $hiddenCopy = implode(', ',$hiddenEmails);
+        $hiddenCopy = implode(', ', $hiddenEmails);
 
         $html = "";
         $html .= "<div><strong>"._t('AUJ9_SEND_MAIL_TEMPLATE_SENDERNAME')."</strong> : $senderName</div>";
@@ -102,7 +102,7 @@ class BazarSendMailController extends YesWikiController
 
     public function sendmailApi()
     {
-        if (!$this->isActivated()){
+        if (!$this->isActivated()) {
             throw new Exception("Send mail is not activated");
         }
         $isAdmin = $this->wiki->UserIsAdmin();
@@ -114,7 +114,7 @@ class BazarSendMailController extends YesWikiController
             'callbackIfNotOverridden' => null
         ]);
         $errors = $this->eventDispatcher->yesWikiDispatch('auj9.sendmail.filterentries', compact(['dataContainer']));
-        if (!empty($errors)){
+        if (!empty($errors)) {
             return new ApiResponse(
                 [
                     'error' => true,
@@ -127,7 +127,7 @@ class BazarSendMailController extends YesWikiController
         }
         $data = $dataContainer->getData();
 
-        if (!empty($data['errorMessage'])){
+        if (!empty($data['errorMessage'])) {
             return new ApiResponse(['error' => $data['errorMessage']], Response::HTTP_UNAUTHORIZED);
         }
 
@@ -138,33 +138,34 @@ class BazarSendMailController extends YesWikiController
         $fieldCache = [];
         $emailfieldname = filter_input(INPUT_POST, 'emailfieldname', FILTER_UNSAFE_RAW);
         $emailfieldname = in_array($emailfieldname, [null,false], true) ? "" : htmlspecialchars(strip_tags($emailfieldname));
-        if ($data['canOverrideAdminRestriction']){
+        if ($data['canOverrideAdminRestriction']) {
             $forms = [];
-            foreach($params['contacts'] as $entryId){
+            foreach($params['contacts'] as $entryId) {
                 $entry = $entryManager->getOne($entryId, false, null, true, true);
-                if (!empty($entry['id_typeannonce']) && 
+                if (!empty($entry['id_typeannonce']) &&
                     is_scalar($entry['id_typeannonce']) &&
-                    intval($entry['id_typeannonce']) > 0){
+                    intval($entry['id_typeannonce']) > 0) {
                     $formId = strval($entry['id_typeannonce']);
-                    if (empty($forms[$formId])){
+                    if (empty($forms[$formId])) {
                         $formManager = $this->getService(FormManager::class);
                         $form = $formManager->getOne($formId);
-                        if (!empty($form['prepared'])){
+                        if (!empty($form['prepared'])) {
                             $forms[$formId] = $form;
                         }
                     }
-                    if (!empty($forms[$formId])){
+                    if (!empty($forms[$formId])) {
                         $form = $forms[$formId];
-                        $this->updateContactsFromForm($form,$entry,$contacts,$fieldCache,$emailfieldname,$entryManager);
+                        $this->updateContactsFromForm($form, $entry, $contacts, $fieldCache, $emailfieldname, $entryManager);
                     }
                 }
             }
-        } elseif ($data['callbackIfNotOverridden'] !== null && is_callable($data['callbackIfNotOverridden'])){
+        } elseif ($data['callbackIfNotOverridden'] !== null && is_callable($data['callbackIfNotOverridden'])) {
             $data['callbackIfNotOverridden'](
                 $params['contacts'],
                 function ($entry, $form) use (&$contacts, &$fieldCache, $emailfieldname, $entryManager) {
-                $this->updateContactsFromForm($form,$entry,$contacts,$fieldCache,$emailfieldname,$entryManager);
-            });
+                    $this->updateContactsFromForm($form, $entry, $contacts, $fieldCache, $emailfieldname, $entryManager);
+                }
+            );
         }
         unset($fieldCache);
 
@@ -205,7 +206,7 @@ class BazarSendMailController extends YesWikiController
                 }
             } elseif ($params['groupinhiddencopy']) {
                 foreach ($contacts as $id => $contact) {
-                    if (!in_array($contact,$hiddenCopies)){
+                    if (!in_array($contact, $hiddenCopies)) {
                         $hiddenCopies[] = $contact;
                     }
                 }
@@ -223,7 +224,7 @@ class BazarSendMailController extends YesWikiController
                     $messageTxtReplaced = $this->replaceLinks($messageTxt, false, $id == "sender-email" ? "" : $id, true);
                     if ($this->sendMail($params['senderEmail'], $params['senderName'], [$contact], $repliesTo, $hiddenCopies, $params['subject'], $messageTxtReplaced, $message)) {
                         $doneFor[] = $id;
-                        if (time() - $startTime > 15){
+                        if (time() - $startTime > 15) {
                             break;
                         }
                     } else {
@@ -249,11 +250,11 @@ class BazarSendMailController extends YesWikiController
     }
 
     private function updateContactsFromForm(
-        array $form, 
-        array $entry, 
-        array &$contacts, 
-        array &$fieldCache, 
-        string $emailfieldname, 
+        array $form,
+        array $entry,
+        array &$contacts,
+        array &$fieldCache,
+        string $emailfieldname,
         $entryManager
     ) {
         $field = $this->getEmailField($form, $fieldCache, $emailfieldname);
@@ -338,7 +339,7 @@ class BazarSendMailController extends YesWikiController
 
     public function filterAuthorizedEntries()
     {
-        if (!$this->isActivated()){
+        if (!$this->isActivated()) {
             throw new Exception("Send mail is not activated");
         }
         foreach (['entriesIds','params'] as $key) {
@@ -535,8 +536,8 @@ class BazarSendMailController extends YesWikiController
             [$params->get('base_url')],
             $output
         );
-        if (preg_match_all('/\[([^\]]+)\]\(([^\)]+)\)/',$output,$matches)){
-            foreach($matches[0] as $idx => $match){
+        if (preg_match_all('/\[([^\]]+)\]\(([^\)]+)\)/', $output, $matches)) {
+            foreach($matches[0] as $idx => $match) {
                 $output = str_replace(
                     $match,
                     ($modeTxt)
@@ -571,9 +572,9 @@ class BazarSendMailController extends YesWikiController
                 $output
             );
             $matches = [];
-            if ($isEntry && preg_match_all('/{entry\\[([A-Za-z0-9-_]+)\\]}/',$output,$matches)){
+            if ($isEntry && preg_match_all('/{entry\\[([A-Za-z0-9-_]+)\\]}/', $output, $matches)) {
                 foreach ($matches[0] as $key => $match) {
-                    if (!empty($matches[1][$key])){
+                    if (!empty($matches[1][$key])) {
                         $newValue = $entry[$matches[1][$key]] ?? '';
                         try {
                             $newValue = strval($newValue);

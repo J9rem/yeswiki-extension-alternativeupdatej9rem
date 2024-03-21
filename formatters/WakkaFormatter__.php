@@ -20,14 +20,14 @@ class WakkaFormatter__ extends YesWikiFormatter
         // get services
         $release = $this->params->has('yeswiki_release') ? $this->params->get('yeswiki_release') : '';
         $release = !is_string($release) ? '' : $release;
-        if (!preg_match('/^4\.(?:[0-3]\.[0-9]|4\.[0-2])+$/',$release)){
+        if (!preg_match('/^4\.(?:[0-3]\.[0-9]|4\.[0-2])+$/', $release)) {
             return;
         }
 
         // clean output
         $matches = [];
-        if (preg_match_all("/<a href='([^']+)'([^>]*)>/",$this->output,$matches)){
-            foreach($matches[0] as $idx => $match){
+        if (preg_match_all("/<a href='([^']+)'([^>]*)>/", $this->output, $matches)) {
+            foreach($matches[0] as $idx => $match) {
                 $newEndPart = empty($matches[2][$idx])
                     ? ''
                     :str_replace(

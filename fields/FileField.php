@@ -33,7 +33,7 @@ trait redefineUpdateEntryAfterFileDelete
             $previousRequest = $_REQUEST;
             $_REQUEST = [];
             unset($entryFromDb[$this->propertyName]); // remove current field
-            if (isset($entryFromDb['bf_date_fin_evenement_data']) && is_string($entryFromDb['bf_date_fin_evenement_data'])){
+            if (isset($entryFromDb['bf_date_fin_evenement_data']) && is_string($entryFromDb['bf_date_fin_evenement_data'])) {
                 unset($entryFromDb['bf_date_fin_evenement_data']); // remove links to parent
             }
             $entryFromDb['antispam'] = 1;
@@ -49,7 +49,7 @@ trait redefineUpdateEntryAfterFileDelete
             
             if (!empty($newEntry['id_fiche'])
                 && is_string($newEntry['id_fiche'])
-                && isset($newEntry['bf_date_fin_evenement'])){
+                && isset($newEntry['bf_date_fin_evenement'])) {
                 $this->getService(DateService::class)->followId($newEntry['id_fiche']);
             }
 

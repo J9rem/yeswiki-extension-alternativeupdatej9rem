@@ -30,16 +30,16 @@ class BreadcrumbsAction extends YesWikiAction
     public function formatArguments($arg)
     {
         $separator = (
-                !empty($arg['separator'])
+            !empty($arg['separator'])
                 && is_string($arg['separator'])
-            )
+        )
             ? $arg['separator']
             : 'span.breadcrumbs-item:i.fas.fa-chevron-right::i:span';
         $matches = [];
         $availabletags = '(?:b|span|i)';
-        for ($i=0; $i < 10 && preg_match("/($availabletags)((?:\.[A-Aa-z0-9_\-]+)+):(.*):$availabletags/",$separator,$matches); $i++) { 
-            $classes = array_filter(explode('.',$matches[2]));
-            $classRaw = empty($classes)  ? '' : ' class="'.implode(' ',$classes).'"';
+        for ($i=0; $i < 10 && preg_match("/($availabletags)((?:\.[A-Aa-z0-9_\-]+)+):(.*):$availabletags/", $separator, $matches); $i++) {
+            $classes = array_filter(explode('.', $matches[2]));
+            $classRaw = empty($classes)  ? '' : ' class="'.implode(' ', $classes).'"';
             $separator = str_replace(
                 $matches[0],
                 <<<HTML
@@ -51,15 +51,15 @@ class BreadcrumbsAction extends YesWikiAction
         }
         return [
             'page' => (
-                    !empty($arg['page'])
+                !empty($arg['page'])
                     && is_string($arg['page'])
-                )
+            )
                 ? $arg['page']
                 : 'PageMenuHaut',
             'separator' => $separator,
-            'displaydropdown' => $this->formatBoolean($arg,true,'displaydropdown'),
-            'displaydropdownonlyforlast' => $this->formatBoolean($arg,true,'displaydropdownonlyforlast'),
-            'displaydropdownforchildrenoflastlevel' => $this->formatBoolean($arg,false,'displaydropdownforchildrenoflastlevel'),
+            'displaydropdown' => $this->formatBoolean($arg, true, 'displaydropdown'),
+            'displaydropdownonlyforlast' => $this->formatBoolean($arg, true, 'displaydropdownonlyforlast'),
+            'displaydropdownforchildrenoflastlevel' => $this->formatBoolean($arg, false, 'displaydropdownforchildrenoflastlevel'),
         ];
     }
     public function run()
@@ -69,7 +69,7 @@ class BreadcrumbsAction extends YesWikiAction
         $this->pageManager = $this->getService(PageManager::class);
 
         $page = $this->pageManager->getOne($this->arguments['page']);
-        if (empty($page)){
+        if (empty($page)) {
             return '';
         }
         $formattedPage = $this->wiki->format("{{include page=\"{$this->arguments['page']}\"}}");
@@ -85,9 +85,9 @@ class BreadcrumbsAction extends YesWikiAction
                 'link' => '',
                 'children' => $tree
             ];
-            $currentTag = explode('/',$_GET['wiki'] ?? '',2)[0] ?? $rootTag;
-            $path = $this->getCurrentPath($currentTag,$tree);
-            $output = $this->render('@alternativeupdatej9rem/breadcrumbs-action.twig',[
+            $currentTag = explode('/', $_GET['wiki'] ?? '', 2)[0] ?? $rootTag;
+            $path = $this->getCurrentPath($currentTag, $tree);
+            $output = $this->render('@alternativeupdatej9rem/breadcrumbs-action.twig', [
                 'path' => $path,
                 'separator' => $this->arguments['separator'],
                 'displaydropdown' => $this->arguments['displaydropdown'],
@@ -108,10 +108,10 @@ class BreadcrumbsAction extends YesWikiAction
      * @param array $tree
      * @return array [['text'=> string, 'tag' => string, 'link' => string],...] top parent, then next
      */
-    protected function getCurrentPath(string $currentTag,array $tree): array
+    protected function getCurrentPath(string $currentTag, array $tree): array
     {
         $path = [];
-        if (!$this->getCurrentPathRecursive($currentTag,$tree,$path)){
+        if (!$this->getCurrentPathRecursive($currentTag, $tree, $path)) {
             // default home
             $path[] = $tree;
             $path[] = [
@@ -130,16 +130,16 @@ class BreadcrumbsAction extends YesWikiAction
      * @param array &$path [['text'=> string, 'tag' => string, 'link' => string],...] top parent, then next
      * @return bool $found
      */
-    protected function getCurrentPathRecursive(string $currentTag,array $tree, array &$path): bool
+    protected function getCurrentPathRecursive(string $currentTag, array $tree, array &$path): bool
     {
-        if (strtolower($tree['tag']) === strtolower($currentTag)){
+        if (strtolower($tree['tag']) === strtolower($currentTag)) {
             $path[] = $tree;
             return true;
         }
-        if (!empty($tree['children'])){
+        if (!empty($tree['children'])) {
             foreach ($tree['children'] as $childTree) {
-                if ($this->getCurrentPathRecursive($currentTag,$childTree,$path)){
-                    array_unshift($path,$tree);
+                if ($this->getCurrentPathRecursive($currentTag, $childTree, $path)) {
+                    array_unshift($path, $tree);
                     return true;
                 }
             }

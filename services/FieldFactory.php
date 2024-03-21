@@ -10,7 +10,6 @@ use Exception;
 use YesWiki\Bazar\Service\FieldFactory as BazarFieldFactory;
 use YesWiki\Wiki;
 
-
 /**
  * needed to force rewrite field on bazarfield
  * Feature UUID : auj9-custom-changes

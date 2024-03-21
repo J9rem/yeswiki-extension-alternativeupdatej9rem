@@ -22,9 +22,9 @@ class AdminTagAction__ extends YesWikiAction
 {
     public function run()
     {
-        if (!$this->wiki->UserIsAdmin()){
+        if (!$this->wiki->UserIsAdmin()) {
             $this->output = '';
-            return $this->render('@templates/alert-message.twig',[
+            return $this->render('@templates/alert-message.twig', [
                 'message' => _t('BAZ_NEED_ADMIN_RIGHTS'),
                 'type' => 'danger'
             ]);

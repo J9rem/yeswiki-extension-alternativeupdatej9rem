@@ -21,19 +21,19 @@ class PageManager extends CorePageManager
     public function setMetadata($tag, $metadata)
     {
         $previousMetadata = $this->getMetadata($tag);
-        if (!$this->aclService->hasAccess('read',$tag)
-            || !$this->aclService->hasAccess('write',$tag)
+        if (!$this->aclService->hasAccess('read', $tag)
+            || !$this->aclService->hasAccess('write', $tag)
             || (
                 !empty($_GET['newpage'])
                 && (
                     empty($metadata['forceSave'])
                     || $metadata['forceSave'] !== true
                 )
-            )){
+            )) {
             return 0;
         }
 
-        if(isset($metadata['forceSave'])){
+        if(isset($metadata['forceSave'])) {
             unset($metadata['forceSave']);
         }
 
@@ -50,7 +50,7 @@ class PageManager extends CorePageManager
         SQL);
     }
 
-        /**
+    /**
      * SavePage
      * Sauvegarde un contenu dans une page donnee
      *
@@ -68,7 +68,7 @@ class PageManager extends CorePageManager
     {
         // is page new?
         $oldPage = $this->getOne($tag);
-        if (parent::save($tag, $body, $comment_on , $bypass_acls ) === 0){
+        if (parent::save($tag, $body, $comment_on, $bypass_acls) === 0) {
             $previousMetadata = $this->getMetadata($tag);
             if (!$this->wiki->services->get(EntryManager::class)->isEntry($tag)
                 && !empty($_POST["newpage"])
@@ -76,12 +76,12 @@ class PageManager extends CorePageManager
                 && (
                     (!empty($_GET['wiki']) && $_GET['wiki'] === $tag)
                     ||
-                    explode('/',array_key_first($_GET),2)[0] === $tag
+                    explode('/', array_key_first($_GET), 2)[0] === $tag
                 )
                 && $this->wiki->tag === $tag // be sure to be on right tag
                 && isset($_POST['theme'])
                 && empty($previousMetadata) // only of no previous metadata
-                ){
+            ) {
                 // imported from __edit
                 $metadata = [
                     'theme' => $_POST["theme"],
@@ -94,7 +94,7 @@ class PageManager extends CorePageManager
                         $metadata[$metadataName] = $_POST[$metadataName];
                     }
                 }
-                $this->setMetadata($tag, array_merge($metadata,['forceSave'=>true]));
+                $this->setMetadata($tag, array_merge($metadata, ['forceSave'=>true]));
             }
             return 0;
         }

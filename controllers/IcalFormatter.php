@@ -163,18 +163,18 @@ class IcalFormatter extends YesWikiController
     {
         if (!empty($entry['bf_date_debut_evenement']) && !empty($entry['bf_date_fin_evenement'])) {
             $startDate = $this->dateService->getDateTimeWithRightTimeZone($entry['bf_date_debut_evenement']);
-            if (is_null($startDate)){
+            if (is_null($startDate)) {
                 return [];
             }
             $endDate = $this->dateService->getDateTimeWithRightTimeZone($entry['bf_date_fin_evenement']);
-            if (is_null($endDate)){
+            if (is_null($endDate)) {
                 return [];
             }
             // 24 h for end date if all day
             if ($this->isAllDay(strval($entry['bf_date_fin_evenement']))) {
                 $endDate = $endDate->add(new DateInterval('P1D'));
             }
-            if ($startDate->diff($endDate)->invert > 0){
+            if ($startDate->diff($endDate)->invert > 0) {
                 // end date before start date not possible in ical : use start time + 1 hour
                 $endDate = $startDate->add(new DateInterval('PT1H'));
             }
@@ -193,7 +193,7 @@ class IcalFormatter extends YesWikiController
      */
     protected function isAllDay(string $date): bool
     {
-        return preg_match('/^[1-2][0-9]{3}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2][0-9]|3[0-1])$/',$date);
+        return preg_match('/^[1-2][0-9]{3}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2][0-9]|3[0-1])$/', $date);
     }
 
     /**
@@ -252,7 +252,7 @@ class IcalFormatter extends YesWikiController
         $location .= (!empty($entry['bf_ville'])) ? $entry['bf_ville'] .' ' : '';
         $location = trim($location);
         if (!empty($location)) {
-            $output .=$this->splitAtnthChar(self::MAX_CHARS_BY_LINE, "LOCATION:".str_replace(["\r","\n"],' ',$location)."\r\n");
+            $output .=$this->splitAtnthChar(self::MAX_CHARS_BY_LINE, "LOCATION:".str_replace(["\r","\n"], ' ', $location)."\r\n");
         }
         $geo = $this->geoJSONFormatter->getGeoData($entry, $cache);
         if (!empty($geo)) {

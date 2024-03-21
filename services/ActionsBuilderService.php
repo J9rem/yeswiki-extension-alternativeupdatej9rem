@@ -59,7 +59,7 @@ trait ActionsBuilderServiceCommon
             
             /* === Feature UUID : auj9-video-field === */
             if (isset($this->data['action_groups']['video']['actions']['video']['properties'])) {
-                $this->data['action_groups']['video']['actions']['video']['properties'] = 
+                $this->data['action_groups']['video']['actions']['video']['properties'] =
                     array_merge(
                         [
                             'url' => [
@@ -70,16 +70,16 @@ trait ActionsBuilderServiceCommon
                         ],
                         $this->data['action_groups']['video']['actions']['video']['properties']
                     );
-                    $this->data['action_groups']['video']['actions']['video']['properties']['id']['required'] = false;
-                    $this->data['action_groups']['video']['actions']['video']['properties']['serveur']['advanced'] = true;
-                    $this->data['action_groups']['video']['actions']['video']['properties']['id']['advanced'] = true;
-                    unset($this->data['action_groups']['video']['actions']['video']['properties']['id']['value']);
+                $this->data['action_groups']['video']['actions']['video']['properties']['id']['required'] = false;
+                $this->data['action_groups']['video']['actions']['video']['properties']['serveur']['advanced'] = true;
+                $this->data['action_groups']['video']['actions']['video']['properties']['id']['advanced'] = true;
+                unset($this->data['action_groups']['video']['actions']['video']['properties']['id']['value']);
             }
             /* === end of Feature UUID : auj9-video-field === */
             
             /* === Feature UUID : auj9-bazar-list-video-dynamic === */
             if (isset($this->data['action_groups']['bazarliste']['actions'])) {
-                if (!isset($this->data['action_groups']['bazarliste']['actions']['bazarvideo'])){
+                if (!isset($this->data['action_groups']['bazarliste']['actions']['bazarvideo'])) {
                     $this->data['action_groups']['bazarliste']['actions']['bazarvideo'] = [];
                 }
                 $props = [
@@ -87,8 +87,8 @@ trait ActionsBuilderServiceCommon
                         'value' => 'video'
                     ]
                 ];
-                foreach(($this->data['action_groups']['bazarliste']['actions']['bazarcard']['properties'] ?? []) as $propName => $propDef){
-                    if($propName == 'displayfields'){
+                foreach(($this->data['action_groups']['bazarliste']['actions']['bazarcard']['properties'] ?? []) as $propName => $propDef) {
+                    if($propName == 'displayfields') {
                         $props[$propName] = [
                             'type' => 'correspondance',
                             'subproperties' => [
@@ -105,11 +105,11 @@ trait ActionsBuilderServiceCommon
                                 'floating' => $propDef['subproperties']['floating'] ?? [],
                             ]
                         ];
-                    } elseif ($propName !== 'template'){
+                    } elseif ($propName !== 'template') {
                         $props[$propName] = $propDef;
                     }
                 }
-                $this->data['action_groups']['bazarliste']['actions']['bazarvideo'] = 
+                $this->data['action_groups']['bazarliste']['actions']['bazarvideo'] =
                     array_merge(
                         $this->data['action_groups']['bazarliste']['actions']['bazarvideo'],
                         [
@@ -122,9 +122,9 @@ trait ActionsBuilderServiceCommon
             /* === end of Feature UUID : auj9-bazar-list-video-dynamic === */
             
             /* === Feature UUID : auj9-bazar-list-send-mail-dynamic === */
-            if ($this->params->has('sendMail')){
+            if ($this->params->has('sendMail')) {
                 $sendMailParam = $this->params->get('sendMail');
-                if (!empty($sendMailParam['activated']) && $sendMailParam['activated'] === true){
+                if (!empty($sendMailParam['activated']) && $sendMailParam['activated'] === true) {
                     if (isset($this->data['action_groups']['bazarliste']['actions'])
                         && !isset($this->data['action_groups']['bazarliste']['actions']['bazarsendmail'])) {
                         $this->data['action_groups']['bazarliste']['actions']['bazarsendmail'] = [
@@ -182,7 +182,7 @@ trait ActionsBuilderServiceCommon
                         && !in_array('bazarsendmail', $this->data['action_groups']['bazarliste']['actions']['commons']['properties']['showexportbuttons']['showExceptFor'])) {
                         $this->data['action_groups']['bazarliste']['actions']['commons']['properties']['showexportbuttons']['showExceptFor'][] =  'bazarsendmail';
                     }
-                    $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/actions-builder-post-update.js',true);
+                    $this->wiki->AddJavascriptFile('tools/alternativeupdatej9rem/javascripts/actions-builder-post-update.js', true);
                 }
             }
             /* === end of Feature UUID : auj9-bazar-list-send-mail-dynamic === */

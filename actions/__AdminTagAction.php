@@ -22,10 +22,10 @@ class __AdminTagAction extends YesWikiAction
 {
     public function run()
     {
-        if (!$this->wiki->UserIsAdmin()){
+        if (!$this->wiki->UserIsAdmin()) {
             $acl = $this->wiki->GetModuleACL('admintag', 'action');
-            if (empty($acl) || in_array($acl,['*','+'],true)){
-                $this->wiki->SetModuleACL('admintag','action','@admins');
+            if (empty($acl) || in_array($acl, ['*','+'], true)) {
+                $this->wiki->SetModuleACL('admintag', 'action', '@admins');
             }
         }
     }

@@ -14,7 +14,7 @@ namespace YesWiki\Alternativeupdatej9rem;
 
 use YesWiki\Alternativeupdatej9rem\DuplicateHandler;
 
-if (!class_exists(DuplicateHandler::class)){
+if (!class_exists(DuplicateHandler::class)) {
     include_once 'tools/alternativeupdatej9rem/handlers/DuplicateHandler.php';
 }
 

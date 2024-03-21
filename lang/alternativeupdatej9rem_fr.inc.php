@@ -147,13 +147,13 @@ return [
   'EDIT_CONFIG_HINT_CLEANUNUSEDMETADATA' => 'Nettoyer les metadonnées non utilisées (true/false)',
   // Feature UUID : auj9-bazar-list-send-mail-dynamic
   'EDIT_CONFIG_HINT_DEFAULT-SENDER-EMAIL' => 'E-mail par défaut pour le template "send-mail.twig"',
-  // Feature UUID : auj9-feat-user-controller-delete-own-pages 
+  // Feature UUID : auj9-feat-user-controller-delete-own-pages
   'EDIT_CONFIG_HINT_DELETEPAGESANDENTRIESWITHUSER' => 'En supprimant un utilisateur, supprimer aussi les pages et fiches liées ? (true/false)',
-  // Feature UUID : auj9-bazarlist-filter-order 
+  // Feature UUID : auj9-bazarlist-filter-order
   'EDIT_CONFIG_HINT_SORTLISTASDEFINEDINFILTERS' => 'Garder l\'ordre des listes dans les filtres bazar',
-  // Feature UUID : auj9-recurrent-events 
+  // Feature UUID : auj9-recurrent-events
   'EDIT_CONFIG_HINT_EVENTREPETITIONTRIGGERERRORSFORADMINS' => 'Déclencher les erreurs PHP sur les évènements récurrents pour les admins uniquement (true/false)',
-  // Feature UUID : auj9-can-force-entry-save-for-specific-group 
+  // Feature UUID : auj9-can-force-entry-save-for-specific-group
   'EDIT_CONFIG_HINT_AUTHORIZEDGROUPTOFORCEENTRYSAVING' => 'Groupe pouvant forcer la sauvegarde d\'une fiche bazar (syntaxe nomDuGroupe sans le @), un seul nom de groupe possible',
 
   // docs/actions/bazarliste.yaml via templates/aceditor/actions-builder.tpl.html

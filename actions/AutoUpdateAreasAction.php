@@ -42,7 +42,7 @@ class AutoUpdateAreasAction extends YesWikiAction
     public function formatArguments($arg)
     {
         return [
-            'type' => (!empty($arg['type']) && in_array($arg['type'],["departments","areas","form"]))
+            'type' => (!empty($arg['type']) && in_array($arg['type'], ["departments","areas","form"]))
                 ? $arg['type']
                 : ""
         ];
@@ -58,13 +58,13 @@ class AutoUpdateAreasAction extends YesWikiAction
         $this->listManager = $this->getService(ListManager::class);
         $this->securityController = $this->getService(SecurityController::class);
 
-        if (!$this->wiki->UserIsAdmin()){
-            return $this->render("@templates/alert-message.twig",[
+        if (!$this->wiki->UserIsAdmin()) {
+            return $this->render("@templates/alert-message.twig", [
                 'type' => 'danger',
                 'message' => _t('AUJ9_AUTOUPDATE_AREAS_RESERVED_TO_ADMIN')
             ]);
         } elseif ($this->securityController->isWikiHibernated()) {
-            return $this->render("@templates/alert-message.twig",[
+            return $this->render("@templates/alert-message.twig", [
                 'type' => 'danger',
                 'message' => _t('WIKI_IN_HIBERNATION')
             ]);
@@ -81,7 +81,7 @@ class AutoUpdateAreasAction extends YesWikiAction
                 break;
             
             default:
-                return $this->render("@templates/alert-message.twig",[
+                return $this->render("@templates/alert-message.twig", [
                     'type' => 'warning',
                     'message' => 'Parameter `type` should be defined for action `{{autoupdateareas}}`!'
                 ]);
@@ -89,20 +89,20 @@ class AutoUpdateAreasAction extends YesWikiAction
         
         // add List if not existing
         if (!empty($_GET[self::GET_KEY]) &&
-            is_string($_GET[self::GET_KEY])){
-            return $this->render("@templates/alert-message.twig",$this->addListIfNotExisting($_GET[self::GET_KEY]));
+            is_string($_GET[self::GET_KEY])) {
+            return $this->render("@templates/alert-message.twig", $this->addListIfNotExisting($_GET[self::GET_KEY]));
         }
 
-        $text = _t('AUJ9_AUTOUPDATE_AREAS_TEXT',[
+        $text = _t('AUJ9_AUTOUPDATE_AREAS_TEXT', [
             'listName' => $listName
         ]);
-        $token = $this->csrfTokenManager->getToken(str_replace('{type}',$this->arguments['type'],self::ANTI_CSRF_TOKEN))->getValue();
-        return $this->callAction('button',[
-            'link' => $this->wiki->Href('render',null,[
+        $token = $this->csrfTokenManager->getToken(str_replace('{type}', $this->arguments['type'], self::ANTI_CSRF_TOKEN))->getValue();
+        return $this->callAction('button', [
+            'link' => $this->wiki->Href('render', null, [
                 'content' => "{{autoupdateareas type=\"{$this->arguments['type']}\"}}",
                 self::GET_KEY => $this->arguments['type'],
                 self::ANTI_CSRF_TOKEN_KEY => $token
-            ],false),
+            ], false),
             'text' => $text,
             'title' => $text,
             'class' => 'btn-secondary-2 new-window'
@@ -113,7 +113,7 @@ class AutoUpdateAreasAction extends YesWikiAction
     {
         $output = '<b>Mise à jour automatique d\'une liste ou d\'un formulaire</b></br>';
         try {
-            $this->csrfTokenController->checkToken(str_replace('{type}',$appendCustomSendMailObject,self::ANTI_CSRF_TOKEN), 'GET', self::ANTI_CSRF_TOKEN_KEY);
+            $this->csrfTokenController->checkToken(str_replace('{type}', $appendCustomSendMailObject, self::ANTI_CSRF_TOKEN), 'GET', self::ANTI_CSRF_TOKEN_KEY);
         } catch (TokenNotFoundException $th) {
             return [
                 'type' => 'danger',
@@ -442,7 +442,7 @@ class AutoUpdateAreasAction extends YesWikiAction
         )
             ? strval($formId)
             : "";
-    }   
+    }
     private function saveFormIdInConfig($formId)
     {
         // default acls in wakka.config.php

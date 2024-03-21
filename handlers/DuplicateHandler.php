@@ -45,8 +45,8 @@ class DuplicateHandler extends YesWikiHandler
         $this->performer = $this->getService(Performer::class);
 
         // check current user can read
-        if (!$this->aclService->hasAccess('read')){
-            return $this->finalRender($this->render('@templates/alert-message.twig',[
+        if (!$this->aclService->hasAccess('read')) {
+            return $this->finalRender($this->render('@templates/alert-message.twig', [
                 'type' => 'danger',
                 'message' => _t('TEMPLATE_NO_ACCESS_TO_PAGE')
             ]));
@@ -56,24 +56,24 @@ class DuplicateHandler extends YesWikiHandler
         $isEntry = $this->entryManager->isEntry($tag);
 
         $canDuplicateEntryIfNotRightToWrite = $this->params->has('canDuplicateEntryIfNotRightToWrite')
-            ? $this->formatBoolean($this->params->get('canDuplicateEntryIfNotRightToWrite'),false)
+            ? $this->formatBoolean($this->params->get('canDuplicateEntryIfNotRightToWrite'), false)
             : false;
 
         // check current user can write for new entry/page
-        if (!$this->aclService->hasAccess('write','--unknown-tag--') && (!$isEntry || !$canDuplicateEntryIfNotRightToWrite)){
-            return $this->finalRender($this->render('@templates/alert-message.twig',[
+        if (!$this->aclService->hasAccess('write', '--unknown-tag--') && (!$isEntry || !$canDuplicateEntryIfNotRightToWrite)) {
+            return $this->finalRender($this->render('@templates/alert-message.twig', [
                 'type' => 'danger',
                 'message' => _t('EDIT_NO_WRITE_ACCESS')
             ]));
         }
 
-        if (!empty($page)){
+        if (!empty($page)) {
             return $isEntry
                 ? $this->duplicateEntry($tag)
                 : $this->duplicatePage($tag);
         }
         $this->wiki->method = $this->isInIframe() ?  'editiframe' : 'edit';
-        return $this->performer->run($this->wiki->method,'handler',[]);
+        return $this->performer->run($this->wiki->method, 'handler', []);
     }
 
     protected function finalRender(string $content, bool $includePage = false): string
@@ -92,24 +92,24 @@ class DuplicateHandler extends YesWikiHandler
     {
         $entry = $this->entryManager->getOne($tag); // with current rights
         $form = $this->formManager->getOne($entry['id_typeannonce']);
-        if (empty($form['prepared'])){
+        if (empty($form['prepared'])) {
             throw new Exception("Impossible to duplicate because form is not existing !");
         }
-        if (!empty($_GET['created']) && $_GET['created'] === '1'){
+        if (!empty($_GET['created']) && $_GET['created'] === '1') {
             $followedEntryIds = [];
-            if ($this->duplicationFollower->isFollowed($tag, $followedEntryIds)){
+            if ($this->duplicationFollower->isFollowed($tag, $followedEntryIds)) {
                 $firstId = array_shift($followedEntryIds);
-                if (count($followedEntryIds) > 0){
-                    flash(_t('AUJ9_OTHER_ENTRIES_CREATED',[
-                        'links'=> implode(',',array_map(
+                if (count($followedEntryIds) > 0) {
+                    flash(_t('AUJ9_OTHER_ENTRIES_CREATED', [
+                        'links'=> implode(',', array_map(
                             function ($id) {
                                 return <<<HTML
-                                    <a class="new-tab" href="{$this->wiki->Href('',$id)}">$id</a>
+                                    <a class="new-tab" href="{$this->wiki->Href('', $id)}">$id</a>
                                     HTML;
                             },
                             $followedEntryIds
                         ))
-                    ]),'success');
+                    ]), 'success');
                 }
                 $this->wiki->Redirect($this->wiki->Href(
                     $this->isInIframe() ? 'iframe' : '', // handler
@@ -122,32 +122,34 @@ class DuplicateHandler extends YesWikiHandler
                 throw new Exception("Error Processing Request");
             } else {
                 return $this->finalRender(
-                    $this->render('@templates/alert-message.twig',[
+                    $this->render('@templates/alert-message.twig', [
                         'type' => 'info',
                         'message' => _t('AUJ9_DUPLICATION_TROUBLE')
                     ]).
-                    $this->entryController->view($tag),true);
+                    $this->entryController->view($tag),
+                    true
+                );
             }
         }
-        if (!isset($_POST['bf_titre'])){
+        if (!isset($_POST['bf_titre'])) {
             foreach ($form['prepared'] as $field) {
-                if ($field instanceof BazarField){
+                if ($field instanceof BazarField) {
                     $propName = $field->getPropertyName();
-                    if (!empty($propName) && isset($entry[$propName])){
+                    if (!empty($propName) && isset($entry[$propName])) {
                         $_POST[$propName] = $entry[$propName];
                         $_REQUEST[$propName] = $entry[$propName];
                     }
                 }
             }
             // clean inputs
-            if (isset($_POST['bf_titre'])){
+            if (isset($_POST['bf_titre'])) {
                 unset($_POST['bf_titre']);
             }
             $redirectUrl = $this->wiki->Href(
                 $this->isInIframe() ? 'iframe' : '', // handler
                 $tag
             );
-            return $this->finalRender($this->entryController->create($form['bn_id_nature'], $redirectUrl),true);
+            return $this->finalRender($this->entryController->create($form['bn_id_nature'], $redirectUrl), true);
         }
         $redirectUrl = $this->wiki->Href(
             $this->isInIframe() ? 'duplicateiframe' : 'duplicate', // handler
@@ -156,20 +158,20 @@ class DuplicateHandler extends YesWikiHandler
             false // html outputs ?
         );
         
-        return $this->finalRender($this->entryController->create($form['bn_id_nature'], $redirectUrl),true);
+        return $this->finalRender($this->entryController->create($form['bn_id_nature'], $redirectUrl), true);
     }
 
     protected function duplicatePage(string $tag): string
     {
         $message = '';
         $type = '';
-        if (isset($_POST['newName'])){
-            if(empty($_POST['newName']) || !is_string($_POST['newName'])){
+        if (isset($_POST['newName'])) {
+            if(empty($_POST['newName']) || !is_string($_POST['newName'])) {
                 $type = 'warning';
                 $message = _t('AUJ9_DUPLICATION_NOT_POSSIBLE_IF_NO_NAME');
             } else {
                 $page = $this->pageManager->getOne($_POST['newName']);
-                if (!empty($page)){
+                if (!empty($page)) {
                     $type = 'danger';
                     $message = _t('AUJ9_DUPLICATION_NOT_POSSIBLE_IF_EXISTING');
                 } else {
@@ -178,15 +180,15 @@ class DuplicateHandler extends YesWikiHandler
                     $this->wiki->tag = $_POST['newName'];
                     unset($_POST['submit']);
                     $this->wiki->method = $this->isInIframe() ? 'editiframe' : 'edit';
-                    flash(_t('AUJ9_DUPLICATION_IN_COURSE',[
+                    flash(_t('AUJ9_DUPLICATION_IN_COURSE', [
                         'originTag' => $tag,
                         'destinationTag' => $_POST['newName'],
-                    ]),'info');
-                    return $this->performer->run($this->wiki->method,'handler',[]);
+                    ]), 'info');
+                    return $this->performer->run($this->wiki->method, 'handler', []);
                 }
             }
         }
-        return $this->finalRender($this->render('@alternativeupdatej9rem/duplicate-handler-ask-new-name.twig',[
+        return $this->finalRender($this->render('@alternativeupdatej9rem/duplicate-handler-ask-new-name.twig', [
             'type' => $type,
             'message' => $message,
             'isInIframe' => $this->isInIframe()

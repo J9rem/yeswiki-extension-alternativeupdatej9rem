@@ -31,22 +31,22 @@ class __VideoAction extends YesWikiAction
                 .'|vimeo\.com\/(.+)' // vimeo
                 .'|(?:dai\.?ly.*\/video\/|dai\.ly\/)(.+)' // dailymotion
                 .'|(?:\/videos\/embed\/|\/w\/)(.+)' // peertube
-            .')/',$url,$matches)){
-            if (!empty($matches[2])){
+            .')/', $url, $matches)) {
+            if (!empty($matches[2])) {
                 $serveur  = 'youtube';
                 $id = $matches[2];
-            } elseif (!empty($matches[3])){
+            } elseif (!empty($matches[3])) {
                 $serveur  = 'youtube';
                 $id = $matches[3];
-            } elseif (!empty($matches[4])){
+            } elseif (!empty($matches[4])) {
                 $serveur  = 'vimeo';
                 $id = $matches[4];
-            } elseif (!empty($matches[5])){
+            } elseif (!empty($matches[5])) {
                 // $serveur  = 'dailymotion';
                 $serveur  = 'peertube';
                 $id = $matches[5];
                 $peertubeinstance = 'dailymotion'; // fake
-            } elseif (!empty($matches[6])){
+            } elseif (!empty($matches[6])) {
                 $serveur  = 'peertube';
                 $id = $matches[6];
                 $peertubeinstance = $matches[1].'/';

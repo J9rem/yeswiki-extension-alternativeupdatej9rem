@@ -74,7 +74,7 @@ class AlternativeUpdateJ9rem2Action extends YesWikiAction
             'localThemes' => [],
             'showThemes' => true,
             'showTools' => true,
-            'uid' => str_replace([".","/","-","\\"],'',uniqid('alternativeupdate_', true)),
+            'uid' => str_replace([".","/","-","\\"], '', uniqid('alternativeupdate_', true)),
             'versions' => implode(',', $this->arguments['versions'])
         ]);
     }

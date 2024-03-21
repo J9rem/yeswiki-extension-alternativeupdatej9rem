@@ -39,8 +39,8 @@ class DuplicationFollower implements EventSubscriberInterface
     public function followEntryCreation($event)
     {
         $entry = $this->getEntry($event);
-        if ($this->shouldFollowEntry($entry)){
-            $this->registerFollowInSession($this->wiki->tag,$entry['id_fiche']);
+        if ($this->shouldFollowEntry($entry)) {
+            $this->registerFollowInSession($this->wiki->tag, $entry['id_fiche']);
         }
     }
 
@@ -65,8 +65,11 @@ class DuplicationFollower implements EventSubscriberInterface
             !empty($entry['id_fiche'])
             && !empty($this->wiki->tag)
             && !empty($this->wiki->method))
-            && in_array($this->wiki->method,['duplicate','duplicateiframe'],true
-        );
+            && in_array(
+                $this->wiki->method,
+                ['duplicate','duplicateiframe'],
+                true
+            );
     }
 
     /**
@@ -76,13 +79,13 @@ class DuplicationFollower implements EventSubscriberInterface
      */
     public function registerFollowInSession(string $copiedEntryId, string $createdEntryId)
     {
-        if (empty($_SESSION['duplicateIds'])){
+        if (empty($_SESSION['duplicateIds'])) {
             $_SESSION['duplicateIds'] = [];
         }
-        if (!array_key_exists($copiedEntryId,$_SESSION['duplicateIds'])){
+        if (!array_key_exists($copiedEntryId, $_SESSION['duplicateIds'])) {
             $_SESSION['duplicateIds'][$copiedEntryId] = [];
         }
-        if (!in_array($createdEntryId,$_SESSION['duplicateIds'][$copiedEntryId])){
+        if (!in_array($createdEntryId, $_SESSION['duplicateIds'][$copiedEntryId])) {
             $_SESSION['duplicateIds'][$copiedEntryId][] = $createdEntryId;
         }
     }
@@ -96,11 +99,11 @@ class DuplicationFollower implements EventSubscriberInterface
     public function isFollowed(string $entryId, array &$followedEntryIds): bool
     {
         $isFollowed = !empty($_SESSION['duplicateIds'][$entryId]);
-        if ($isFollowed){
+        if ($isFollowed) {
             $followedEntryIds = $_SESSION['duplicateIds'][$entryId];
             unset($_SESSION['duplicateIds'][$entryId]);
         }
-        if (isset($_SESSION['duplicateIds']) && empty($_SESSION['duplicateIds'])){
+        if (isset($_SESSION['duplicateIds']) && empty($_SESSION['duplicateIds'])) {
             unset($_SESSION['duplicateIds']);
         }
         return $isFollowed;

@@ -56,7 +56,7 @@ class SubscribeField extends CheckboxEntryField
             || !is_string($values[self::FIELD_CAN_EDIT_LIST]))
             ? ''
             : trim($values[self::FIELD_CAN_EDIT_LIST]);
-        if($this->canEditList){
+        if($this->canEditList) {
             $this->canEditList = '%'; // default owner and admins
         }
         $this->maxChars = '';
@@ -73,7 +73,7 @@ class SubscribeField extends CheckboxEntryField
     {
         // load options only when needed but not at construct to prevent infinite loops
         if (is_null($this->options)) {
-            if ($this->isUserType){
+            if ($this->isUserType) {
                 $this->options = $this->getOptionsFromUsers();
             } else {
                 $this->options = parent::getOptions();
@@ -86,7 +86,7 @@ class SubscribeField extends CheckboxEntryField
     {
         // load options only when needed but not at construct to prevent infinite loops
         if (is_null($this->optionsNotSecured)) {
-            if ($this->isUserType){
+            if ($this->isUserType) {
                 $this->optionsNotSecured = $this->getOptionsFromUsers(true);
             } else {
                 $this->optionsNotSecured = $this->getAllOptionsFromEntries();
@@ -140,17 +140,17 @@ class SubscribeField extends CheckboxEntryField
      */
     protected function getOptionsFromUsers(bool $forceExtraction = false)
     {
-        if ($forceExtraction || $this->wiki->UserIsAdmin()){
+        if ($forceExtraction || $this->wiki->UserIsAdmin()) {
             $names = array_values(array_map(
-                function($user){
+                function ($user) {
                     return $user['name'] ?? '';
                 },
                 $this->getService(UserManager::class)->getAll()
             ));
-            $names = array_filter($names,function ($name) {
+            $names = array_filter($names, function ($name) {
                 return !empty($name);
             });
-            return array_combine($names,$names);
+            return array_combine($names, $names);
         }
         return [];
     }
@@ -158,20 +158,20 @@ class SubscribeField extends CheckboxEntryField
     protected function renderStatic($entry)
     {
         $subscriptionManager = $this->getService(SubscriptionManager::class);
-        if (!$this->isUserType){
-            if (!$subscriptionManager->checkIfFormIsOnlyOneEntry($this->getLinkedObjectName())){
+        if (!$this->isUserType) {
+            if (!$subscriptionManager->checkIfFormIsOnlyOneEntry($this->getLinkedObjectName())) {
                 return $this->showErroMessageForForm();
             }
             if (empty($this->pageToCreateEntry)
-                || empty($this->getService(PageManager::class)->getOne($this->pageToCreateEntry))){
+                || empty($this->getService(PageManager::class)->getOne($this->pageToCreateEntry))) {
                 return $this->showErroMessageForMissingEntryCreationPage();
             }
         }
-        if (!$this->isUserType){
-            $entry = $subscriptionManager->updateEntryWithLinkedValues($entry,$this);
+        if (!$this->isUserType) {
+            $entry = $subscriptionManager->updateEntryWithLinkedValues($entry, $this);
         }
         $output= '';
-        if ($this->showList){
+        if ($this->showList) {
             $savedOptions = $this->options;
             $this->options = $this->getFullOptionsNotSecured();
             $output = parent::renderStatic($entry);
@@ -181,12 +181,12 @@ class SubscribeField extends CheckboxEntryField
         $output .= $this->render(
             '@alternativeupdatej9rem/button-for-subcription.twig',
             [
-                'isRegistered' => $subscriptionManager->isRegistered($this,$entry),
+                'isRegistered' => $subscriptionManager->isRegistered($this, $entry),
                 'canRegister' => $this->isUserType ? true : $subscriptionManager->canRegister($this),
                 'entryId' => $entry['id_fiche'] ?? '',
                 'propertyName' => $this->getPropertyName(),
-                'noPlace' => !$subscriptionManager->isThereAvailablePlace($entry,$this),
-                'canEditEntry' => empty($entry['id_fiche']) || $this->getService(AclService::class)->hasAccess('write',$entry['id_fiche'])
+                'noPlace' => !$subscriptionManager->isThereAvailablePlace($entry, $this),
+                'canEditEntry' => empty($entry['id_fiche']) || $this->getService(AclService::class)->hasAccess('write', $entry['id_fiche'])
             ]
         );
         return $output;
@@ -199,9 +199,9 @@ class SubscribeField extends CheckboxEntryField
      */
     protected function formatOutput(string $outputToFormat): string
     {
-        $anchor = preg_quote('<span class="BAZ_texte">','/');
-        $anchorUl = preg_quote('<ul>','/');
-        $randomStr = rand(1000,100000).'-'.(new DateTimeImmutable())->getTimestamp();
+        $anchor = preg_quote('<span class="BAZ_texte">', '/');
+        $anchorUl = preg_quote('<ul>', '/');
+        $randomStr = rand(1000, 100000).'-'.(new DateTimeImmutable())->getTimestamp();
         $seeListTxt = _t('AUJ9_SUBSCRIBE_SEE_LIST');
         $hideListTxt = _t('AUJ9_SUBSCRIBE_HIDE_LIST');
         $this->getService(AssetsManager::class)->AddCSSFile('tools/alternativeupdatej9rem/styles/subscribe-field.css');
@@ -220,7 +220,7 @@ class SubscribeField extends CheckboxEntryField
         </div>
         <ul id="$randomStr" class="collapse">
         HTML;
-        return preg_replace("/($anchor)(\s*)($anchorUl)/","$1$2$newUl",$outputToFormat);
+        return preg_replace("/($anchor)(\s*)($anchorUl)/", "$1$2$newUl", $outputToFormat);
     }
 
     protected function renderInput($entry)
@@ -230,8 +230,9 @@ class SubscribeField extends CheckboxEntryField
                 $this->canEditList,
                 null,
                 true,
-                $entry['id_fiche'] ?? '')
-            ){
+                $entry['id_fiche'] ?? ''
+            )
+        ) {
             return '';
         }
         $askForLimit = $this->render(
@@ -248,7 +249,7 @@ class SubscribeField extends CheckboxEntryField
                 'value' => intval($entry[$this->getPropertyName().'_data']['max'] ?? -1)
             ]
         );
-        if ($this->isUserType){
+        if ($this->isUserType) {
             $savedOptions = $this->options;
             $keys = $this->getValues($entry);
             $availablesOptions = $this->getFullOptionsNotSecured();
@@ -256,8 +257,8 @@ class SubscribeField extends CheckboxEntryField
                 ? $availablesOptions
                 : array_filter(
                     $availablesOptions,
-                    function($key) use($keys){
-                        return in_array($key,$keys);
+                    function ($key) use ($keys) {
+                        return in_array($key, $keys);
                     }
                 );
             $output = parent::renderInput($entry);
@@ -266,20 +267,20 @@ class SubscribeField extends CheckboxEntryField
         }
         
         $subscriptionManager = $this->getService(SubscriptionManager::class);
-        if (!$subscriptionManager->checkIfFormIsOnlyOneEntry($this->getLinkedObjectName())){
+        if (!$subscriptionManager->checkIfFormIsOnlyOneEntry($this->getLinkedObjectName())) {
             return $this->showErroMessageForForm();
         }
         if (empty($this->pageToCreateEntry)
-            || empty($this->getService(PageManager::class)->getOne($this->pageToCreateEntry))){
+            || empty($this->getService(PageManager::class)->getOne($this->pageToCreateEntry))) {
             return $this->showErroMessageForMissingEntryCreationPage();
         }
-        $entry = $subscriptionManager->updateEntryWithLinkedValues($entry,$this);
+        $entry = $subscriptionManager->updateEntryWithLinkedValues($entry, $this);
         return $askForLimit.parent::renderInput($entry);
     }
 
     protected function showErroMessageForForm():string
     {
-        return $this->render('@templates/alert-message.twig',[
+        return $this->render('@templates/alert-message.twig', [
             'type' => 'danger',
             'message' => _t('AUJ9_SUBSCRIBE_BAD_CONFIG_FORM')
         ]);
@@ -287,7 +288,7 @@ class SubscribeField extends CheckboxEntryField
 
     protected function showErroMessageForMissingEntryCreationPage():string
     {
-        return $this->render('@templates/alert-message.twig',[
+        return $this->render('@templates/alert-message.twig', [
             'type' => 'danger',
             'message' => _t('AUJ9_SUBSCRIBE_BAD_CONFIG_ENTRY_CREATION_PAGE')
         ]);
@@ -296,13 +297,13 @@ class SubscribeField extends CheckboxEntryField
     public function formatValuesBeforeSaveIfEditable($entry, bool $isCreation = false)
     {
         $subsciptionManager = $this->getService(SubscriptionManager::class);
-        $output = parent::formatValuesBeforeSaveIfEditable($entry,$isCreation);
+        $output = parent::formatValuesBeforeSaveIfEditable($entry, $isCreation);
         $values = $this->getValues($output);
-        $output = $subsciptionManager->keepOnlyBellowMax($entry,$values,$this,$output);
+        $output = $subsciptionManager->keepOnlyBellowMax($entry, $values, $this, $output);
         $values = $this->getValues($output);
         $output = array_merge(
             $output,
-            $subsciptionManager->registerNB($entry,$values,$this)
+            $subsciptionManager->registerNB($entry, $values, $this)
         );
         return $output;
     }

@@ -12,7 +12,6 @@
 
 namespace YesWiki\alternativeupdatej9rem\Field;
 
-
 use Psr\Container\ContainerInterface;
 use YesWiki\Bazar\Field\BazarField;
 
@@ -25,11 +24,11 @@ class LinkField extends BazarField
     protected const FIELD_OPTIONS = 6;
     protected const FIELD_CLASS = 7;
 
-	protected $class;
-	protected $displayVideo;
-	protected $maxHeight;
-	protected $maxWidth;
-	protected $ratio;
+    protected $class;
+    protected $displayVideo;
+    protected $maxHeight;
+    protected $maxWidth;
+    protected $ratio;
 
     public function __construct(array $values, ContainerInterface $services)
     {
@@ -43,7 +42,7 @@ class LinkField extends BazarField
         $this->displayVideo = ($values[self::FIELD_DISPLAYVIDEO] ?? '') === 'displayvideo';
         $this->class = $values[self::FIELD_CLASS] ?? '';
         $options = (!empty($values[self::FIELD_OPTIONS]) && is_string($values[self::FIELD_OPTIONS]))
-            ? explode('|',$values[self::FIELD_OPTIONS])
+            ? explode('|', $values[self::FIELD_OPTIONS])
             : [];
         $this->maxHeight = $options[2] ?? '';
         $this->maxWidth = $options[1] ?? '';
@@ -57,43 +56,43 @@ class LinkField extends BazarField
     }
 
     public function getDisplayVideo():bool
-	{
-		return $this->displayVideo;
-	}
+    {
+        return $this->displayVideo;
+    }
 
     public function getRatio():string
-	{
-		return is_scalar($this->ratio) ? strval($this->ratio) : '';
-	}
+    {
+        return is_scalar($this->ratio) ? strval($this->ratio) : '';
+    }
 
-	public function getMaxWidth():int
-	{
-		return (is_numeric($this->maxWidth) && intval($this->maxWidth) > 0) ? intval($this->maxWidth) : 0;
-	}
+    public function getMaxWidth():int
+    {
+        return (is_numeric($this->maxWidth) && intval($this->maxWidth) > 0) ? intval($this->maxWidth) : 0;
+    }
 
-	public function getMaxHeight():int
-	{
-		return (is_numeric($this->maxHeight) && intval($this->maxHeight) > 0) ? intval($this->maxHeight) : 0;
-	}
+    public function getMaxHeight():int
+    {
+        return (is_numeric($this->maxHeight) && intval($this->maxHeight) > 0) ? intval($this->maxHeight) : 0;
+    }
 
-	public function getClass():string
-	{
-		return is_scalar($this->class) ? strval($this->class) : '';
-	}
+    public function getClass():string
+    {
+        return is_scalar($this->class) ? strval($this->class) : '';
+    }
 
     // change return of this method to keep compatible with php 7.3 (mixed is not managed)
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
-	{
-		return array_merge(
-			parent::jsonSerialize(),
-			[
-				'displayVideo' => $this->getDisplayVideo(),
-				'ratio' => $this->getRatio(),
-				'maxWidth' => $this->getMaxWidth(),
-				'maxHeight' => $this->getMaxHeight(),
-				'class' => $this->getClass()
-			]
-		);
-	}
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        return array_merge(
+            parent::jsonSerialize(),
+            [
+                'displayVideo' => $this->getDisplayVideo(),
+                'ratio' => $this->getRatio(),
+                'maxWidth' => $this->getMaxWidth(),
+                'maxHeight' => $this->getMaxHeight(),
+                'class' => $this->getClass()
+            ]
+        );
+    }
 }
