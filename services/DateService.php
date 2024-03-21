@@ -575,18 +575,27 @@ class DateService implements EventSubscriberInterface
                 [
                     'formsIds' => [$formId],
                     'queries' => [
-                        'bf_date_fin_evenement_data' => "{\"recurrentParentId\":\"$entryId\"}"
+                        'bf_date_fin_evenement_data' => ".*$entryId.*"
                     ]
                 ],
                 false, // filter on read Acl
                 false // useGuard
             );
-            foreach($entriesToDelete as $entryToDelete) {
-                try {
-                    // $this->entryManager->delete($entryToDelete['id_fiche']);
-                    $this->forceDeleteEvenIfNotAdmin($entryToDelete['id_fiche']);
-                } catch (Throwable $th) {
-                    // do nothing
+            if (is_iterable($entriesToDelete)) {
+                $entriesToDelete = array_filter(
+                    $entriesToDelete,
+                    function ($entryToFilter) use ($entryId) {
+                        return !empty($entryToFilter['bf_date_fin_evenement_data'])
+                            && $entryToFilter['bf_date_fin_evenement_data'] === "{\"recurrentParentId\":\"$entryId\"}" ;
+                    }
+                );
+                foreach($entriesToDelete as $entryToDelete) {
+                    try {
+                        // $this->entryManager->delete($entryToDelete['id_fiche']);
+                        $this->forceDeleteEvenIfNotAdmin($entryToDelete['id_fiche']);
+                    } catch (Throwable $th) {
+                        // do nothing
+                    }
                 }
             }
         }
