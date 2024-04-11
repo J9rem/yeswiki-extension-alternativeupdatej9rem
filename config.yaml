@@ -4,7 +4,7 @@
 # file that was distributed with this source code.
 parameters:
   alternative_yeswiki_repository: # auj9-autoupdate-system
-    J9rem: "https://repository.oui-wiki.pro/"
+    J9rem: "https://repo-yw.j9rem.net/"
   activateEventRepetition: false # Feature UUID : auj9-recurrent-events
   eventRepetitionTriggerErrorsForAdmins: false # Feature UUID : auj9-recurrent-events
   canDuplicateEntryIfNotRightToWrite: false # Feature UUID : auj9-duplicate
