@@ -6,14 +6,13 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
 
 ### Correctifs
 
- - l'extension corrige aussi des soucis pouvant aussi survenir dans l'enregistrement des dates et leur affichage via `{{bazarliste template="calendar"}}` ou via l'export `ICAL` pour `doryphore 4.4.1` (ainsi qu'une amélioration de la stabilité du champ `image`)
  - l'extension corrige un souci sur les metadonnées des pages qui peuvent être créées en base de données, même si l'utilisateur n'est pas connecté (nécessaire pour `doryphore 4.4.1` et `doryphore 4.4.2`)
- - l'extension corrige un souci pour émettre un évènement lors de la suppression d'une fiche à partir d'un tableau
- - l'extension corrige un souci pour les champs liés
  - l'extension corrige une faille de sécurité sur les droits de lecture pour le handler `lmsraw`
- - correctifs multiples pour `doryphore 4.4.2`
+ - l'extension propose des correctifs multiples pour `doryphore 4.4.2`
    - correctif sur les routes api pour supprimer une page
    - création d'un `PageController`
+   - correction d'un souci avec les champs liés
+   - correction d'une erreur de frappe dans ICALFormatter et amélioration du rendu au format ICS
 
 ### Actions
 
@@ -80,7 +79,6 @@ Ajout des champs:
 ||option pour garder l'ordre des listes dans les filtres bazar|[`auj9-bazarlist-filter-order`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazarlist-filter-order&type=code)|
 |Correctifs|corrections concernant les metadonnées (pour `4.4.1` ou +)|[`auj9-fix-edit-metadata`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-edit-metadata&type=code)|
 ||corrections la faille de sécurité du handler `lmsraw`|[`auj9-fix-lmsraw-handler`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-lmsraw-handler&type=code)|
-||correction d'un souci avec les champs liés|[`auj9-fix-linkedentry-empty`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-linkedentry-empty&type=code)|
 ||pour `doryphore 4.4.2`|[`auj9-fix-4-4-2`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-2&type=code)|
 |Template Bazar|`video.twig`|[`auj9-bazar-list-video-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-video-dynamic&type=code)|
 ||`send-mail.twig`|[`auj9-bazar-list-send-mail-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-send-mail-dynamic&type=code)|
