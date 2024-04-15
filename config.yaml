@@ -75,6 +75,10 @@ services:
   YesWiki\Alternativeupdatej9rem\Controller\IcalFormatter:
     decorates: YesWiki\Bazar\Controller\IcalFormatter
     decoration_on_invalid: null
+  # Feature UUID : auj9-fix-4-4-3 maybe needed 4.4.4
+  YesWiki\Alternativeupdatej9rem\Controller\SecurityController:
+    decorates: YesWiki\Security\Controller\SecurityController
+    decoration_on_invalid: null
   # Feature UUID : auj9-feat-user-controller-delete-own-pages
   YesWiki\Alternativeupdatej9rem\Controller\UserController:
     decorates: YesWiki\Core\Controller\UserController

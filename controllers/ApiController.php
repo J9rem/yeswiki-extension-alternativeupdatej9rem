@@ -15,12 +15,14 @@ use AutoUpdate\Package;
 use AutoUpdate\Repository;
 // Feature UUID : auj9-local-cache
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\StreamedResponse; //Feature UUID : auj9-fix-4-4-3
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\Exception\TokenNotFoundException;
 use YesWiki\Alternativeupdatej9rem\Controller\BazarSendMailController; // Feature UUID : auj9-bazar-list-send-mail-dynamic
+use YesWiki\Alternativeupdatej9rem\Controller\CaptchaController; // Feature UUID : auj9-fix-4-4-3
 use YesWiki\Alternativeupdatej9rem\Controller\ConfigOpenAgendaController ; // Feature UUID : auj9-open-agenda-connect
 use YesWiki\Alternativeupdatej9rem\Controller\PageController; // Feature UUID : auj9-fix-4-4-2
 use YesWiki\Alternativeupdatej9rem\Service\AutoUpdateService;
@@ -750,5 +752,43 @@ class ApiController extends YesWikiController
                 Response::HTTP_OK
             );
         });
+    }
+
+    /**
+     * @Route("/api/captcha/{hashb64}", methods={"GET"}, options={"acl":{"public"}})
+     * Feature UUID : auj9-fix-4-4-3
+     *   maybe needed for 4.4.4
+     * @param string $hash
+     * @return StreamedResponse
+     */
+    public function getCaptcha($hashb64): StreamedResponse
+    {
+        // clean headers and cach
+        if (!headers_sent()){
+            header_remove();
+        }
+        if (ob_get_level() > 1){
+            ob_end_clean();
+        }
+        $headers = [
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Credentials' => 'true',
+            'Access-Control-Allow-Headers' => 'X-Requested-With, Location, Slug, Accept, Content-Type',
+            'Access-Control-Expose-Headers' => 'Location, Slug, Accept, Content-Type',
+            'Access-Control-Allow-Methods' => 'GET',
+            'Cache-Control' => 'no-store, no-cache, must-revalidate', // HTTP/1.1
+            'Content-Type' => 'Content-type: image/png'
+        ];
+        $hash = base64_decode($hashb64);
+        return new StreamedResponse(
+            function() use($hash) {
+                if (ob_get_level() > 1){
+                    ob_end_clean();
+                }
+                $this->getService(CaptchaController::class)->printImage($hash);
+            },
+            Response::HTTP_OK,
+            $headers
+        );
     }
 }
