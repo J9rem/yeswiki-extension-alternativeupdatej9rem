@@ -7,7 +7,6 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * Feature UUID : auj9-fix-edit-metadata
  */
 
 namespace YesWiki\Alternativeupdatej9rem\Service;
@@ -18,6 +17,7 @@ use YesWiki\Core\Service\ThemeManager;
 
 class PageManager extends CorePageManager
 {
+    // ===       Feature UUID : auj9-can-force-entry-save-for-specific-group ===
     public function setMetadata($tag, $metadata)
     {
         $previousMetadata = $this->getMetadata($tag);
@@ -38,16 +38,6 @@ class PageManager extends CorePageManager
         }
 
         return parent::setMetadata($tag, $metadata);
-    }
-
-    public function deleteOrphaned($tag)
-    {
-        parent::deleteOrphaned($tag);
-        $this->dbService->query(<<<SQL
-        DELETE FROM {$this->dbService->prefixTable('triples')}
-          WHERE `resource`='{$this->dbService->escape($tag)}'
-            and `property`='http://outils-reseaux.org/_vocabulary/metadata';
-        SQL);
     }
 
     /**
@@ -94,10 +84,23 @@ class PageManager extends CorePageManager
                         $metadata[$metadataName] = $_POST[$metadataName];
                     }
                 }
-                $this->setMetadata($tag, array_merge($metadata, ['forceSave'=>true]));
+                $this->setMetadata($tag, array_merge($metadata, ['forceSave' => true]));
             }
             return 0;
         }
         return 1;
     }
+    // === end of Feature UUID : auj9-can-force-entry-save-for-specific-group ===
+
+    // === part for Feature UUID : auj9-fix-edit-metadata ===
+    public function deleteOrphaned($tag)
+    {
+        parent::deleteOrphaned($tag);
+        $this->dbService->query(<<<SQL
+        DELETE FROM {$this->dbService->prefixTable('triples')}
+          WHERE `resource`='{$this->dbService->escape($tag)}'
+            and `property`='http://outils-reseaux.org/_vocabulary/metadata';
+        SQL);
+    }
+    // === end of   Feature UUID : auj9-fix-edit-metadata ===
 }

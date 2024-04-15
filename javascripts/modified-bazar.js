@@ -478,10 +478,11 @@ $(document).ready(() => {
           return false
         }
       } catch (error) {
-        // specific lines for Feature UUID : auj9-can-force-entry-save-for-specific-group
+        /* Feature UUID : auj9-can-force-entry-save-for-specific-group */
         if (error !== 'canForceSave'){
           return false
         }
+        /* end of Feature UUID : auj9-can-force-entry-save-for-specific-group */
       }
       return true
     },
