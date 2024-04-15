@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace YesWiki\Alternativeupdatej9rem\Controller;
 
 use AutoUpdate\Package;
@@ -21,7 +22,7 @@ use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\Exception\TokenNotFoundException;
 use YesWiki\Alternativeupdatej9rem\Controller\BazarSendMailController; // Feature UUID : auj9-bazar-list-send-mail-dynamic
 use YesWiki\Alternativeupdatej9rem\Controller\ConfigOpenAgendaController ; // Feature UUID : auj9-open-agenda-connect
-use YesWiki\Alternativeupdatej9rem\Controller\PageController; // Feature UUID : auj9-fix-page-controller
+use YesWiki\Alternativeupdatej9rem\Controller\PageController; // Feature UUID : auj9-fix-4-4-2
 use YesWiki\Alternativeupdatej9rem\Service\AutoUpdateService;
 use YesWiki\Alternativeupdatej9rem\Service\CacheService; // Feature UUID : auj9-local-cache
 use YesWiki\Alternativeupdatej9rem\Service\SubscriptionManager; // Feature UUID : auj9-subscribe-to-entry
@@ -29,8 +30,8 @@ use YesWiki\Bazar\Controller\ApiController as BazarApiController; // Feature UUI
 use YesWiki\Core\ApiResponse;
 use YesWiki\Core\Controller\AuthController;
 use YesWiki\Core\Controller\CsrfTokenController;
-use YesWiki\Core\Service\DbService; // Feature UUID : auj9-fix-page-controller
-use YesWiki\Core\Service\PageManager; // Feature UUID : auj9-fix-page-controller
+use YesWiki\Core\Service\DbService; // Feature UUID : auj9-fix-4-4-2
+use YesWiki\Core\Service\PageManager; // Feature UUID : auj9-fix-4-4-2
 use YesWiki\Core\Service\TripleStore;
 use YesWiki\Core\Service\UserManager;
 use YesWiki\Core\YesWikiController;
@@ -62,7 +63,7 @@ class ApiController extends YesWikiController
                     }
                     if (empty($user)) {
                         return new ApiResponse(
-                            ['error' => "no user","wrongPassword"=>false],
+                            ['error' => "no user","wrongPassword" => false],
                             Response::HTTP_BAD_REQUEST
                         );
                     } elseif ($authController->checkPassword($password, $user)) {
@@ -72,7 +73,7 @@ class ApiController extends YesWikiController
                         );
                     } else {
                         return new ApiResponse(
-                            ['error' => "wrong password","wrongPassword"=>true],
+                            ['error' => "wrong password","wrongPassword" => true],
                             Response::HTTP_BAD_REQUEST
                         );
                     }
@@ -83,7 +84,7 @@ class ApiController extends YesWikiController
                     }
                     if (empty($user)) {
                         return new ApiResponse(
-                            ['error' => "no user","wrongPassword"=>false],
+                            ['error' => "no user","wrongPassword" => false],
                             Response::HTTP_BAD_REQUEST
                         );
                     } elseif ($user['password'] === md5($password)) {
@@ -93,7 +94,7 @@ class ApiController extends YesWikiController
                         );
                     } else {
                         return new ApiResponse(
-                            ['error' => "wrong password","wrongPassword"=>true],
+                            ['error' => "wrong password","wrongPassword" => true],
                             Response::HTTP_BAD_REQUEST
                         );
                     }
@@ -109,7 +110,7 @@ class ApiController extends YesWikiController
                             Response::HTTP_BAD_REQUEST
                         );
                     }
-                    
+
                     $repository = $autoUpdateService->initRepository($version);
                     $addresses = $repository->getAlternativeAddresses();
                     foreach (['getAlternativeToolsPackages','getAlternativeThemesPackages'] as $functionName) {
@@ -148,7 +149,7 @@ class ApiController extends YesWikiController
                     foreach ($_POST['versions'] as $version) {
                         if (!empty($version) && is_string($version)) {
                             $repository = $autoUpdateService->initRepository($version, $_POST['packages']);
-                            
+
                             $repos = $autoUpdateService->getReposForAlternative($repository, function ($package) {
                                 return $this->toArray($package);
                             });
@@ -183,8 +184,8 @@ class ApiController extends YesWikiController
                         }
                         $data[$key] = $exts;
                     }
-                    
-                    
+
+
                     return new ApiResponse(
                         $data,
                         Response::HTTP_OK
@@ -201,7 +202,7 @@ class ApiController extends YesWikiController
                                 Response::HTTP_BAD_REQUEST
                             );
                         }
-                        extract([$name=>$var]);
+                        extract([$name => $var]);
                         unset($var);
                     }
                     foreach (['file','packages'] as $name) {
@@ -213,7 +214,7 @@ class ApiController extends YesWikiController
                                 Response::HTTP_BAD_REQUEST
                             );
                         }
-                        extract([$name=>$var]);
+                        extract([$name => $var]);
                         unset($var);
                     }
                     $file = base64_decode($file);
@@ -233,7 +234,7 @@ class ApiController extends YesWikiController
                     }
                     if ($this->wiki->services->get(SecurityController::class)->isWikiHibernated()) {
                         return new ApiResponse(
-                            ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate'=> true],
+                            ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate' => true],
                             Response::HTTP_INTERNAL_SERVER_ERROR
                         );
                     }
@@ -248,12 +249,12 @@ class ApiController extends YesWikiController
 
                     if (is_null($messages)) {
                         return new ApiResponse(
-                            ['error' => "'$packageName' has not been installed in POST for action '$action'",'installed'=>false],
+                            ['error' => "'$packageName' has not been installed in POST for action '$action'",'installed' => false],
                             Response::HTTP_BAD_REQUEST
                         );
                     } else {
                         return new ApiResponse(
-                            ['messages'=>$this->render("@autoupdate/update.twig", [
+                            ['messages' => $this->render("@autoupdate/update.twig", [
                                 'messages' => $messages,
                                 'baseUrl' => $autoUpdateService->baseUrl(),
                             ])],
@@ -261,7 +262,7 @@ class ApiController extends YesWikiController
                         );
                     }
                 });
-            
+
             case 'delete':
                 return $this->executeInSecureContext(function ($autoUpdateService) use ($action) {
                     foreach (['packageName'] as $name) {
@@ -273,7 +274,7 @@ class ApiController extends YesWikiController
                                 Response::HTTP_BAD_REQUEST
                             );
                         }
-                        extract([$name=>$var]);
+                        extract([$name => $var]);
                         unset($var);
                     }
                     foreach (['packages'] as $name) {
@@ -284,12 +285,12 @@ class ApiController extends YesWikiController
                                 Response::HTTP_BAD_REQUEST
                             );
                         }
-                        extract([$name=>$var]);
+                        extract([$name => $var]);
                         unset($var);
                     }
                     if ($this->wiki->services->get(SecurityController::class)->isWikiHibernated()) {
                         return new ApiResponse(
-                            ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate'=> true],
+                            ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate' => true],
                             Response::HTTP_INTERNAL_SERVER_ERROR
                         );
                     }
@@ -305,7 +306,7 @@ class ApiController extends YesWikiController
                         );
                     } else {
                         return new ApiResponse(
-                            ['messages'=>$this->render("@autoupdate/update.twig", [
+                            ['messages' => $this->render("@autoupdate/update.twig", [
                                 'messages' => $messages,
                                 'baseUrl' => $autoUpdateService->baseUrl(),
                             ])],
@@ -324,7 +325,7 @@ class ApiController extends YesWikiController
                                 Response::HTTP_BAD_REQUEST
                             );
                         }
-                        extract([$name=>$var]);
+                        extract([$name => $var]);
                         unset($var);
                     }
                     foreach (['packages'] as $name) {
@@ -335,12 +336,12 @@ class ApiController extends YesWikiController
                                 Response::HTTP_BAD_REQUEST
                             );
                         }
-                        extract([$name=>$var]);
+                        extract([$name => $var]);
                         unset($var);
                     }
                     if ($this->wiki->services->get(SecurityController::class)->isWikiHibernated()) {
                         return new ApiResponse(
-                            ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate'=> true],
+                            ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate' => true],
                             Response::HTTP_INTERNAL_SERVER_ERROR
                         );
                     }
@@ -355,7 +356,7 @@ class ApiController extends YesWikiController
                         );
                     } else {
                         return new ApiResponse(
-                            ['error' => "'$packageName' has not been ".($activation ? 'activated' : 'deactivated')." in POST for action '$action'"],
+                            ['error' => "'$packageName' has not been " . ($activation ? 'activated' : 'deactivated') . " in POST for action '$action'"],
                             Response::HTTP_BAD_REQUEST
                         );
                     }
@@ -376,11 +377,11 @@ class ApiController extends YesWikiController
     {
         $autoUpdateService = $this->getService(AutoUpdateService::class);
         $csrfTokenManager = $this->wiki->services->get(CsrfTokenManager::class);
-                
+
         try {
             $inputToken = filter_input(INPUT_POST, 'token', FILTER_UNSAFE_RAW);
             $inputToken = in_array($inputToken, [false,null], true) ? $inputToken : htmlspecialchars(strip_tags($inputToken));
-            
+
             if (is_null($inputToken) || $inputToken === false) {
                 throw new TokenNotFoundException(_t('NO_CSRF_TOKEN_ERROR'));
             }
@@ -424,7 +425,7 @@ class ApiController extends YesWikiController
         ];
     }
 
-    
+
 
     /**
      * @Route("/api/alternativeupdatej9rem/set-edit-entry-partial-params/{resource}/{id}/{fields}", methods={"POST"}, options={"acl":{"public", "@admins"}})
@@ -435,7 +436,7 @@ class ApiController extends YesWikiController
         $this->wiki->services->get(CsrfTokenController::class)->checkToken('admin-token', 'POST', 'anti-csrf-token', true);
         if ($this->wiki->services->get(SecurityController::class)->isWikiHibernated()) {
             return new ApiResponse(
-                ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate'=> true],
+                ['error' => _t('WIKI_IN_HIBERNATION'),'hibernate' => true],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
@@ -453,7 +454,7 @@ class ApiController extends YesWikiController
         if (!empty($previousTriples)) {
             if (count($previousTriples) > 1) {
                 // delete duplicate
-                for ($i=1; $i <= count($previousTriples); $i++) {
+                for ($i = 1; $i <= count($previousTriples); $i++) {
                     $tripleStore->delete(
                         $resource,
                         'https://yeswiki.net/triple/EditEntryPartialParams',
@@ -534,7 +535,7 @@ class ApiController extends YesWikiController
                 $fomsIds = $_GET['idtypeannonce'];
             }
 
-            list('data'=>$data, 'eTag'=>$eTag) = $cacheService->getFromCache(
+            list('data' => $data, 'eTag' => $eTag) = $cacheService->getFromCache(
                 'bazarlist',
                 json_encode($_GET),
                 function () use ($bazarApiController) {
@@ -553,7 +554,7 @@ class ApiController extends YesWikiController
                 header_remove('Expires');
                 header_remove('Pragma');
                 $headers = [
-                    'ETag'=>"W/\"$eTag\"",
+                    'ETag' => "W/\"$eTag\"",
                     'Cache-Control' => 'no-cache',
                 ];
             }
@@ -568,37 +569,8 @@ class ApiController extends YesWikiController
     }
 
     /**
-     * @Route("/api/pages/{tag}/delete",methods={"POST"},options={"acl":{"public","+"}},priority=5)
-     * Feature UUID : auj9-fix-page-controller
-     */
-    public function deletePageByGetMethod($tag)
-    {
-        $result = [];
-        $code = Response::HTTP_INTERNAL_SERVER_ERROR;
-        try {
-            $csrfTokenController = $this->wiki->services->get(CsrfTokenController::class);
-            $csrfTokenController->checkToken('main', 'POST', 'csrfToken', false);
-        } catch (TokenNotFoundException $th) {
-            $code = Response::HTTP_UNAUTHORIZED;
-            $result = [
-                'notDeleted' => [$tag],
-                'error' => $th->getMessage()
-            ];
-        } catch (Throwable $th) {
-            $code = Response::HTTP_INTERNAL_SERVER_ERROR;
-            $result = [
-                'notDeleted' => [$tag],
-                'error' => $th->getMessage()
-            ];
-        }
-        return (empty($result))
-            ? $this->deletePage($tag)
-            : new ApiResponse($result, $code);
-    }
-
-    /**
      * @Route("/api/pages/{tag}",methods={"DELETE"},options={"acl":{"public","+"}},priority=5)
-     * Feature UUID : auj9-fix-page-controller
+     * Feature UUID : auj9-fix-4-4-2
      */
     public function deletePage($tag)
     {
@@ -662,7 +634,7 @@ class ApiController extends YesWikiController
         return $this->getService(BazarSendMailController::class)->previewEmail();
     }
 
-    
+
     /**
      * @Route("/api/auj9/send-mail/sendmail", methods={"POST"},options={"acl":{"public","+"}})
      * Feature UUID : auj9-bazar-list-send-mail-dynamic
@@ -671,7 +643,7 @@ class ApiController extends YesWikiController
     {
         return $this->getService(BazarSendMailController::class)->sendmailApi();
     }
-    
+
     /**
      * @Route("/api/auj9/send-mail/filterentries", methods={"POST"},options={"acl":{"public","+"}})
      * Feature UUID : auj9-bazar-list-send-mail-dynamic
