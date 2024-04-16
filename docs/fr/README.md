@@ -15,7 +15,6 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
    - correction d'une erreur de frappe dans ICALFormatter et amélioration du rendu au format ICS
  - l'extension propose des correctifs multiples pour `doryphore 4.4.3`
    - correction du comportement des captcha
-   - correction d'un souci pour l'affichage du bouton de connexion
 
 ### Actions
 
