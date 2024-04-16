@@ -153,9 +153,6 @@ class CaptchaController extends YesWikiController
          */
         $image = $this->createImage($this->imageWidth);
 
-        if ($image === false) {
-            $this->wiki->exit('Error when creating image');
-        }
         // background
         imagefilledrectangle($image, 0, 0, $this->imageWidth, self::IMAGE_HEIGHT, $this->getColorFromName($image, 'white'));
 
