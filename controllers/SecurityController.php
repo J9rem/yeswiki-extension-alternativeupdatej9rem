@@ -8,7 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  * Feature UUID : auj9-fix-4-4-3
- *   maybe needed for 4.4.4
+ *   maybe needed for 4.4.5
  */
 
 namespace YesWiki\Alternativeupdatej9rem\Controller;
@@ -55,13 +55,13 @@ class SecurityController extends CoreSecurityController
                 if (empty($_POST['captcha'])) {
                     $error = _t('CAPTCHA_ERROR_PAGE_UNSAVED');
                 } elseif (!$this->captchaController->check(
-                        $_POST['captcha'] ?? '',
-                        $_POST['captcha_hash'] ?? ''
-                    )) {
+                    $_POST['captcha'] ?? '',
+                    $_POST['captcha_hash'] ?? ''
+                )) {
                     $error = _t('CAPTCHA_ERROR_WRONG_WORD');
                 }
                 // clean if error
-                if (!empty($error)){
+                if (!empty($error)) {
                     $_POST['submit'] = '';
                     if ($mode == 'entry') {
                         unset($_POST['bf_titre']);

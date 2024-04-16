@@ -757,17 +757,17 @@ class ApiController extends YesWikiController
     /**
      * @Route("/api/captcha/{hashb64}", methods={"GET"}, options={"acl":{"public"}})
      * Feature UUID : auj9-fix-4-4-3
-     *   maybe needed for 4.4.4
+     *   maybe needed for 4.4.5
      * @param string $hash
      * @return StreamedResponse
      */
     public function getCaptcha($hashb64): StreamedResponse
     {
         // clean headers and cach
-        if (!headers_sent()){
+        if (!headers_sent()) {
             header_remove();
         }
-        if (ob_get_level() > 1){
+        if (ob_get_level() > 1) {
             ob_end_clean();
         }
         $headers = [
@@ -781,8 +781,8 @@ class ApiController extends YesWikiController
         ];
         $hash = base64_decode($hashb64);
         return new StreamedResponse(
-            function() use($hash) {
-                if (ob_get_level() > 1){
+            function () use ($hash) {
+                if (ob_get_level() > 1) {
                     ob_end_clean();
                 }
                 $this->getService(CaptchaController::class)->printImage($hash);

@@ -18,6 +18,8 @@ class __LinkStyleAction extends YesWikiAction
 {
     public function run()
     {
+        // Feature UUID : auj9-fix-navbar-login-btn-since-4-4-3
+        $this->getService(AssetsManager::class)->AddCSSFile('tools/alternativeupdatej9rem/styles/fix-navbar-button.css');
         // Feature UUID : auj9-custom-changes
         $this->getService(AssetsManager::class)->AddCSSFile('tools/alternativeupdatej9rem/styles/fix.css');
         // Feature UUID : auj9-choice-display-hidden-field

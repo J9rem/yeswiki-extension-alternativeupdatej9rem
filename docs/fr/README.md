@@ -15,6 +15,7 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
    - correction d'une erreur de frappe dans ICALFormatter et amélioration du rendu au format ICS
  - l'extension propose des correctifs multiples pour `doryphore 4.4.3`
    - correction du comportement des captcha
+ - correction du bouton connecter à partir de  `doryphore 4.4.3`
 
 ### Actions
 
@@ -83,6 +84,7 @@ Ajout des champs:
 ||corrections la faille de sécurité du handler `lmsraw`|[`auj9-fix-lmsraw-handler`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-lmsraw-handler&type=code)|
 ||pour `doryphore 4.4.2`|[`auj9-fix-4-4-2`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-2&type=code)|
 ||pour `doryphore 4.4.3`|[`auj9-fix-4-4-3`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-3&type=code)|
+||correction du bouton connecter à partir de  `doryphore 4.4.3`|[`auj9-fix-navbar-login-btn-since-4-4-3`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-navbar-login-btn-since-4-4-3&type=code)|
 |Template Bazar|`video.twig`|[`auj9-bazar-list-video-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-video-dynamic&type=code)|
 ||`send-mail.twig`|[`auj9-bazar-list-send-mail-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-send-mail-dynamic&type=code)|
 
