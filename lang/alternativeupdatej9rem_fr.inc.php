@@ -155,6 +155,8 @@ return [
   'EDIT_CONFIG_HINT_EVENTREPETITIONTRIGGERERRORSFORADMINS' => 'Déclencher les erreurs PHP sur les évènements récurrents pour les admins uniquement (true/false)',
   // Feature UUID : auj9-can-force-entry-save-for-specific-group
   'EDIT_CONFIG_HINT_AUTHORIZEDGROUPTOFORCEENTRYSAVING' => 'Groupe pouvant forcer la sauvegarde d\'une fiche bazar (syntaxe nomDuGroupe sans le @), un seul nom de groupe possible',
+  // Feature UUID : auj9-can-choose-to-hide-link-to-content-page
+  'EDIT_CONFIG_HINT_SHOWLINKTOCONTENTPAGEIFEXISTING' => 'Montrer le lien vers la page "Mes Contenues" dans la modale de connexion, quand cette page existe ?',
 
   // docs/actions/bazarliste.yaml via templates/aceditor/actions-builder.tpl.html
   // Feature UUID : auj9-bazar-list-send-mail-dynamic
