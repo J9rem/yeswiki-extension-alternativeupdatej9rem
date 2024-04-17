@@ -8,17 +8,22 @@
 {{ include(['tools/archive/templates/autoupdate/core.twig','tools/autoupdate/templates/core.twig']) }}
 {% set locRev = core.localRelease|split('.') %}
 {% set rev = core.release|split('.') %}
-{% if core.requestedVersion == "doryphore" and (rev[0] > 5 or (rev[0] == 4 and rev[1] > 4  or (rev[1] == 4 and rev[2] > 2))) %}
+{% if core.requestedVersion == "doryphore" and (rev[0] > 5 or (rev[0] == 4 and rev[1] > 4  or (rev[1] == 4 and rev[2] > 4))) %}
     <div>
         <b>Attention : la version <code>doryphore {{ rev[0] }}.{{ rev[1] }}.{{ rev[2] }}</code> n'a pas encore été vérifiée par J9rem.
         <br>L'installer pourrait provoquer des erreurs. Veuillez attendre une mise à jour de l'extension <code>alternativeupdatej9rem</code>
         <br>et la disparition de ce message avant de faire la mise à jour de <code>YesWiki doryphore</code>.</b>
     </div>
-{% endif %}
-{% if core.requestedVersion == "doryphore" and (locRev[0] == 4 and locRev[1] < 4  or (locRev[1] == 4 and locRev[2] < 2)) %}
+{% elseif core.requestedVersion == "doryphore" and (locRev[0] == 4 and locRev[1] < 4  or (locRev[1] == 4 and locRev[2] < 2)) %}
     <div class="alert alert-danger">
-        Attention : la version <code>doryphore {{ locRev[0] }}.{{ locRev[1] }}.{{ locRev[2] }}</code> est ancienne est possède des instabilités ou des soucis de sécurité.
+        Attention : la version <code>doryphore {{ locRev[0] }}.{{ locRev[1] }}.{{ locRev[2] }}</code> est ancienne et possède des instabilités ou des soucis de sécurité.
         <br/>La version actuelle de l'extension <code>alternativeupdatej9rem</code> ne corrige plus ces instabilités !
+        <br>Veuillez faire la mise à jour de <code>YesWiki doryphore</code>.
+    </div>
+{% elseif core.requestedVersion == "doryphore" and locRev[0] == 4 and locRev[1] == 4 and locRev[2] == 2 %}
+    <div class="alert alert-warning">
+        Attention : la version <code>doryphore {{ locRev[0] }}.{{ locRev[1] }}.{{ locRev[2] }}</code> est ancienne et possède des instabilités ou des soucis de sécurité.
+        <br/>Prochainement, l'extension <code>alternativeupdatej9rem</code> ne corrigera plus ces instabilités !
         <br>Veuillez faire la mise à jour de <code>YesWiki doryphore</code>.
     </div>
 {% endif %}
