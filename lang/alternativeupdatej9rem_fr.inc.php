@@ -156,7 +156,7 @@ return [
   // Feature UUID : auj9-can-force-entry-save-for-specific-group
   'EDIT_CONFIG_HINT_AUTHORIZEDGROUPTOFORCEENTRYSAVING' => 'Groupe pouvant forcer la sauvegarde d\'une fiche bazar (syntaxe nomDuGroupe sans le @), un seul nom de groupe possible',
   // Feature UUID : auj9-can-choose-to-hide-link-to-content-page
-  'EDIT_CONFIG_HINT_SHOWLINKTOCONTENTPAGEIFEXISTING' => 'Montrer le lien vers la page "Mes Contenues" dans la modale de connexion, quand cette page existe ?',
+  'EDIT_CONFIG_HINT_SHOWLINKTOCONTENTPAGEIFEXISTING' => 'Montrer le lien vers la page "Mes Contenus" dans la modale de connexion, quand cette page existe ?',
   // Feature UUID : auj9-option-entrycontroller-edit-instead-of-view-if-only-one
   'EDIT_CONFIG_HINT_EDITENTRYINSTEADOFSHOWINGIFONLYONE' => 'Pour les formulaires à une seule fiche, éditer la fiche plutôt que l\'afficher quand il y en a déjà une ?',
 
