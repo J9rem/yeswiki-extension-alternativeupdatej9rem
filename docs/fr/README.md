@@ -57,6 +57,7 @@ Ajout des champs:
  - possibilité de forcer la sauvegarde d'une fiche incomplète pour les membres d'un groupe spécifique
  - ajout d'une option pour garder l'ordre des listes dans les filtres bazar
  - option pour masquer le lien vers la page "MesContenus"
+ - option pour éditer la fiche plutôt que l'afficher si une seule fiche par formulaire
 
 ----
 **Identification des fonctionnalités dans le code source**
@@ -83,6 +84,7 @@ Ajout des champs:
 ||possibilité pour un groupe spécifique de forcer la sauvegarde d'une fiche incomplète|[`auj9-can-force-entry-save-for-specific-group`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-can-force-entry-save-for-specific-group&type=code)|
 ||option pour garder l'ordre des listes dans les filtres bazar|[`auj9-bazarlist-filter-order`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazarlist-filter-order&type=code)|
 ||option pour masquer le lien vers la page "MesContenus"|[`auj9-can-choose-to-hide-link-to-content-page`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-can-choose-to-hide-link-to-content-page&type=code)|
+||option pour éditer la fiche plutôt que l'afficher si une seule fiche par formulaire|[`auj9-option-entrycontroller-edit-instead-of-view-if-only-one`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-option-entrycontroller-edit-instead-of-view-if-only-one&type=code)|
 |Correctifs|corrections concernant les metadonnées (pour `4.4.1` ou +)|[`auj9-fix-edit-metadata`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-edit-metadata&type=code)|
 ||corrections la faille de sécurité du handler `lmsraw`|[`auj9-fix-lmsraw-handler`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-lmsraw-handler&type=code)|
 ||pour `doryphore 4.4.2`|[`auj9-fix-4-4-2`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-2&type=code)|

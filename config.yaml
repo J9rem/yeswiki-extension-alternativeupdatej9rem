@@ -29,6 +29,7 @@ parameters:
   sortListAsDefinedInFilters: false # Feature UUID : auj9-bazarlist-filter-order
   authorizedGroupToForceEntrySaving: admins # Feature UUID : auj9-can-force-entry-save-for-specific-group
   showLinkToContentPageIfExisting: true     # Feature UUID : auj9-can-choose-to-hide-link-to-content-page
+  editEntryInsteadOfShowingIfOnlyOne: false # Feature UUID : auj9-option-entrycontroller-edit-instead-of-view-if-only-one
   alternativeupdatej9rem_editable_config_params:
     - 'activateEventRepetition' # Feature UUID : auj9-recurrent-events
     - 'eventRepetitionTriggerErrorsForAdmins' # Feature UUID : auj9-recurrent-events
@@ -45,8 +46,9 @@ parameters:
     - openAgenda: # Feature UUID : auj9-open-agenda-connect
       - isActivated
     - 'sortListAsDefinedInFilters' # Feature UUID : auj9-bazarlist-filter-order
-    - 'authorizedGroupToForceEntrySaving' # Feature UUID : auj9-can-force-entry-save-for-specific-group
-    - 'showLinkToContentPageIfExisting'   # Feature UUID : auj9-can-choose-to-hide-link-to-content-page
+    - 'authorizedGroupToForceEntrySaving'  # Feature UUID : auj9-can-force-entry-save-for-specific-group
+    - 'showLinkToContentPageIfExisting'    # Feature UUID : auj9-can-choose-to-hide-link-to-content-page
+    - 'editEntryInsteadOfShowingIfOnlyOne' # Feature UUID : auj9-option-entrycontroller-edit-instead-of-view-if-only-one
 
 services:
   _defaults:
@@ -72,6 +74,10 @@ services:
   # Feature UUID : auj9-bazarlist-filter-order
   YesWiki\Alternativeupdatej9rem\Service\BazarListService:
     decorates: YesWiki\Bazar\Service\BazarListService
+    decoration_on_invalid: null
+  # Feature UUID : auj9-option-entrycontroller-edit-instead-of-view-if-only-one
+  YesWiki\Alternativeupdatej9rem\Controller\EntryController:
+    decorates: YesWiki\Bazar\Controller\EntryController
     decoration_on_invalid: null
   # Feature UUID : auj9-fix-4-4-2
   YesWiki\Alternativeupdatej9rem\Controller\IcalFormatter:
