@@ -15,5 +15,7 @@
     "tools/bazar/templates/inputs/date.twig",
     ] %}
 
-
+{% if source('tools/bazar/templates/inputs/_date_recurrent_part.twig',ignore_missing = true) is empty %}
+    {# if no core file #}
     {{ include("@bazar/inputs/_date_recurrent_part.twig") }}
+{% endif %}

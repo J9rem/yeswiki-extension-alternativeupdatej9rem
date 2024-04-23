@@ -5,6 +5,7 @@
 # Feature UUID : auj9-recurrent-events
 #}
 
+{% if source('tools/bazar/presentation/javascripts/recurrent-event.js',ignore_missing = true) is empty %}
     {% if field.propertyname == 'bf_date_fin_evenement' 
         and canRegisterMultipleEntries 
         and config.activateEventRepetition is same as true %}
@@ -210,3 +211,7 @@
             {% endblock input %}
         {% endembed %}
     {% endif %}
+{% elseif source('tools/bazar/templates/inputs/_date_recurrent_part.twig',ignore_missing = true) is not empty %}
+    {# prefer core file #}
+    {% include "tools/bazar/templates/inputs/_date_recurrent_part.twig" %}
+{% endif %}

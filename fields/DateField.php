@@ -24,8 +24,20 @@ use YesWiki\Bazar\Field\DateField as CoreDateField;
  */
 class DateField extends CoreDateField
 {
+    /**
+     * test if core contains recurrent events
+     * @return bool
+     */
+    protected function coreHasRecurrentEvents(): bool
+    {
+        return is_file('tools/bazar/templates/inputs/_date_recurrent_part.twig');
+    }
+
     protected function renderInput($entry)
     {
+        if ($this->coreHasRecurrentEvents()) {
+            return parent::renderInput($entry);
+        }
         $day = "";
         $hour = 0;
         $minute = 0;
@@ -68,6 +80,9 @@ class DateField extends CoreDateField
 
     public function formatValuesBeforeSave($entry)
     {
+        if ($this->coreHasRecurrentEvents()) {
+            return parent::formatValuesBeforeSave($entry);
+        }
         $return = [];
         if ($this->getPropertyname() === 'bf_date_fin_evenement') {
             if(!empty($entry['id_fiche'])
@@ -105,6 +120,9 @@ class DateField extends CoreDateField
 
     protected function renderStatic($entry)
     {
+        if ($this->coreHasRecurrentEvents()) {
+            return parent::renderStatic($entry);
+        }
         $value = $this->getValue($entry);
         if (!$value) {
             return "";

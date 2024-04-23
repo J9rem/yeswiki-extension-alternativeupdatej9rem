@@ -20,6 +20,7 @@ use Exception;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Throwable;
+use YesWiki\Bazar\Service\DateService as BazarDateService;
 use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Bazar\Service\FormManager;
 use YesWiki\Core\Controller\AuthController;
@@ -83,7 +84,7 @@ class DateService implements EventSubscriberInterface
      */
     public function followEntryChange($event)
     {
-        if ($this->isActivated) {
+        if ($this->isActivated && !class_exists(BazarDateService::class, false)) {
             $entry = $this->getEntry($event);
             if ($this->shouldFollowEntry($entry)) {
                 $this->deleteLinkedEntries($entry);
@@ -99,7 +100,7 @@ class DateService implements EventSubscriberInterface
      */
     public function followEntryDeletion($event)
     {
-        if ($this->isActivated) {
+        if ($this->isActivated && !class_exists(BazarDateService::class, false)) {
             $entryBeforeDeletion = $this->getEntry($event);
             if (!empty($entryBeforeDeletion)) {
                 $this->deleteLinkedEntries($entryBeforeDeletion);
