@@ -76,7 +76,9 @@ class DateField extends CoreDateField
             }
             if (!$this->getService(DateService::class)->canRegisterMultipleEntries($entry)) {
                 // clean data from entry because not possible to create repetition
-                unset($entry['bf_date_fin_evenement_data']);
+                if (isset($entry['bf_date_fin_evenement_data'])) {
+                    unset($entry['bf_date_fin_evenement_data']);
+                }
             } elseif (!empty($entry['bf_date_fin_evenement_data']['other'])) {
                 unset($entry['bf_date_fin_evenement_data']['other']);
                 if (!empty($entry['bf_date_fin_evenement_data'])) {
@@ -135,6 +137,7 @@ class DateField extends CoreDateField
 
     /**
      * changes for duplicateHandler
+     * Feature UUID : auj9-duplicate
      */
 
     protected function getValue($entry)
