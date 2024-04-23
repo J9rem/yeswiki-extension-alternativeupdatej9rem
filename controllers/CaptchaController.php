@@ -13,6 +13,7 @@
 
 namespace YesWiki\Alternativeupdatej9rem\Controller;
 
+use Exception;
 use GdImage;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use YesWiki\Core\YesWikiController;
