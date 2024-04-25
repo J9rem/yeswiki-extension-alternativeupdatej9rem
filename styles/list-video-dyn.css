@@ -11,3 +11,7 @@
 .style-vertical .bazar-card.bazar-video {
     padding: 0.5rem;
 }
+.style-vertical .bazar-card.bazar-video .visual-area {
+    margin: -0.5rem;
+    margin-bottom: 0.5rem;
+}

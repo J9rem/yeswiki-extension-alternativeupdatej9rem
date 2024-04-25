@@ -74,7 +74,7 @@ return [
   'AUJ9_OTHER_ENTRIES_CREATED' => 'D\'autres fiches ont été créées : %{links}',
   'AUJ9_PAGE_NEW_NAME' => 'Nom de la nouvelle page à créer',
   'AUJ9_SAVE' => 'Sauver',
-  
+
   // services/SubscriptionManager.php
   // Feature UUID : auj9-subscribe-to-entry
   'AUJ9_SUBSCRIBE_EMPTY' => '0 inscription',
@@ -88,6 +88,8 @@ return [
   // Feature UUID : auj9-bazar-list-video-dynamic
   'AUJ9_BAZARVIDEO_ACTION_LABEL' => 'Affichage des vidéos par bloc',
   'AUJ9_BAZARVIDEO_ACTION_VIDEO_LINK_LABEL' => 'Champ lien',
+  'AUJ9_BAZARVIDEO_ACTION_DISPLAYFIELDS_IMAGE_HINT' => 'Facultatif, champ pour remplacer la vignette d\'incrustation vidéo par une image !',
+  'AUJ9_BAZARVIDEO_ACTION_DISPLAYFIELDS_IMAGE_LABEL' => 'Champ image',
   // Feature UUID : auj9-breadcrumbs-action
   'AUJ9_BREADCRUMBS_DISPLAY_DROPDOWN_LABEL' => 'Afficher les menus déroulants',
   'AUJ9_BREADCRUMBS_DISPLAY_DROPDOWN_FOR_CHILDREN_OF_LAST_LEVEL_LABEL' => 'Afficher les menus déroulants pour les sous-niveaux du dernier niveau',
@@ -176,7 +178,7 @@ return [
   'AUJ9_SEND_MAIL_TEMPLATE_SENDTOGROUPDEFAULT_LABEL' => 'Par défaut, envoyer à tous',
   'AUJ9_SEND_MAIL_TEMPLATE_TITLE_EMPTY_LABEL' => 'Vide = \'%{emptyVal}\'',
   'AUJ9_SEND_MAIL_TEMPLATE_TITLE_LABEL' => 'Titre',
-  
+
   // templates/bazar/send-mail.twig
   // Feature UUID : auj9-bazar-list-send-mail-dynamic
   'AUJ9_SEND_MAIL_TEMPLATE_ADDCONTACTSTOREPLYTO' => 'Forcer "Répondre à tous" (uniquement pour les envois groupés)',
@@ -188,17 +190,17 @@ return [
   'AUJ9_SEND_MAIL_TEMPLATE_DONE_FOR' => 'Envoyé pour',
   'AUJ9_SEND_MAIL_TEMPLATE_GROUP_IN_HIDDEN_COPY' => 'Envoyer en copie cachée',
   'AUJ9_SEND_MAIL_TEMPLATE_GROUP_IN_HIDDEN_COPY_HELP' => 'Option uniquement disponible si moins de {nb} fiches sélectionnées',
-  'AUJ9_SEND_MAIL_TEMPLATE_HASCONTACTFROM' => "Attention, ce wiki force l'expéditeur des e-mails à %{forcedFrom}\n".
+  'AUJ9_SEND_MAIL_TEMPLATE_HASCONTACTFROM' => "Attention, ce wiki force l'expéditeur des e-mails à %{forcedFrom}\n" .
       "(l'e-mail de l'expéditeur est déplacé dans \"Répondre à\")",
-  'AUJ9_SEND_MAIL_TEMPLATE_HELP' => "Pour les envois non groupés :\n".
-      "[text](lien) => lien href\n".
-      "{baseUrl} => lien de base du wiki\n".
-      "{entryId} => entryId\n".
-      "{entryLink} => lien vers la fiche brut\n".
-      "{entryLinkWithTitle} => lien vers la fiche avec son titre\n".
-      "{entryLinkWithText} => lien vers la fiche avec le texte \"Voir la fiche xxx\"\n".
-      "{entryEditLink} => lien vers la modification de la fiche (brut)\n".
-      "{entryEditLinkWithText} => lien vers la modification de la fiche (avec le titre \"Modifier la fiche\")\n".
+  'AUJ9_SEND_MAIL_TEMPLATE_HELP' => "Pour les envois non groupés :\n" .
+      "[text](lien) => lien href\n" .
+      "{baseUrl} => lien de base du wiki\n" .
+      "{entryId} => entryId\n" .
+      "{entryLink} => lien vers la fiche brut\n" .
+      "{entryLinkWithTitle} => lien vers la fiche avec son titre\n" .
+      "{entryLinkWithText} => lien vers la fiche avec le texte \"Voir la fiche xxx\"\n" .
+      "{entryEditLink} => lien vers la modification de la fiche (brut)\n" .
+      "{entryEditLinkWithText} => lien vers la modification de la fiche (avec le titre \"Modifier la fiche\")\n" .
       "{entry[fieldName]} => valeur du champ fieldName pour cette fiche\n",
   'AUJ9_SEND_MAIL_TEMPLATE_HIDE' => 'Masquer les paramètres avancés',
   'AUJ9_SEND_MAIL_TEMPLATE_HIDE_DONE_FOR_ALL' => 'Réduire la liste',

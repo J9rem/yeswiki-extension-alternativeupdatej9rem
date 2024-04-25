@@ -56,7 +56,7 @@ trait ActionsBuilderServiceCommon
             } else {
                 $this->data = $this->previousData;
             }
-            
+
             /* === Feature UUID : auj9-video-field === */
             if (isset($this->data['action_groups']['video']['actions']['video']['properties'])) {
                 $this->data['action_groups']['video']['actions']['video']['properties'] =
@@ -76,7 +76,7 @@ trait ActionsBuilderServiceCommon
                 unset($this->data['action_groups']['video']['actions']['video']['properties']['id']['value']);
             }
             /* === end of Feature UUID : auj9-video-field === */
-            
+
             /* === Feature UUID : auj9-bazar-list-video-dynamic === */
             if (isset($this->data['action_groups']['bazarliste']['actions'])) {
                 if (!isset($this->data['action_groups']['bazarliste']['actions']['bazarvideo'])) {
@@ -92,11 +92,16 @@ trait ActionsBuilderServiceCommon
                         $props[$propName] = [
                             'type' => 'correspondance',
                             'subproperties' => [
-                                'imagefieldname' => $propDef['subproperties']['visual'] ?? [],
                                 'urlfieldname' => [
                                     'type' => 'form-field',
                                     'label' => _t('AUJ9_BAZARVIDEO_ACTION_VIDEO_LINK_LABEL'),
                                     'value' => 'bf_url'
+                                ],
+                                'imagefieldname' => [
+                                    'type' => 'form-field',
+                                    'label' => _t('AUJ9_BAZARVIDEO_ACTION_DISPLAYFIELDS_IMAGE_LABEL'),
+                                    'hint' => _t('AUJ9_BAZARVIDEO_ACTION_DISPLAYFIELDS_IMAGE_HINT'),
+                                    'default' => ''
                                 ],
                                 'title' => $propDef['subproperties']['title'] ?? [],
                                 'subtitle' => $propDef['subproperties']['subtitle'] ?? [],
@@ -120,7 +125,7 @@ trait ActionsBuilderServiceCommon
                     );
             }
             /* === end of Feature UUID : auj9-bazar-list-video-dynamic === */
-            
+
             /* === Feature UUID : auj9-bazar-list-send-mail-dynamic === */
             if ($this->params->has('sendMail')) {
                 $sendMailParam = $this->params->get('sendMail');
@@ -177,7 +182,7 @@ trait ActionsBuilderServiceCommon
                             ],
                         ];
                     }
-                    
+
                     if (isset($this->data['action_groups']['bazarliste']['actions']['commons']['properties']['showexportbuttons']['showExceptFor'])
                         && !in_array('bazarsendmail', $this->data['action_groups']['bazarliste']['actions']['commons']['properties']['showexportbuttons']['showExceptFor'])) {
                         $this->data['action_groups']['bazarliste']['actions']['commons']['properties']['showexportbuttons']['showExceptFor'][] =  'bazarsendmail';
@@ -186,7 +191,7 @@ trait ActionsBuilderServiceCommon
                 }
             }
             /* === end of Feature UUID : auj9-bazar-list-send-mail-dynamic === */
-            
+
             /* === Feature UUID : auj9-breadcrumbs-action === */
             if (isset($this->data['action_groups']['advanced-actions']['actions'])) {
                 $this->data['action_groups']['advanced-actions']['actions']['breadcrumbs'] = [
