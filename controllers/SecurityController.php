@@ -76,6 +76,27 @@ class SecurityController extends CoreSecurityController
     }
 
     /**
+     * render captcha if needed
+     * @param string &$output
+     */
+    public function renderCaptcha(string &$output)
+    {
+        if (!$this->wiki->UserIsAdmin() && $this->params->get('use_captcha')) {
+            $champsCaptcha = $this->renderCaptchaField();
+            $matches = [];
+            if (preg_match_all('/(\<div class="form-actions">.*<button type=\"submit\" name=\"submit\")/Uis', $output, $matches)) {
+                foreach ($matches[0] as $key => $match) {
+                    $output = str_replace(
+                        $match,
+                        $champsCaptcha . $matches[1][$key],
+                        $output
+                    );
+                }
+            }
+        }
+    }
+
+    /**
      * render captcha field if needed
      * @return string
      */
