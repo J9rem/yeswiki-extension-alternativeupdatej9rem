@@ -30,6 +30,7 @@ parameters:
   authorizedGroupToForceEntrySaving: admins # Feature UUID : auj9-can-force-entry-save-for-specific-group
   showLinkToContentPageIfExisting: true     # Feature UUID : auj9-can-choose-to-hide-link-to-content-page
   editEntryInsteadOfShowingIfOnlyOne: false # Feature UUID : auj9-option-entrycontroller-edit-instead-of-view-if-only-one
+  sqlConnectTimeout: 0                      # Feature UUID : auj9-perf-sql
   alternativeupdatej9rem_editable_config_params:
     - 'activateEventRepetition' # Feature UUID : auj9-recurrent-events
     - 'eventRepetitionTriggerErrorsForAdmins' # Feature UUID : auj9-recurrent-events
@@ -49,6 +50,7 @@ parameters:
     - 'authorizedGroupToForceEntrySaving'  # Feature UUID : auj9-can-force-entry-save-for-specific-group
     - 'showLinkToContentPageIfExisting'    # Feature UUID : auj9-can-choose-to-hide-link-to-content-page
     - 'editEntryInsteadOfShowingIfOnlyOne' # Feature UUID : auj9-option-entrycontroller-edit-instead-of-view-if-only-one
+    - 'sqlConnectTimeout'       # Feature UUID : auj9-perf-sql
 
 services:
   _defaults:
@@ -74,6 +76,10 @@ services:
   # Feature UUID : auj9-bazarlist-filter-order
   YesWiki\Alternativeupdatej9rem\Service\BazarListService:
     decorates: YesWiki\Bazar\Service\BazarListService
+    decoration_on_invalid: null
+  # Feature UUID : auj9-perf-sql
+  YesWiki\Alternativeupdatej9rem\Service\DbService:
+    decorates: YesWiki\Core\Service\DbService
     decoration_on_invalid: null
   # Feature UUID : auj9-option-entrycontroller-edit-instead-of-view-if-only-one
   YesWiki\Alternativeupdatej9rem\Controller\EntryController:

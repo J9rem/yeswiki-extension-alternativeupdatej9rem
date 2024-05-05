@@ -58,6 +58,7 @@ Ajout des champs:
  - ajout d'une option pour garder l'ordre des listes dans les filtres bazar
  - option pour masquer le lien vers la page "MesContenus"
  - option pour éditer la fiche plutôt que l'afficher si une seule fiche par formulaire
+ - ajouter des réglages pour les performances `SQL`
 
 ----
 **Identification des fonctionnalités dans le code source**
@@ -85,6 +86,7 @@ Ajout des champs:
 ||option pour garder l'ordre des listes dans les filtres bazar|[`auj9-bazarlist-filter-order`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazarlist-filter-order&type=code)|
 ||option pour masquer le lien vers la page "MesContenus"|[`auj9-can-choose-to-hide-link-to-content-page`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-can-choose-to-hide-link-to-content-page&type=code)|
 ||option pour éditer la fiche plutôt que l'afficher si une seule fiche par formulaire|[`auj9-option-entrycontroller-edit-instead-of-view-if-only-one`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-option-entrycontroller-edit-instead-of-view-if-only-one&type=code)|
+||performances `SQL`|[`auj9-perf-sql`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-perf-sql&type=code)|
 |Correctifs|corrections concernant les metadonnées (pour `4.4.1` ou +)|[`auj9-fix-edit-metadata`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-edit-metadata&type=code)|
 ||corrections la faille de sécurité du handler `lmsraw`|[`auj9-fix-lmsraw-handler`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-lmsraw-handler&type=code)|
 ||pour `doryphore 4.4.2`|[`auj9-fix-4-4-2`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-2&type=code)|
