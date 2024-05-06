@@ -7,7 +7,8 @@
 
 {% set anchor = '<div class="tags-container"></div>' %}
 {% set new = '' %}
-{% if request.newpage is same as '1' and request.theme is not empty %}
+{% if (request.get is defined request.get.newpage is same as '1' and request.get.theme is not empty)
+    or (request.get is not defined and request.newpage is same as '1' and request.theme is not empty ) %}
   {% set new = '<input type="hidden" name="newpage" value="1"/>' %}
   {% for key in [
         'theme',

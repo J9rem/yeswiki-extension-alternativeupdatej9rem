@@ -5,7 +5,8 @@
 # Feature UUID : auj9-autoupdate-system
 #}
 
-{% if request.alternativeupdatej9rem != "1" %}
+{% if (request.get is defined and request.get.alternativeupdatej9rem != "1")
+    or (request.get is not defined and request.alternativeupdatej9rem != "1") %}
     {{ include('tools/autoupdate/templates/status.twig',{
         tools:tools|filter(ext=>config.updatablePackagesViaAlternative is iterable 
             and ext.name not in config.updatablePackagesViaAlternative )
