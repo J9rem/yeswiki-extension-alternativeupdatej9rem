@@ -166,6 +166,7 @@ return [
   'EDIT_CONFIG_HINT_EDITENTRYINSTEADOFSHOWINGIFONLYONE' => 'Pour les formulaires à une seule fiche, éditer la fiche plutôt que l\'afficher quand il y en a déjà une ?',
   // Feature UUID : auj9-perf-sql
   'EDIT_CONFIG_HINT_SQLCONNECTTIMEOUT' => 'Temps maximum de connexion SQL en secondes (0 = limite du serveur)',
+  'EDIT_CONFIG_HINT_DISPLAYEDFORMSINRSSHANDLER' => 'Formulaires affichés dans le flux RSS (vide = tous, liste séparée par des virgules ; ex 1,3,4)',
 
   // docs/actions/bazarliste.yaml via templates/aceditor/actions-builder.tpl.html
   // Feature UUID : auj9-bazar-list-send-mail-dynamic
