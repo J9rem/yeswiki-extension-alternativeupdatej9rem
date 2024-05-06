@@ -85,7 +85,7 @@ class DomService
      * @param array $domXpath [DOMDocument $dom,DOMXpath $xpath]
      * @return array [$nodesForFirstDropdown,$nodesForSecondDropdown]...
      */
-    public function extractNodesOfDropdownList(array $domXpath):array
+    public function extractNodesOfDropdownList(array $domXpath): array
     {
         $dropdownslist = ($domXpath['xpath'])->query('*/div/ul//li/ul/..');
         $results = [];
@@ -115,7 +115,7 @@ class DomService
                 // we add trigger for dropdown
                 if ($node->nodeName == 'a') {
                     $class = $node->getAttribute('class');
-                    $node->setAttribute('class', $class.' dropdown-toggle');
+                    $node->setAttribute('class', $class . ' dropdown-toggle');
                     $node->setAttribute('data-toggle', 'dropdown');
                     $caret = ($domXpath['dom'])->createElement('b');
                     $caret->setAttribute('class', 'caret');
@@ -137,7 +137,7 @@ class DomService
         }
     }
 
-    
+
     /**
      * add class to parent of active link
      * @param array $domXpath [DOMDocument $dom,DOMXpath $xpath]
@@ -148,7 +148,7 @@ class DomService
         if (!is_null($activelinks)) {
             foreach ($activelinks as $activelink) {
                 $class = $activelink->parentNode->getAttribute('class');
-                $activelink->parentNode->setAttribute('class', $class.' active');
+                $activelink->parentNode->setAttribute('class', $class . ' active');
             }
         }
     }
@@ -158,7 +158,7 @@ class DomService
      * @param array $domXpath [DOMDocument $dom,DOMXpath $xpath]
      * @return string
      */
-    public function getFormattedOutput(array $domXpath):string
+    public function getFormattedOutput(array $domXpath): string
     {
         return preg_replace(
             '/^<!DOCTYPE.+?>/',
@@ -168,7 +168,7 @@ class DomService
                 '',
                 ($domXpath['dom'])->saveHTML()
             )
-        )."\n";
+        ) . "\n";
     }
 
     /**
@@ -206,7 +206,7 @@ class DomService
             if (empty($link) && $node->nodeName === 'a') {
                 $data = $this->convertLinkToTextAndTag($node);
                 if (!empty($data['text'])) {
-                    list('tag'=>$tag, 'text'=>$text, 'link'=>$link) = $data;
+                    list('tag' => $tag, 'text' => $text, 'link' => $link) = $data;
                 }
             }
             // save txt if needed
@@ -218,8 +218,8 @@ class DomService
             }
             // save children from ul if needed
             if (empty($children) && !empty($link) && $node->nodeName === 'ul') {
-                if ($node->className === 'fake-ul') {
-                    $nodePath =$node->getNodePath();
+                if (($node instanceof DOMElement) && $node->className === 'fake-ul') {
+                    $nodePath = $node->getNodePath();
                     if ($nodePath) {
                         $childNodes = ($domXpath['xpath'])->query("$nodePath/li/div/div/ul/li");
                     }
