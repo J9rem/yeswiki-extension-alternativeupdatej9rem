@@ -80,10 +80,11 @@ class DbService extends CoreDbService
     protected function setSqlSessionConnectTimeout()
     {
         /**
-         * @var mixed $wantedTimeout
+         * @var int $wantedTimeout
          */
         $wantedTimeout = $this->getWantedTimeout();
         if ($wantedTimeout > 0) {
+            $wantedTimeout = max(10, $wantedTimeout); // to prevent bad config
             mysqli_options($this->link, MYSQLI_OPT_CONNECT_TIMEOUT, $wantedTimeout);
             mysqli_options($this->link, MYSQLI_OPT_READ_TIMEOUT, $wantedTimeout);
         }
@@ -131,11 +132,12 @@ class DbService extends CoreDbService
     protected function setSessionTimeout()
     {
         /**
-         * @var mixed $wantedTimeout
+         * @var int $wantedTimeout
          */
         $wantedTimeout = $this->getWantedTimeout();
         if ($wantedTimeout > 0) {
-            $this->query("SET @@SESSION.wait_timeout=$wantedTimeout;");
+            $wantedTimeout = max(10, $wantedTimeout); // to prevent bad config
+            $this->query("SET SESSION wait_timeout=$wantedTimeout;");
         }
     }
 
