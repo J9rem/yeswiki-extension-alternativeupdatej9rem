@@ -218,7 +218,9 @@ class DomService
             }
             // save children from ul if needed
             if (empty($children) && !empty($link) && $node->nodeName === 'ul') {
-                if (($node instanceof DOMElement) && $node->className === 'fake-ul') {
+                if (($node instanceof DOMElement)
+                    && isset($node->className)
+                    && $node->className === 'fake-ul') {
                     $nodePath = $node->getNodePath();
                     if ($nodePath) {
                         $childNodes = ($domXpath['xpath'])->query("$nodePath/li/div/div/ul/li");
