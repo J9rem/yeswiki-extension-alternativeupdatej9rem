@@ -64,6 +64,8 @@ services:
   YesWiki\Alternativeupdatej9rem\Controller\:
     resource: 'controllers/*'
   # Feature UUID : auj9-fix-edit-metadata
+  # Feature UUID : auj9-fix-4-4-3
+  # Feature UUID : auj9-can-force-entry-save-for-specific-group 
   YesWiki\Alternativeupdatej9rem\Service\PageManager:
     decorates: YesWiki\Core\Service\PageManager
     decoration_on_invalid: null
@@ -78,6 +80,10 @@ services:
   # Feature UUID : auj9-bazarlist-filter-order
   YesWiki\Alternativeupdatej9rem\Service\BazarListService:
     decorates: YesWiki\Bazar\Service\BazarListService
+    decoration_on_invalid: null
+  # Feature UUID : auj9-fix-4-4-3
+  YesWiki\Alternativeupdatej9rem\Service\FormManager:
+    decorates: YesWiki\Bazar\Service\FormManager
     decoration_on_invalid: null
   # Feature UUID : auj9-perf-sql
   YesWiki\Alternativeupdatej9rem\Service\DbService:

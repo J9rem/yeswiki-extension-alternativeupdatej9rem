@@ -103,4 +103,36 @@ class PageManager extends CorePageManager
         SQL);
     }
     // === end of   Feature UUID : auj9-fix-edit-metadata ===
+
+    // === part for Feature UUID : auj9-fix-4-4-3 ===
+    /**
+     * get readable page tags
+     * update page's owner to improve performances
+     * @return string[] list of tags readble for current user
+     */
+    public function getReadablePageTags(): array
+    {
+        /**
+         * @var string $sqlRequest
+         */
+        $sqlRequest = <<<SQL
+            SELECT tag,owner FROM {$this->dbService->prefixTable('pages')} WHERE LATEST = 'Y' ORDER BY tag
+        SQL;
+
+
+        // append request to filter on acls during the request
+        if (!$this->wiki->UserIsAdmin()) {
+            $sqlRequest .= $this->aclService->updateRequestWithACL();
+        }
+        /**
+         * @var array $pages  - list of pages ['tag' => string,'owner' => string]
+         */
+        $pages = $this->dbService->loadAll($sqlRequest);
+        return array_map(function ($page) {
+            // cache page's owner to prevent reload of page from sql or infinite loop in some case
+            $this->cacheOwner($page);
+            return $page['tag'];
+        }, $pages);
+    }
+    // === end of   Feature UUID : auj9-fix-4-4-3 ===
 }
