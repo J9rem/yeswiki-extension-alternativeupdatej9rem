@@ -75,13 +75,13 @@ class UpdateHandler__ extends YesWikiHandler
         if (in_array($this->params->get('cleanUnusedMetadata'), [true,'true'], true)) {
             $messages[] = 'ℹ️ Clean unused metadata';
             $selectSQL = <<<SQL
-            SELECT `id`,`resource` FROM {$this->dbService->prefixTable('triples')}
+            SELECT `id`,`resource` FROM {$dbService->prefixTable('triples')}
                 WHERE `property`='http://outils-reseaux.org/_vocabulary/metadata'
                   AND NOT (`resource` IN (
-                    SELECT `tag` FROM {$this->dbService->prefixTable('pages')}
+                    SELECT `tag` FROM {$dbService->prefixTable('pages')}
                   ))
             SQL;
-            $triples = $this->dbService->loadAll($selectSQL);
+            $triples = $dbService->loadAll($selectSQL);
             if (empty($triples)) {
                 $messages[] = '✅ No triple to delete !';
             } else {
@@ -101,18 +101,18 @@ class UpdateHandler__ extends YesWikiHandler
                 }
                 $messages[] = "<ul>$message</ul>";
                 $deleteSQL = <<<SQL
-                DELETE FROM {$this->dbService->prefixTable('triples')}
+                DELETE FROM {$dbService->prefixTable('triples')}
                     WHERE `property`='http://outils-reseaux.org/_vocabulary/metadata'
                       AND NOT (`resource` IN (
-                        SELECT `tag` FROM {$this->dbService->prefixTable('pages')}
+                        SELECT `tag` FROM {$dbService->prefixTable('pages')}
                       ))
                 SQL;
                 try {
-                    $this->dbService->query($deleteSQL);
+                    $dbService->query($deleteSQL);
                 } catch (Throwable $th) {
                     //throw $th;
                 }
-                $triples = $this->dbService->loadAll($selectSQL);
+                $triples = $dbService->loadAll($selectSQL);
                 if (empty($triples)) {
                     $messages[] = '&nbsp;&nbsp;✅ All triples deleted !';
                 } else {
