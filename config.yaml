@@ -69,6 +69,10 @@ services:
   YesWiki\Alternativeupdatej9rem\Service\PageManager:
     decorates: YesWiki\Core\Service\PageManager
     decoration_on_invalid: null
+  # Feature UUID : auj9-fix-4-4-3
+  YesWiki\Alternativeupdatej9rem\Service\AclService:
+    decorates: YesWiki\Core\Service\AclService
+    decoration_on_invalid: null
   # Feature UUID : auj9-custom-changes
   YesWiki\Alternativeupdatej9rem\Service\FieldFactory:
     decorates: YesWiki\Bazar\Service\FieldFactory
