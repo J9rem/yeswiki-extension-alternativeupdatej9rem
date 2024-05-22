@@ -35,9 +35,7 @@ class EntryManager extends BazarEntryManager
     ): array {
         $parentBacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
         $appendHtmlData = empty($appendHtmlData[1]['function'])
-            || $appendHtmlData[1]['function'] != 'loadOptionsFromEntries'
-            || empty($appendHtmlData[1]['class'])
-            || substr($appendHtmlData[1]['class'], -strlen('EnumField')) != 'EnumField';
+            || $appendHtmlData[1]['function'] != 'loadOptionsFromEntries';
         $requete = $this->prepareSearchRequest($params, $filterOnReadACL);
         $searchResults = array();
         $results = $this->dbService->loadAll($requete);
