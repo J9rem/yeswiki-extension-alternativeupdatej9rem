@@ -89,10 +89,6 @@ services:
   YesWiki\Alternativeupdatej9rem\Service\FormManager:
     decorates: YesWiki\Bazar\Service\FormManager
     decoration_on_invalid: null
-  # Feature UUID : auj9-fix-4-4-3
-  YesWiki\Alternativeupdatej9rem\Service\EntryManager:
-    decorates: YesWiki\Bazar\Service\EntryManager
-    decoration_on_invalid: null
   # Feature UUID : auj9-perf-sql
   YesWiki\Alternativeupdatej9rem\Service\DbService:
     decorates: YesWiki\Core\Service\DbService
