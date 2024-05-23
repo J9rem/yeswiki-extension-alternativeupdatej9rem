@@ -8,17 +8,16 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  * Feature UUID : auj9-autoupdate-system
+ * Feature UUID : auj9-fix-4-4-3
  */
 
 namespace YesWiki\Alternativeupdatej9rem\Entity;
 
-use AutoUpdate\PackageTheme as CorePackageTheme;
-use AutoUpdate\Release;
+use AutoUpdate\PackageTheme as AutoUpdatePackageTheme; // Feature UUID : auj9-fix-4-4-3
+use YesWiki\AutoUpdate\Entity\PackageTheme as CorePackageTheme;
 use Exception;
 
-include_once 'tools/autoupdate/vendor/autoload.php';
-
-class PackageTheme extends CorePackageTheme
+trait PackageThemeTrait
 {
     public function __construct($release, $address, $desc, $doc, $minimalPhpVersion = null)
     {
@@ -31,5 +30,22 @@ class PackageTheme extends CorePackageTheme
     public function setMD5File(string $md5File)
     {
         $this->md5File = $md5File;
+    }
+}
+
+/* === Feature UUID : auj9-fix-4-4-3 === */
+if (file_exists('tools/autoupdate/vendor/autoload.php')){
+    include_once 'tools/autoupdate/vendor/autoload.php';
+}
+if (class_exists(AutoUpdatePackageTheme::class)){
+    class PackageTheme extends AutoUpdatePackageTheme
+    {
+        use PackageThemeTrait;
+    }
+} else {
+/* === end of Feature UUID : auj9-fix-4-4-3 === */
+    class PackageTheme extends CorePackageTheme
+    {
+        use PackageThemeTrait;
     }
 }

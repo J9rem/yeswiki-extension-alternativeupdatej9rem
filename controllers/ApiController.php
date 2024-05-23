@@ -11,8 +11,6 @@
 
 namespace YesWiki\Alternativeupdatej9rem\Controller;
 
-use AutoUpdate\Package;
-use AutoUpdate\Repository;
 // Feature UUID : auj9-local-cache
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse; //Feature UUID : auj9-fix-4-4-3
@@ -27,7 +25,9 @@ use YesWiki\Alternativeupdatej9rem\Controller\ConfigOpenAgendaController ; // Fe
 use YesWiki\Alternativeupdatej9rem\Controller\PageController; // Feature UUID : auj9-fix-4-4-2
 use YesWiki\Alternativeupdatej9rem\Service\AutoUpdateService;
 use YesWiki\Alternativeupdatej9rem\Service\CacheService; // Feature UUID : auj9-local-cache
+use YesWiki\Alternativeupdatej9rem\Service\RevisionChecker; // Feature UUID : auj9-fix-4-4-3 / auj9-autoupdate-system
 use YesWiki\Alternativeupdatej9rem\Service\SubscriptionManager; // Feature UUID : auj9-subscribe-to-entry
+// use YesWiki\AutoUpdate\Entity\Package;
 use YesWiki\Bazar\Controller\ApiController as BazarApiController; // Feature UUID : auj9-local-cache
 use YesWiki\Core\ApiResponse;
 use YesWiki\Core\Controller\AuthController;
@@ -54,6 +54,8 @@ class ApiController extends YesWikiController
         $action = in_array($action, [false,null], true) ? "" : htmlspecialchars(strip_tags($action));
         $password = filter_input(INPUT_POST, 'password', FILTER_UNSAFE_RAW);
         $password = in_array($password, [false,null], true) ? "" : $password;
+        $params = $this->getService(ParameterBagInterface::class);
+        $isNewSystem = !RevisionChecker::isRevisionThan($params, true, 'doryphore', 4, 4, 4);
         switch ($action) {
             case 'getToken':
                 $userManager = $this->wiki->services->get(UserManager::class);
@@ -194,7 +196,7 @@ class ApiController extends YesWikiController
                     );
                 });
             case 'install':
-                return $this->executeInSecureContext(function ($autoUpdateService) use ($action) {
+                return $this->executeInSecureContext(function ($autoUpdateService) use ($action, $isNewSystem) {
                     foreach (['version','packageName','md5'] as $name) {
                         $var = filter_input(INPUT_POST, $name, FILTER_UNSAFE_RAW);
                         $var = in_array($var, [false,null], true) ? "" : htmlspecialchars(strip_tags($var));
@@ -256,7 +258,7 @@ class ApiController extends YesWikiController
                         );
                     } else {
                         return new ApiResponse(
-                            ['messages' => $this->render("@autoupdate/update.twig", [
+                            ['messages' => $this->render($isNewSystem ? "@autoupdate/update-result.twig" : "@autoupdate/update.twig", [
                                 'messages' => $messages,
                                 'baseUrl' => $autoUpdateService->baseUrl(),
                             ])],
@@ -266,7 +268,7 @@ class ApiController extends YesWikiController
                 });
 
             case 'delete':
-                return $this->executeInSecureContext(function ($autoUpdateService) use ($action) {
+                return $this->executeInSecureContext(function ($autoUpdateService) use ($action, $isNewSystem) {
                     foreach (['packageName'] as $name) {
                         $var = filter_input(INPUT_POST, $name, FILTER_UNSAFE_RAW);
                         $var = in_array($var, [false,null], true) ? "" : htmlspecialchars(strip_tags($var));
@@ -308,7 +310,7 @@ class ApiController extends YesWikiController
                         );
                     } else {
                         return new ApiResponse(
-                            ['messages' => $this->render("@autoupdate/update.twig", [
+                            ['messages' => $this->render($isNewSystem ? "@autoupdate/update-result.twig" : "@autoupdate/update.twig", [
                                 'messages' => $messages,
                                 'baseUrl' => $autoUpdateService->baseUrl(),
                             ])],
@@ -410,7 +412,7 @@ class ApiController extends YesWikiController
     /**
      * Feature UUID : auj9-autoupdate-system
      */
-    protected function toArray(Package $package): array
+    protected function toArray($package): array
     {
         return [
             'name' => $package->name,

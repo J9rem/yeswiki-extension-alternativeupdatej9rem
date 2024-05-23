@@ -13,8 +13,6 @@
 
 namespace YesWiki\Alternativeupdatej9rem;
 
-use AutoUpdate\Messages;
-use AutoUpdate\PackageCollection;
 use Exception;
 use Throwable;
 use YesWiki\Alternativeupdatej9rem\Entity\Repository;
@@ -72,8 +70,6 @@ class AlternativeUpdateJ9rem2Action extends YesWikiAction
             'repos' => $repos,
             'localTools' => [],
             'localThemes' => [],
-            'showThemes' => true,
-            'showTools' => true,
             'uid' => str_replace([".","/","-","\\"], '', uniqid('alternativeupdate_', true)),
             'versions' => implode(',', $this->arguments['versions'])
         ]);
