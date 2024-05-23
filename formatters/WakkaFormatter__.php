@@ -20,7 +20,8 @@ class WakkaFormatter__ extends YesWikiFormatter
     {
         // get services
         if (
-            $this->getService(RevisionChecker::class)->isRevisionLowerThan('doryphore', 4, 4, 0, false)
+            !$this->wiki->services->has(RevisionChecker::class)
+            || $this->getService(RevisionChecker::class)->isRevisionLowerThan('doryphore', 4, 4, 0, false)
             || $this->getService(RevisionChecker::class)->isRevisionHigherThan('doryphore', 4, 4, 3)
             ) {
             return;
