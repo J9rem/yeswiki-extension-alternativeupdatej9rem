@@ -13,15 +13,14 @@
 
 namespace YesWiki\Alternativeupdatej9rem;
 
+use YesWiki\Alternativeupdatej9rem\Service\RevisionChecker;
 use YesWiki\Core\YesWikiAction;
 
 class BarreRedactionAction__ extends YesWikiAction
 {
     public function run()
     {
-        $release = $this->params->get('yeswiki_release');
-        if (is_string($release)
-            && preg_match('/^4\.(?:[0-3]\.[0-9]|4\.[0-2])$/', $release)
+        if ($this->getService(RevisionChecker::class)->isRevisionHigherThan('doryphore', 4, 4, 0)
             && $this->canShowDuplicate()) {
             $anchor = preg_quote('class="link-edit"><i class="fa fa-pencil-alt"></i><span>'. html_entity_decode(_t('TEMPLATE_EDIT_THIS_PAGE')) .'</span></a>', '/');
             $anchor = str_replace(

@@ -12,6 +12,7 @@
 
 namespace YesWiki\Alternativeupdatej9rem\Service;
 
+use YesWiki\Alternativeupdatej9rem\Service\RevisionChecker;
 use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Core\Service\AclService as CoreAclService;
 
@@ -189,11 +190,9 @@ class AclService extends CoreAclService
     protected function checkShouldBeReplaced(): int
     {
         if (empty($this->checkToBeReplaced)) {
-            $version = $this->params->get("yeswiki_version");
-            $release = $this->params->get("yeswiki_release");
             $this->checkToBeReplaced = (
-                $version === "doryphore"
-                && preg_match("/^4\.4\.[3-4]$/", $release)
+                $this->wiki->services->get(RevisionChecker::class)->isWantedRevision('doryphore', 4, 4, 3)
+                || $this->wiki->services->get(RevisionChecker::class)->isWantedRevision('doryphore', 4, 4, 4)
             )
             ? 1
             : -1;

@@ -22,10 +22,9 @@ use Exception;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use YesWiki\Alternativeupdatej9rem\Entity\Repository;
 use YesWiki\Alternativeupdatej9rem\Exception\UpgradeException;
+use YesWiki\Alternativeupdatej9rem\Service\RevisionChecker;
 use YesWiki\Plugins;
 use YesWiki\Wiki;
-
-include_once 'tools/autoupdate/vendor/autoload.php';
 
 class AutoUpdateService
 {
@@ -57,6 +56,7 @@ class AutoUpdateService
     protected $filesService ;
     protected $params ;
     protected $pluginService;
+    protected $revisionChecker;
     protected $updatablePackagesViaAlternative;
     protected $wiki ;
 
@@ -74,14 +74,16 @@ class AutoUpdateService
 
     public function __construct(
         ParameterBagInterface $params,
+        RevisionChecker $revisionChecker,
         Wiki $wiki
     ) {
+        include_once 'tools/autoupdate/vendor/autoload.php';
         $this->params = $params;
+        $this->revisionChecker = $revisionChecker;
         $this->wiki = $wiki;
-        $version = $this->params->get("yeswiki_version");
-        $release = $this->params->get("yeswiki_release");
-        $this->activated = true || ($version === "doryphore") && preg_match("/^4\.2\.[2-9]$|^4\.(?:[3-9]|[1-9][0-9])\.\d\d?\d?$|^[5-9]\.\d\d?\.\d\d?\d?$/", $release);
-        $this->filesService = new Files();
+        $this->activated = $this->revisionChecker->isRevisionHigherThan('doryphore', 4, 2, 2)
+            && $this->revisionChecker->isRevisionLowerThan('doryphore', 4, 4, 4);
+        $this->filesService = $this->activated ? new Files() : null;
         $this->pluginService = null;
         $this->updatablePackagesViaAlternative = $this->params->has("updatablePackagesViaAlternative")
             ? $this->params->get("updatablePackagesViaAlternative")
@@ -106,7 +108,7 @@ class AutoUpdateService
      * @return null|Repository
      * @throws Exception if trouble to load a repository
      */
-    public function initRepository(string $requestedVersion='', array $packagesData = []): ?Repository
+    public function initRepository(string $requestedVersion = '', array $packagesData = []): ?Repository
     {
         $address = $this->repositoryAddress($requestedVersion);
         if (empty(filter_var($address, FILTER_VALIDATE_URL))) {
@@ -118,13 +120,13 @@ class AutoUpdateService
                 throw new Exception("'alternative_yeswiki_repository' param is bad formatted for key $key ; got '$addr' !");
             }
         }
-        $localKey = $address.implode("", $alternativeAddresses);
+        $localKey = $address . implode("", $alternativeAddresses);
         if (!isset($this->cacheRepo[$localKey])) {
             $repository = new Repository(
                 $address,
                 $alternativeAddresses
             );
-    
+
             $this->loadRepository($repository, $packagesData);
 
             $this->cacheRepo[$localKey] = $repository;
@@ -163,7 +165,7 @@ class AutoUpdateService
         requested by version parameter of {{update}} action
         if empty, no specifc version is requested
     */
-    private function repositoryAddress($requestedVersion='')
+    private function repositoryAddress($requestedVersion = '')
     {
         $repositoryAddress = $this::DEFAULT_REPO;
 
@@ -197,7 +199,7 @@ class AutoUpdateService
      * @param string $requestedVersion
      * @return array
      */
-    private function alternativeRepositoryAddresses(string $requestedVersion=''): array
+    private function alternativeRepositoryAddresses(string $requestedVersion = ''): array
     {
         if ($this->params->has('alternative_yeswiki_repository')) {
             $param = $this->params->get('alternative_yeswiki_repository');
@@ -235,7 +237,7 @@ class AutoUpdateService
     private function loadRepository(Repository $repository, array $packagesData = [])
     {
         $repository->initLists();
-        
+
         $this->loadARepo($repository, $repository->getAddress(), false);
         foreach ($repository->getAlternativeAddresses() as $key => $addr) {
             $this->loadARepo($repository, $addr, true, $key, $packagesData);
@@ -339,8 +341,8 @@ class AutoUpdateService
      */
     protected function getAffectedToolsNames(Repository $repository): array
     {
-        
-        list('packagesNames'=>$packagesNames) = $this->getReposRaw(['tools'], $repository);
+
+        list('packagesNames' => $packagesNames) = $this->getReposRaw(['tools'], $repository);
 
         return array_map('strtolower', $packagesNames);
     }
@@ -352,7 +354,7 @@ class AutoUpdateService
      */
     protected function getAffectedThemesNames(Repository $repository): array
     {
-        list('packagesNames'=>$packagesNames) = $this->getReposRaw(['themes'], $repository);
+        list('packagesNames' => $packagesNames) = $this->getReposRaw(['themes'], $repository);
 
         return array_map('strtolower', $packagesNames);
     }
@@ -387,7 +389,7 @@ class AutoUpdateService
         string $packageName,
         string $packageFile = "",
         string $packageFileMD5 = ""
-    ) :?Messages {
+    ): ?Messages {
         if (empty($packageName) || $packageName == "yeswiki") {
             return null;
         }
@@ -480,7 +482,7 @@ class AutoUpdateService
         } catch (UpgradeException $ex) {
             $package->cleanTempFiles();
         }
-        
+
         return $messages;
     }
 
@@ -492,7 +494,7 @@ class AutoUpdateService
     public function deleteAlternativeOrLocal(
         Repository $repository,
         string $packageName
-    ) :?Messages {
+    ): ?Messages {
         if (empty($packageName) || $packageName == "yeswiki") {
             return null;
         }
@@ -552,11 +554,11 @@ class AutoUpdateService
      */
     public function getReposForAlternative(Repository $repository, $callable = null): array
     {
-        list('repos'=>$repos) = $this->getReposRaw(['themes','tools'], $repository, $callable);
+        list('repos' => $repos) = $this->getReposRaw(['themes','tools'], $repository, $callable);
         return $repos;
     }
 
-    
+
     /**
      * @param array $types
      * @param Repository $repository

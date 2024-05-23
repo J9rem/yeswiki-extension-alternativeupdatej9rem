@@ -2,6 +2,7 @@
 
 namespace YesWiki\Alternativeupdatej9rem;
 
+use YesWiki\Alternativeupdatej9rem\Service\RevisionChecker;
 use YesWiki\Core\YesWikiFormatter;
 
 /**
@@ -18,9 +19,10 @@ class WakkaFormatter__ extends YesWikiFormatter
     public function run()
     {
         // get services
-        $release = $this->params->has('yeswiki_release') ? $this->params->get('yeswiki_release') : '';
-        $release = !is_string($release) ? '' : $release;
-        if (!preg_match('/^4\.(?:[0-3]\.[0-9]|4\.[0-2])+$/', $release)) {
+        if (
+            $this->getService(RevisionChecker::class)->isRevisionLowerThan('doryphore', 4, 4, 0, false)
+            || $this->getService(RevisionChecker::class)->isRevisionHigherThan('doryphore', 4, 4, 3)
+            ) {
             return;
         }
 
