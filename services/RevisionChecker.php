@@ -86,12 +86,22 @@ class RevisionChecker
         $matches = [];
         return $this->version === $version
             && preg_match("/^(\d+)\.(\d+)\.(\d+)\$/", $this->release, $matches)
-            && intval($matches[1]) <= $major
-            && intval($matches[2]) <= $minor
             && (
-                $included
-                ? intval($matches[3]) <= $bugfix
-                : intval($matches[3]) < $bugfix
+                intval($matches[1]) < $major
+                || (
+                    intval($matches[1]) == $major
+                    && (
+                        intval($matches[2]) < $minor
+                        || (
+                            intval($matches[2]) == $minor
+                            && (
+                                $included
+                                ? intval($matches[3]) <= $bugfix
+                                : intval($matches[3]) < $bugfix
+                            )
+                        )
+                    )
+                )
             );
     }
 
@@ -108,12 +118,22 @@ class RevisionChecker
         $matches = [];
         return $this->version === $version
             && preg_match("/^(\d+)\.(\d+)\.(\d+)\$/", $this->release, $matches)
-            && intval($matches[1]) >= $major
-            && intval($matches[2]) >= $minor
             && (
-                $included
-                ? intval($matches[3]) >= $bugfix
-                : intval($matches[3]) > $bugfix
+                intval($matches[1]) > $major
+                || (
+                    intval($matches[1]) == $major
+                    && (
+                        intval($matches[2]) > $minor
+                        || (
+                            intval($matches[2]) == $minor
+                            && (
+                                $included
+                                ? intval($matches[3]) >= $bugfix
+                                : intval($matches[3]) > $bugfix
+                            )
+                        )
+                    )
+                )
             );
     }
 
