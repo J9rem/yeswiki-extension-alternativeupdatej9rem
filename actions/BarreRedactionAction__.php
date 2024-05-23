@@ -19,7 +19,8 @@ class BarreRedactionAction__ extends YesWikiAction
 {
     public function run()
     {
-        if (RevisionChecker::isRevisionThan($this->params, false, 'doryphore', 4, 4, 0)
+        if (method_exists(RevisionChecker::class, 'isRevisionThan')
+            && RevisionChecker::isRevisionThan($this->params, false, 'doryphore', 4, 4, 0)
             && $this->canShowDuplicate()) {
             $anchor = preg_quote('class="link-edit"><i class="fa fa-pencil-alt"></i><span>' . html_entity_decode(_t('TEMPLATE_EDIT_THIS_PAGE')) . '</span></a>', '/');
             $anchor = str_replace(

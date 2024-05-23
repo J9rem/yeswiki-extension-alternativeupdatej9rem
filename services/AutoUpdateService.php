@@ -79,8 +79,12 @@ class AutoUpdateService
         include_once 'tools/autoupdate/vendor/autoload.php';
         $this->params = $params;
         $this->wiki = $wiki;
-        $this->activated = RevisionChecker::isRevisionThan($params, false, 'doryphore', 4, 2, 2)
-            && RevisionChecker::isRevisionThan($params, true, 'doryphore', 4, 4, 4);
+        $this->activated =
+            !method_exists(RevisionChecker::class, 'isRevisionThan')
+            || (
+                RevisionChecker::isRevisionThan($params, false, 'doryphore', 4, 2, 2)
+                && RevisionChecker::isRevisionThan($params, true, 'doryphore', 4, 4, 4)
+            );
         $this->filesService = $this->activated ? new Files() : null;
         $this->pluginService = null;
         $this->updatablePackagesViaAlternative = $this->params->has("updatablePackagesViaAlternative")

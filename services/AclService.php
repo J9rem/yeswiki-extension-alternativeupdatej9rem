@@ -191,7 +191,8 @@ class AclService extends CoreAclService
     {
         if (empty($this->checkToBeReplaced)) {
             $this->checkToBeReplaced = (
-                RevisionChecker::isWantedRevision($this->params, 'doryphore', 4, 4, 3)
+                !method_exists(RevisionChecker::class, 'isRevisionThan')
+                || RevisionChecker::isWantedRevision($this->params, 'doryphore', 4, 4, 3)
                 || RevisionChecker::isWantedRevision($this->params, 'doryphore', 4, 4, 4)
             )
             ? 1

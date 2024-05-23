@@ -20,7 +20,8 @@ class WakkaFormatter__ extends YesWikiFormatter
     {
         // get services
         if (
-            RevisionChecker::isRevisionThan($this->params, true, 'doryphore', 4, 4, 0, false)
+            !method_exists(RevisionChecker::class, 'isRevisionThan')
+            || RevisionChecker::isRevisionThan($this->params, true, 'doryphore', 4, 4, 0, false)
             || RevisionChecker::isRevisionThan($this->params, false, 'doryphore', 4, 4, 3)
         ) {
             return;
