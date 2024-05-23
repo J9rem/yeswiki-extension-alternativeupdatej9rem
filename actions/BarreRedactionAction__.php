@@ -20,7 +20,8 @@ class BarreRedactionAction__ extends YesWikiAction
 {
     public function run()
     {
-        if ($this->getService(RevisionChecker::class)->isRevisionHigherThan('doryphore', 4, 4, 0)
+        if ($this->wiki->services->has(RevisionChecker::class)
+            && $this->getService(RevisionChecker::class)->isRevisionHigherThan('doryphore', 4, 4, 0)
             && $this->canShowDuplicate()) {
             $anchor = preg_quote('class="link-edit"><i class="fa fa-pencil-alt"></i><span>'. html_entity_decode(_t('TEMPLATE_EDIT_THIS_PAGE')) .'</span></a>', '/');
             $anchor = str_replace(

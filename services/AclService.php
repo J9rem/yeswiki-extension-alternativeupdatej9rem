@@ -191,7 +191,8 @@ class AclService extends CoreAclService
     {
         if (empty($this->checkToBeReplaced)) {
             $this->checkToBeReplaced = (
-                $this->wiki->services->get(RevisionChecker::class)->isWantedRevision('doryphore', 4, 4, 3)
+                !$this->wiki->services->has(RevisionChecker::class)
+                || $this->wiki->services->get(RevisionChecker::class)->isWantedRevision('doryphore', 4, 4, 3)
                 || $this->wiki->services->get(RevisionChecker::class)->isWantedRevision('doryphore', 4, 4, 4)
             )
             ? 1
