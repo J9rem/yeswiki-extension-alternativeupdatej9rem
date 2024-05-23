@@ -8,20 +8,21 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  * Feature UUID : auj9-autoupdate-system
+ * Feature UUID : auj9-fix-4-4-3
  */
-
 
 namespace YesWiki\Alternativeupdatej9rem;
 
-use AutoUpdate\Messages;
-use AutoUpdate\PackageCollection;
 use Throwable;
+use YesWiki\Alternativeupdatej9rem\Entity\Messages; // Feature UUID : auj9-fix-4-4-3
+use YesWiki\Alternativeupdatej9rem\Entity\PackageCollection; // Feature UUID : auj9-fix-4-4-3
 use YesWiki\Alternativeupdatej9rem\Entity\Repository;
 use YesWiki\Alternativeupdatej9rem\Service\AutoUpdateService;
+use YesWiki\Alternativeupdatej9rem\Service\RevisionChecker;
+// use YesWiki\AutoUpdate\Entity\Messages;
+// use YesWiki\AutoUpdate\Entity\PackageCollection;
 use YesWiki\Core\YesWikiAction;
 use YesWiki\Security\Controller\SecurityController;
-
-include_once 'tools/autoupdate/vendor/autoload.php';
 
 /**
  * customization for update
@@ -29,6 +30,10 @@ include_once 'tools/autoupdate/vendor/autoload.php';
 class __UpdateAction extends YesWikiAction
 {
     protected $autoUpdateService;
+    /**
+     * @var bool $isNewSystem
+     */
+    protected $isNewSystem;
     protected $securityController;
 
     public function formatArguments($arg)
@@ -49,35 +54,66 @@ class __UpdateAction extends YesWikiAction
             return "";
         }
 
-        $repository = $this->autoUpdateService->initRepository($this->arguments['version']);
-
+        
         if ($this->autoUpdateService->isAdmin() &&
             !$this->securityController->isWikiHibernated()) {
-            if (isset($_GET['upgrade'])) {
-                return $this->upgradeAlternativeIfNeeded($repository);
+            $repository = $this->autoUpdateService->initRepository($this->arguments['version']);
+            $this->isNewSystem = !RevisionChecker::isRevisionThan($this->params, true, 'doryphore', 4, 4, 4);
+            if (!$this->isNewSystem){
+                if (isset($_GET['upgrade'])) {
+                    $action = 'upgrade';
+                    $packageName = $this->filterInput('upgrade');
+                } elseif (isset($_GET['delete'])) {
+                    $action = 'delete';
+                    $packageName = $this->filterInput('delete');
+                } elseif (isset($_GET['activate'])) {
+                    $action = 'activate';
+                    $packageName = $this->filterInput('activate');
+                } elseif (isset($_GET['deactivate'])) {
+                    $action = 'deactivate';
+                    $packageName = $this->filterInput('deactivate');
+                } else {
+                    $action = '';
+                    $packageName = '';
+                }
+            } else {
+                $action = $this->filterInput('action');
+                $packageName = $this->filterInput('package');
             }
-            if (isset($_GET['delete'])) {
-                return $this->deleteAlternativeIfNeeded($repository);
-            }
-            if (isset($_GET['activate'])) {
-                return $this->activationLocal($repository, true);
-            }
-            if (isset($_GET['deactivate'])) {
-                return $this->activationLocal($repository, false);
+            switch ($action) {
+                case 'upgrade':
+                    return $this->upgradeAlternativeIfNeeded($repository, $packageName);
+                case 'delete':
+                    return $this->deleteAlternativeIfNeeded($repository, $packageName);
+                case 'activate':
+                    return $this->activationLocal($repository, $packageName, true);
+                case 'deactivate':
+                    return $this->activationLocal($repository, $packageName, false);
+                
+                default:
+                    return null;
             }
         }
 
         return null;
     }
 
+    protected function filterInput(string $name): string
+    {
+        if (empty($_GET[$name])){
+            return '';
+        }
+        $value = filter_var($_GET[$name], FILTER_UNSAFE_RAW);
+        return ($value === false) ? "" : htmlspecialchars(strip_tags($value));
+    }
+
     /**
      * update alternative package
      * @param Repository $repository
+     * @param string $packageName
      */
-    private function upgradeAlternativeIfNeeded(Repository $repository) :string
+    private function upgradeAlternativeIfNeeded(Repository $repository, string $packageName): string
     {
-        $packageName = filter_var($_GET['upgrade'], FILTER_UNSAFE_RAW);
-        $packageName = ($packageName === false) ? "" : htmlspecialchars(strip_tags($packageName));
         if (empty($packageName) || $packageName == "yeswiki") {
             return '';
         }
@@ -87,58 +123,58 @@ class __UpdateAction extends YesWikiAction
         if (is_null($messages)) {
             return '';
         } else {
-            unset($_GET['upgrade']);
-            $_GET['alternativeupdatej9rem'] = "1";
+            $this->arguments['version'] = 'unknown-to-remove-display';
         }
-        
-        return $this->render("@autoupdate/update.twig", [
-            'messages' => $messages,
-            'baseUrl' => $this->autoUpdateService->baseUrl(),
-        ]);
+        return $this->render(
+            $this->isNewSystem ? "@autoupdate/update-result.twig" : "@autoupdate/update.twig",
+            [
+                'messages' => $messages,
+                'baseUrl' => $this->autoUpdateService->baseUrl(),
+            ]
+        );
     }
 
-    
+
     /**
      * delete alternative package
      * @param Repository $repository
+     * @param string $packageName
      */
-    private function deleteAlternativeIfNeeded(Repository $repository) :string
+    private function deleteAlternativeIfNeeded(Repository $repository, string $packageName): string
     {
-        $packageName = filter_var($_GET['delete'], FILTER_UNSAFE_RAW);
-        $packageName = ($packageName === false) ? "" : htmlspecialchars(strip_tags($packageName));
         $messages = $this->autoUpdateService->deleteAlternativeOrLocal($repository, $packageName);
 
         if (is_null($messages)) {
             return '';
         } else {
-            unset($_GET['delete']);
-            $_GET['alternativeupdatej9rem'] = "1";
+            $this->arguments['version'] = 'unknown-to-remove-display';
         }
-        
-        return $this->render("@autoupdate/update.twig", [
-            'messages' => $messages,
-            'baseUrl' => $this->autoUpdateService->baseUrl(),
-        ]);
+
+        return $this->render(
+            $this->isNewSystem ? "@autoupdate/update-result.twig" : "@autoupdate/update.twig",
+            [
+                'messages' => $messages,
+                'baseUrl' => $this->autoUpdateService->baseUrl(),
+            ]
+        );
     }
 
     /**
      * deactive local ext
      * @param Repository $repository
      * @param bool $activation
+     * @param string $packageName
      * @return string
      */
-    protected function activationLocal(Repository $repository, $activation = true): string
+    protected function activationLocal(Repository $repository, string $packageName, $activation = true): string
     {
         $key = $activation ? 'activate' : 'deactivate';
-        $packageName = filter_var($_GET[$key], FILTER_UNSAFE_RAW);
-        unset($_GET[$key]);
-        $packageName = ($packageName === false) ? "" : htmlspecialchars(strip_tags($packageName));
 
         if ($this->autoUpdateService->activationLocal($repository, $packageName, $activation)) {
-            flash("L'extension '$packageName' a été ".($activation ? "activée": "désactivée"), 'success');
+            flash("L'extension '$packageName' a été " . ($activation ? "activée" : "désactivée"), 'success');
             $this->wiki->Redirect($this->wiki->Href());
         } else {
-            flash("L'extension '$packageName' n'a pas été ".($activation ? "activée": "désactivée"), 'error');
+            flash("L'extension '$packageName' n'a pas été " . ($activation ? "activée" : "désactivée"), 'error');
             $this->wiki->Redirect($this->wiki->Href());
         }
     }

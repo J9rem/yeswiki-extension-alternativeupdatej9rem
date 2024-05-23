@@ -8,15 +8,15 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  * Feature UUID : auj9-autoupdate-system
+ * Feature UUID : auj9-fix-4-4-3
  */
 
 namespace YesWiki\Alternativeupdatej9rem\Entity;
 
 use YesWiki\Alternativeupdatej9rem\Entity\PackageTheme;
-use AutoUpdate\Release;
+use YesWiki\Alternativeupdatej9rem\Entity\Release; //Feature UUID : auj9-fix-4-4-3
+// use YesWiki\AutoUpdate\Entity\Release;
 use Exception;
-
-include_once 'tools/autoupdate/vendor/autoload.php';
 
 class PackageThemeLocal extends PackageTheme
 {

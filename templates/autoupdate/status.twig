@@ -5,11 +5,8 @@
 # Feature UUID : auj9-autoupdate-system
 #}
 
-{% if (request.get is defined and request.get.alternativeupdatej9rem != "1")
-    or (request.get is not defined and request.alternativeupdatej9rem != "1") %}
-    {{ include('tools/autoupdate/templates/status.twig',{
-        tools:tools|filter(ext=>config.updatablePackagesViaAlternative is iterable 
-            and ext.name not in config.updatablePackagesViaAlternative )
-    })|raw|replace({"data-parent=\"#accordion_update\"":"data-parent=\"#accordion_update,#accordion_update_j9rem\""})|raw }}
-	{{ format("{{alternativeupdatej9rem version=\"#{core.requestedVersion}\"}}")|raw }}
-{% endif %}
+{{ include('tools/autoupdate/templates/status.twig',{
+    tools:tools|filter(ext=>config.updatablePackagesViaAlternative is iterable 
+        and ext.name not in config.updatablePackagesViaAlternative )
+})|raw|replace({"data-parent=\"#accordion_update\"":"data-parent=\"#accordion_update,#accordion_update_j9rem\""})|raw }}
+{{ format("{{alternativeupdatej9rem version=\"#{core.requestedVersion}\"}}")|raw }}

@@ -8,21 +8,27 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  * Feature UUID : auj9-autoupdate-system
+ * Feature UUID : auj9-fix-4-4-3
  */
 
 namespace YesWiki\Alternativeupdatej9rem\Service;
 
-use AutoUpdate\Configuration;
-use AutoUpdate\Files;
-use AutoUpdate\PackageCollection;
-use AutoUpdate\Messages;
-use AutoUpdate\Release;
-use AutoUpdate\Repository as CoreRepository;
 use Exception;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use YesWiki\Alternativeupdatej9rem\Entity\CoreRepository; // Feature UUID : auj9-fix-4-4-3
+use YesWiki\Alternativeupdatej9rem\Entity\Files; // Feature UUID : auj9-fix-4-4-3
+use YesWiki\Alternativeupdatej9rem\Entity\PackageCollection; // Feature UUID : auj9-fix-4-4-3
+use YesWiki\Alternativeupdatej9rem\Entity\Messages; // Feature UUID : auj9-fix-4-4-3
+use YesWiki\Alternativeupdatej9rem\Entity\Release; // Feature UUID : auj9-fix-4-4-3
 use YesWiki\Alternativeupdatej9rem\Entity\Repository;
 use YesWiki\Alternativeupdatej9rem\Exception\UpgradeException;
 use YesWiki\Alternativeupdatej9rem\Service\RevisionChecker;
+// use YesWiki\AutoUpdate\Entity\Repository as CoreRepository;
+// use YesWiki\AutoUpdate\Entity\Files;
+// use YesWiki\AutoUpdate\Entity\PackageCollection;
+// use YesWiki\AutoUpdate\Entity\Messages;
+// use YesWiki\AutoUpdate\Entity\Release;
+use YesWiki\Core\Entity\ConfigurationFile;
 use YesWiki\Plugins;
 use YesWiki\Wiki;
 
@@ -76,16 +82,12 @@ class AutoUpdateService
         RevisionChecker $revisionChecker,
         Wiki $wiki
     ) {
-        include_once 'tools/autoupdate/vendor/autoload.php';
         $this->params = $params;
         $this->wiki = $wiki;
         $this->activated =
             !method_exists(RevisionChecker::class, 'isRevisionThan')
-            || (
-                RevisionChecker::isRevisionThan($params, false, 'doryphore', 4, 2, 2)
-                && RevisionChecker::isRevisionThan($params, true, 'doryphore', 4, 4, 4)
-            );
-        $this->filesService = $this->activated ? new Files() : null;
+            || RevisionChecker::isRevisionThan($params, false, 'doryphore', 4, 2, 2);
+        $this->filesService = new Files();
         $this->pluginService = null;
         $this->updatablePackagesViaAlternative = $this->params->has("updatablePackagesViaAlternative")
             ? $this->params->get("updatablePackagesViaAlternative")
@@ -144,7 +146,7 @@ class AutoUpdateService
 
     public function getWikiConfiguration()
     {
-        $configuration = new Configuration(
+        $configuration = new ConfigurationFile(
             $this->getWikiDir() . '/wakka.config.php'
         );
         $configuration->load();
@@ -403,7 +405,9 @@ class AutoUpdateService
         }
         list('key' => $key, 'package' => $package) = $repository->getAlternativePackage($packageName);
         if (empty($package) || (
-            !in_array($packageName, $this->updatablePackagesViaAlternative) && get_class($package) === PackageCollection::CORE_CLASS
+            !in_array($packageName, $this->updatablePackagesViaAlternative)
+            && get_class($package) === PackageCollection::CORE_CLASS
+            && get_parent_class($package) === PackageCollection::CORE_CLASS
         )) {
             // not found for alternative repository or core
             return null;
@@ -506,11 +510,17 @@ class AutoUpdateService
             return null;
         }
         list('key' => $key, 'package' => $package) = $repository->getAlternativePackage($packageName);
-        if (!empty($package) && get_class($package) === PackageCollection::CORE_CLASS) {
+        if (!empty($package)
+            && get_class($package) === PackageCollection::CORE_CLASS
+            && get_parent_class($package) === PackageCollection::CORE_CLASS
+        ) {
             return null;
         } elseif (empty($package)) {
             $package = $repository->getLocalPackage($packageName);
-            if (empty($package) || get_class($package) === PackageCollection::CORE_CLASS) {
+            if (empty($package)
+                || get_class($package) === PackageCollection::CORE_CLASS
+                || get_parent_class($package) === PackageCollection::CORE_CLASS
+            ) {
                 return null;
             }
         }
@@ -541,8 +551,10 @@ class AutoUpdateService
     {
         if (!empty($packageName) && $packageName != "yeswiki") {
             $package = $repository->getLocalPackage($packageName);
-            if (!empty($package) && get_class($package) !== PackageCollection::CORE_CLASS &&
-                    $package->activate($activation)) {
+            if (!empty($package)
+                && get_class($package) !== PackageCollection::CORE_CLASS
+                && get_parent_class($package) !== PackageCollection::CORE_CLASS
+                && $package->activate($activation)) {
                 return true;
             }
         }

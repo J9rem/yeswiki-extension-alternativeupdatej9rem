@@ -10,6 +10,26 @@
 {{ include_javascript('javascripts/vendor/vue/vue.js') }}
 {{ include_javascript('tools/alternativeupdatej9rem/javascripts/alternativej9rem2.js',false,true) }}
 
+{% set revision = config.yeswiki_version %}
+{% set release = config.yeswiki_release|split('.') %}
+{% set isNewSystem = 
+    revision == "doryphore"
+    and release|length > 1
+    and (
+      release[0] > 4
+      or (
+        release[0] == 4
+        and (
+            release[1] > 4
+            or (
+                release[1] == 4
+                and
+                release[2] > 4
+            )
+        )
+      )
+    )
+    %}
 <div class="alternativej9rem2-container" data-uid="{{uid}}" data-versions="{{versions}}">
     <div 
         v-if="ready || !installing" 
@@ -41,7 +61,7 @@
     </div>
     <div v-if="message.length > 0" v-html="message" :class="messageClass"></div>
     <div v-if="postInstallMessage.length > 0" v-html="postInstallMessage"></div>
-    <div v-if="!finishedUpdate"><a :href="wiki.url(wiki.pageTag+'/update')" class="btn btn-danger" target="_blank" @click="unsetFinishedUpdate">{{ _t('ALTERNATIVEUPDATE_FINISH_UPDATE') }}</a></div>
+    <div v-if="!finishedUpdate"><a :href="{{ isNewSystem ? "wiki.url(wiki.pageTag.replace('Specific',''),{action:'post_install'})" : "wiki.url(wiki.pageTag+'/update')"}}" class="btn btn-danger" target="_blank" @click="unsetFinishedUpdate">{{ _t('ALTERNATIVEUPDATE_FINISH_UPDATE') }}</a></div>
     <div v-if="ready" class="panel-group" role="tablist" aria-multiselectable="true" id="accordion_update_j9rem" >
         <template v-for="(versiondata,version) in data.versions">
             <h2>Version <i v-html="version"></i></h2>

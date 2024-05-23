@@ -5,6 +5,26 @@
 # Feature UUID : auj9-autoupdate-system
 #}
 
+{% set revision = config.yeswiki_version %}
+{% set release = config.yeswiki_release|split('.') %}
+{% set isNewSystem = 
+    revision == "doryphore"
+    and release|length > 1
+    and (
+      release[0] > 4
+      or (
+        release[0] == 4
+        and (
+            release[1] > 4
+            or (
+                release[1] == 4
+                and
+                release[2] > 4
+            )
+        )
+      )
+    )
+    %}
 <table class="table table-striped table-condensed table-updates">
   <thead>
     <tr>
@@ -46,7 +66,9 @@
                     {% set text = ext.updateAvailable ? _t('AU_UPDATE') : _t('ALTERNATIVEUPDATE_REINSTALL') %}
                     {% set class = ext.updateAvailable ? 'btn-primary' : 'btn-info' %}
                     {% if not isHibernated %}
-                        <a  href="{{ url({params:{upgrade:ext.updateLink}}) }}"
+                        <a  href="{{ url({params:isNewSystem
+                            ? {action:'upgrade',package:ext.updateLink}
+                            : {upgrade:ext.updateLink}}) }}"
                             class="btn btn-xs {{ class }}"
                             title="{{ text }}"
                         >
@@ -69,7 +91,9 @@
             <td>
                 {% if isAdmin and not ext.installed %}
                     {% if not isHibernated %}
-                        <a  href="{{ url({params:{upgrade:ext.updateLink}}) }}"
+                        <a  href="{{ url({params:isNewSystem
+                            ? {action:'upgrade',package:ext.updateLink}
+                            : {upgrade:ext.updateLink}}) }}"
                             class="btn btn-xs btn-primary"
                             title="{{ _t('AU_INSTALL') }}"
                         >
@@ -89,7 +113,9 @@
 
                 {% if isAdmin and ext.installed and ext.name != 'autoupdate' %}
                     {% if not isHibernated %}
-                        <a  href="{{ url({params:{delete:ext.deleteLink|split('delete=')|slice(1,1)|first}}) }}"
+                        <a  href="{{ url({params:isNewSystem
+                            ? {action:'delete',package:ext.deleteLink|split('delete=')|slice(1,1)|first}
+                            : {delete:ext.deleteLink|split('delete=')|slice(1,1)|first}}) }}"
                             class="btn btn-xs btn-danger"
                             title="{{ _t('AU_DELETE_EXT') }}"
                         >

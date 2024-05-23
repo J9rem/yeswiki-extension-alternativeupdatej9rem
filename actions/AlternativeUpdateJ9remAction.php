@@ -12,8 +12,6 @@
 
 namespace YesWiki\Alternativeupdatej9rem;
 
-use AutoUpdate\Messages;
-use AutoUpdate\PackageCollection;
 use Throwable;
 use YesWiki\Alternativeupdatej9rem\Entity\Repository;
 use YesWiki\Alternativeupdatej9rem\Exception\UpgradeException;
@@ -61,8 +59,6 @@ class AlternativeUpdateJ9remAction extends YesWikiAction
             'repos' => $repos,
             'localTools' => $localTools,
             'localThemes' => $localThemes,
-            'showThemes' => true,
-            'showTools' => true,
             'core' => $core,
         ]);
     }
