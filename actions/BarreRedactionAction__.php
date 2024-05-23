@@ -10,7 +10,6 @@
  * Feature UUID : auj9-duplicate
  */
 
-
 namespace YesWiki\Alternativeupdatej9rem;
 
 use YesWiki\Alternativeupdatej9rem\Service\RevisionChecker;
@@ -20,16 +19,15 @@ class BarreRedactionAction__ extends YesWikiAction
 {
     public function run()
     {
-        if ($this->wiki->services->has(RevisionChecker::class)
-            && $this->getService(RevisionChecker::class)->isRevisionHigherThan('doryphore', 4, 4, 0)
+        if (RevisionChecker::isRevisionThan($this->params, false, 'doryphore', 4, 4, 0)
             && $this->canShowDuplicate()) {
-            $anchor = preg_quote('class="link-edit"><i class="fa fa-pencil-alt"></i><span>'. html_entity_decode(_t('TEMPLATE_EDIT_THIS_PAGE')) .'</span></a>', '/');
+            $anchor = preg_quote('class="link-edit"><i class="fa fa-pencil-alt"></i><span>' . html_entity_decode(_t('TEMPLATE_EDIT_THIS_PAGE')) . '</span></a>', '/');
             $anchor = str_replace(
                 '>',
                 '>\\s*',
                 $anchor
             );
-            $button = '<a title="' . _t('AUJ9_DUPLICATE') . '" href="' . $this->wiki->Href('duplicate'.testUrlInIframe()) . '"><i class="fas fa-copy"></i></a>';
+            $button = '<a title="' . _t('AUJ9_DUPLICATE') . '" href="' . $this->wiki->Href('duplicate' . testUrlInIframe()) . '"><i class="fas fa-copy"></i></a>';
             $match = [];
             $this->output = preg_replace(
                 "/($anchor)/",

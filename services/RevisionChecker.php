@@ -15,65 +15,37 @@
 
 namespace YesWiki\Alternativeupdatej9rem\Service;
 
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;;
-use YesWiki\Wiki;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
  * offer methods to check revision of yeswiki
  */
 class RevisionChecker
 {
-    /**
-     * @var ParameterBagInterface $params
-     */
-    protected $params ;
+    public function __construct() {}
 
     /**
-     * @var string $release - revision of yeswiki
+     * @param ParameterBagInterface $params
+     * @param string $version - version of wanted YesWiki
+     * @param int $major
+     * @param int $minor
+     * @param int $bugfix
+     * @return bool
      */
-    protected $release ;
-
-    /**
-     * @var string $version - version of yeswiki
-     */
-    protected $version ;
-
-    /**
-     * @var Wiki $wiki
-     */
-    protected $wiki ;
-
-
-    public function __construct(
+    public static function isWantedRevision(
         ParameterBagInterface $params,
-        Wiki $wiki
-    ) {
-        $this->params = $params;
-        $this->wiki = $wiki;
-        $this->version = $this->params->get('yeswiki_version');
-        if (!is_string($this->version)){
-            $this->version = '';
-        }
-        $this->release = $this->params->get('yeswiki_release');
-        if (!is_string($this->release)){
-            $this->release = '';
-        }
+        string $version,
+        int $major,
+        int $minor,
+        int $bugfix
+    ): bool {
+        return self::getParam($params, 'yeswiki_version') === $version
+            && self::getParam($params, 'yeswiki_release') === "$major.$minor.$bugfix";
     }
 
     /**
-     * @param string $version - version of wanted YesWiki
-     * @param int $major
-     * @param int $minor
-     * @param int $bugfix
-     * @return bool
-     */
-    public function isWantedRevision(string $version, int $major, int $minor, int $bugfix): bool
-    {
-        return $this->version === $version
-            && $this->release === "$major.$minor.$bugfix";
-    }
-
-    /**
+     * @param ParameterBagInterface $params
+     * @param bool $isLower
      * @param string $version - version of wanted YesWiki
      * @param int $major
      * @param int $minor
@@ -81,31 +53,48 @@ class RevisionChecker
      * @param bool $included - current revision is included
      * @return bool
      */
-    public function isRevisionLowerThan(string $version, int $major, int $minor, int $bugfix, bool $included = true): bool
-    {
-        $matches = [];
-        return $this->version === $version
-            && preg_match("/^(\d+)\.(\d+)\.(\d+)\$/", $this->release, $matches)
-            && (
-                intval($matches[1]) < $major
-                || (
-                    intval($matches[1]) == $major
-                    && (
-                        intval($matches[2]) < $minor
-                        || (
-                            intval($matches[2]) == $minor
-                            && (
-                                $included
-                                ? intval($matches[3]) <= $bugfix
-                                : intval($matches[3]) < $bugfix
-                            )
-                        )
-                    )
-                )
-            );
+    public static function isRevisionThan(
+        ParameterBagInterface $params,
+        bool $isLower,
+        string $version,
+        int $major,
+        int $minor,
+        int $bugfix,
+        bool $included = true
+    ): bool {
+        return self::InternalIsRevisionThan(
+            $isLower,
+            self::getParam($params, 'yeswiki_version'),
+            self::getParam($params, 'yeswiki_release'),
+            $version,
+            $major,
+            $minor,
+            $bugfix,
+            $included
+        );
     }
 
     /**
+     * @param ParameterBagInterface $params
+     * @param string $name
+     * @return string
+     */
+    protected static function getParam(ParameterBagInterface $params, string $name): string
+    {
+        $value = '';
+        if ($params->has($name)) {
+            $extractedValue = $params->get($name);
+            if (is_string($extractedValue)) {
+                $value = $extractedValue;
+            }
+        }
+        return $value;
+    }
+
+    /**
+     * @param bool $isLower
+     * @param string $currentVersion
+     * @param string $currentRelease
      * @param string $version - version of wanted YesWiki
      * @param int $major
      * @param int $minor
@@ -113,28 +102,36 @@ class RevisionChecker
      * @param bool $included - current revision is included
      * @return bool
      */
-    public function isRevisionHigherThan(string $version, int $major, int $minor, int $bugfix, bool $included = true): bool
-    {
+    protected static function InternalIsRevisionThan(
+        bool $isLower,
+        string $currentVersion,
+        string $currentRelease,
+        string $version,
+        int $major,
+        int $minor,
+        int $bugfix,
+        bool $included = true
+    ): bool {
         $matches = [];
-        return $this->version === $version
-            && preg_match("/^(\d+)\.(\d+)\.(\d+)\$/", $this->release, $matches)
+        $modifier = $isLower ? -1 : 1 ;
+        return $currentVersion === $version
+            && preg_match("/^(\d+)\.(\d+)\.(\d+)\$/", $currentRelease, $matches)
             && (
-                intval($matches[1]) > $major
+                (intval($matches[1]) - $major) * $modifier > 0
                 || (
                     intval($matches[1]) == $major
                     && (
-                        intval($matches[2]) > $minor
+                        (intval($matches[2]) - $minor) * $modifier > 0
                         || (
                             intval($matches[2]) == $minor
                             && (
                                 $included
-                                ? intval($matches[3]) >= $bugfix
-                                : intval($matches[3]) > $bugfix
+                                ? (intval($matches[3]) - $bugfix) * $modifier >= 0
+                                : (intval($matches[3]) - $bugfix) * $modifier > 0
                             )
                         )
                     )
                 )
             );
     }
-
 }

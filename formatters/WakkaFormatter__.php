@@ -15,15 +15,14 @@ class WakkaFormatter__ extends YesWikiFormatter
     {
         return [];
     }
-    
+
     public function run()
     {
         // get services
         if (
-            !$this->wiki->services->has(RevisionChecker::class)
-            || $this->getService(RevisionChecker::class)->isRevisionLowerThan('doryphore', 4, 4, 0, false)
-            || $this->getService(RevisionChecker::class)->isRevisionHigherThan('doryphore', 4, 4, 3)
-            ) {
+            RevisionChecker::isRevisionThan($this->params, true, 'doryphore', 4, 4, 0, false)
+            || RevisionChecker::isRevisionThan($this->params, false, 'doryphore', 4, 4, 3)
+        ) {
             return;
         }
 
@@ -33,7 +32,7 @@ class WakkaFormatter__ extends YesWikiFormatter
             foreach($matches[0] as $idx => $match) {
                 $newEndPart = empty($matches[2][$idx])
                     ? ''
-                    :str_replace(
+                    : str_replace(
                         ['=true','=false'],
                         ['="true"','="false"'],
                         $matches[2][$idx]
