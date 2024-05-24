@@ -15,23 +15,24 @@
 namespace YesWiki\Alternativeupdatej9rem;
 
 use Exception;
-use Throwable;
+use YesWiki\Alternativeupdatej9rem\Service\RevisionChecker;
 use YesWiki\Alternativeupdatej9rem\Service\UpdateHandlerService;
-use YesWiki\Bazar\Service\FormManager;
 use YesWiki\Core\YesWikiHandler;
-use YesWiki\Core\Service\DbService;
 use YesWiki\Security\Controller\SecurityController;
 
 class UpdateHandler__ extends YesWikiHandler
 {
     public function run()
     {
-        if ($this->getService(SecurityController::class)->isWikiHibernated()) {
-            throw new Exception(_t('WIKI_IN_HIBERNATION'));
-        };
+        if (RevisionChecker::isRevisionThan($this->params, false, 'doryphore', 4, 4, 4, false)) {
+            return null;
+        }
         if (!$this->wiki->UserIsAdmin()) {
             return null;
         }
+        if ($this->getService(SecurityController::class)->isWikiHibernated()) {
+            throw new Exception(_t('WIKI_IN_HIBERNATION'));
+        };
 
         $updateHandlerService = $this->wiki->services->get(UpdateHandlerService::class);
 
@@ -39,11 +40,18 @@ class UpdateHandler__ extends YesWikiHandler
 
         $updateHandlerService->addSpecifiPage($messages);
         $updateHandlerService->removeNotUpToDateTools($messages);
-        $this->cleanUnusedMetadata($messages);
-        $this->transformVideoFieldToUrlField($messages);
+        $updateHandlerService->cleanUnusedMetadata($messages);
+        $updateHandlerService->transformVideoFieldToUrlField($messages);
 
         if (!empty($messages)) {
-            $message = implode('<br/>', $messages);
+            $message = implode('<br/>',
+                array_map(
+                    function ($lines){
+                        return implode('<br/>', $lines);
+                    },
+                    array_column($messages, 'lines')
+                )
+            );
             $output = <<<HTML
             <strong>Extension AlternativeUpdateJ9rem</strong><br/>
             $message<br/>
@@ -58,101 +66,5 @@ class UpdateHandler__ extends YesWikiHandler
             );
         }
         return null;
-    }
-
-    /**
-     * Clean unused metadata
-     * @param array $messages
-     * @return void
-     * Feature UUID : auj9-fix-edit-metadata
-     */
-    protected function cleanUnusedMetadata(array &$messages)
-    {
-        /**
-         * @var DbService $dbService
-         */
-        $dbService = $this->wiki->services->get(DbService::class);
-        if (in_array($this->params->get('cleanUnusedMetadata'), [true,'true'], true)) {
-            $messages[] = 'ℹ️ Clean unused metadata';
-            $selectSQL = <<<SQL
-            SELECT `id`,`resource` FROM {$dbService->prefixTable('triples')}
-                WHERE `property`='http://outils-reseaux.org/_vocabulary/metadata'
-                  AND NOT (`resource` IN (
-                    SELECT `tag` FROM {$dbService->prefixTable('pages')}
-                  ))
-            SQL;
-            $triples = $dbService->loadAll($selectSQL);
-            if (empty($triples)) {
-                $messages[] = '✅ No triple to delete !';
-            } else {
-                $messages[] = '&nbsp;&nbsp;ℹ️ ' . count($triples) . ' triples to delete !';
-                $message = '';
-                for ($i = 0; $i < count($triples) && $i <= 10; $i++) {
-                    if ($i == 10) {
-                        $message .= <<<HTML
-                        <li>...</li>
-                        HTML;
-                    } else {
-                        $values = $triples[$i];
-                        $message .= <<<HTML
-                        <li>{$values['resource']} ({$values['id']})</li>
-                        HTML;
-                    }
-                }
-                $messages[] = "<ul>$message</ul>";
-                $deleteSQL = <<<SQL
-                DELETE FROM {$dbService->prefixTable('triples')}
-                    WHERE `property`='http://outils-reseaux.org/_vocabulary/metadata'
-                      AND NOT (`resource` IN (
-                        SELECT `tag` FROM {$dbService->prefixTable('pages')}
-                      ))
-                SQL;
-                try {
-                    $dbService->query($deleteSQL);
-                } catch (Throwable $th) {
-                    //throw $th;
-                }
-                $triples = $dbService->loadAll($selectSQL);
-                if (empty($triples)) {
-                    $messages[] = '&nbsp;&nbsp;✅ All triples deleted !';
-                } else {
-                    $messages[] = '&nbsp;&nbsp;❌ Error : ' . count($riples) . ' triples are not deleted !';
-                }
-            }
-        }
-    }
-
-    /**
-     * transform video field definition in forms in url field
-     * @param array $messages
-     * @return void
-     * Feature UUID : auj9-video-field
-     */
-    protected function transformVideoFieldToUrlField(array &$messages)
-    {
-        $formManager = $this->getService(FormManager::class);
-        $forms = $formManager->getAll();
-        foreach($forms as $form) {
-            if (!empty($form['template']) && is_array($form['template'])) {
-                $toSave = false;
-                foreach($form['template'] as $key => $fieldTemplate) {
-                    if ($fieldTemplate[0] === 'video') {
-                        $toSave = true;
-                    }
-                }
-                if ($toSave) {
-                    $messages[] = "ℹ️ Converting videofield to urlfield in form {$form['bn_id_nature']}";
-                    $separator = preg_quote('***', '/');
-                    $form['bn_template'] = preg_replace(
-                        "/\nvideo$separator([^*]+)$separator([^|]+)$separator([^*]+)$separator([^*]+)$separator([^|]+)$separator([^*]+)((?:{$separator}[^*]+){4}(?:$separator(?:[^*]+| \\* )){2}(?:{$separator}[^*]*){4,}\r?\n)/",
-                        "\nlien_internet***$1***$2***displayvideo*** ***$5***$3|$4|$6$7",
-                        $form['bn_template']
-                    );
-                    $formManager->update($form);
-                    $messages[] = "&nbsp;&nbsp; ✅";
-                }
-
-            }
-        }
     }
 }
