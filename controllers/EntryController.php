@@ -13,7 +13,7 @@
 namespace YesWiki\Alternativeupdatej9rem\Controller;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use YesWiki\Bazar\Controller\EntryController As BazarEntryController;
+use YesWiki\Bazar\Controller\EntryController as BazarEntryController;
 
 /**
  * class to extend EntryController and try to edit entry instead of view
@@ -68,7 +68,7 @@ class EntryController extends BazarEntryController
         return $output;
     }
 
-    
+
     /**
      * @param string $entryId
      * @param string|null $time choose only the entry's revision corresponding to time, null = latest revision
@@ -77,7 +77,9 @@ class EntryController extends BazarEntryController
      */
     public function view($entryId, $time = '', $showFooter = true, ?string $userNameForRendering = null)
     {
-        if ($this->editInsteadOfView === true){
+        if ($this->editInsteadOfView === true) {
+            // reset
+            $this->editInsteadOfView = false;
             /**
              * @var string $output
              */
@@ -92,8 +94,6 @@ class EntryController extends BazarEntryController
                     'message' => _t('EDIT_NO_WRITE_ACCESS')
                 ]);
             }
-            // reset
-            $this->editInsteadOfView = false;
             return $output;
         }
         // reset
