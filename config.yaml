@@ -61,6 +61,7 @@ services:
 
   YesWiki\Alternativeupdatej9rem\Service\:
     resource: 'services/*'
+    exclude: 'services/YesWikiParamsCompilerPass.php'
   YesWiki\Alternativeupdatej9rem\Controller\:
     resource: 'controllers/*'
   # Feature UUID : auj9-fix-edit-metadata

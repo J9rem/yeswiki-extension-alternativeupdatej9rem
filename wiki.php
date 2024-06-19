@@ -8,12 +8,16 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  * Feature UUID : auj9-keep-only-wanted-langs
+ * Feature UUID : auj9-dont-show-stmp-params
  */
+
+use YesWiki\Alternativeupdatej9rem\Service\YesWikiParamsCompilerPass; //Feature UUID : auj9-dont-show-stmp-params
 
 if (!defined('WIKINI_VERSION')) {
     die('acc&egrave;s direct interdit');
 }
 
+/* === Feature UUID : auj9-keep-only-wanted-langs === */
 // reset languages
 if (!empty($GLOBALS['available_languages'])
     && !empty($GLOBALS['languages_list'])
@@ -30,10 +34,16 @@ if (!empty($GLOBALS['available_languages'])
     if (
         !empty($GLOBALS['prefered_language'])
         && !in_array($GLOBALS['prefered_language'], $GLOBALS['available_languages'])
-        ){
+    ) {
         $GLOBALS['prefered_language'] = 'fr';
-        if (isset($_GET['lang'])){
+        if (isset($_GET['lang'])) {
             unset($_GET['lang']);
         }
     }
 }
+/* === END FOR Feature UUID : auj9-keep-only-wanted-langs === */
+
+/* === Feature UUID : auj9-dont-show-stmp-params === */
+// add compiler pass
+$this->services->addCompilerPass(new YesWikiParamsCompilerPass());
+/* === END FOR Feature UUID : auj9-dont-show-stmp-params === */
