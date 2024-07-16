@@ -18,6 +18,7 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
    - amélioration du cache du `FormManager` et `PageManager`
    - correction d'un souci de détection des inclusions récursives des groupes ACL
    - correction d'un souci concernant les onglets
+   - correction de l'affichage du `throbber` pour le lecteur intégré de pdf
  - correction du bouton "connecter" dans le menu déroulant à partir de `doryphore 4.4.3`
  - ne pas activer les langues inconnues à partir de `doryphore 4.4.3`
  - ne pas afficher les paramètres SMTP à partir de `doryphore 4.4.5`
