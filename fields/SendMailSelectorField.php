@@ -10,7 +10,6 @@
  * Feature UUID : auj9-send-mail-selector-field
  */
 
-
 namespace YesWiki\Alternativeupdatej9rem\Field;
 
 use Psr\Container\ContainerInterface;
@@ -64,7 +63,7 @@ class SendMailSelectorField extends EnumField
         parent::__construct($values, $services);
         $this->size = null;
         $this->maxChars = null;
-        $this->propertyName = $this->listLabel;
+        $this->propertyName = $this->extractRightPropertyName();
         $this->linkedLabel = trim($values[self::FIELD_LINKED_LABEL]);
         $this->linkedLabelInForm = trim($values[self::FIELD_LINKED_LABEL_IN_FORM]);
         $this->linkedLabelInForm = empty($this->linkedLabelInForm) ? 'bf_mail' : $this->linkedLabelInForm;
@@ -74,6 +73,22 @@ class SendMailSelectorField extends EnumField
 
         // lazy loading for options
         $this->options = null;
+    }
+
+    protected function extractRightPropertyName(): string
+    {
+        if (isset($this->listLabel)) {
+            return $this->listLabel;
+        }
+        $name = $this->name;
+        return preg_replace(
+            '/^'
+            . preg_quote($this->getType(), '/')
+            . preg_quote($this->getLinkedObjectName(), '/')
+            . '/',
+            '',
+            $name
+        );
     }
 
     private function loadOptions()
@@ -125,7 +140,7 @@ class SendMailSelectorField extends EnumField
         $value = $this->getValue($entry);
         $email = $this->getAssociatedEmail($entry);
         if (!empty($email)) {
-            $value =new SendMailSelectorFieldObjectForSave($value, $email);
+            $value = new SendMailSelectorFieldObjectForSave($value, $email);
         }
         return array_merge(
             [$this->propertyName => $value],
