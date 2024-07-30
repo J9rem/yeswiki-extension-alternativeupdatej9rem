@@ -19,6 +19,7 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
    - correction d'un souci de détection des inclusions récursives des groupes ACL
    - correction d'un souci concernant les onglets
    - correction de l'affichage du `throbber` pour le lecteur intégré de pdf
+ - l'extension propose des correctifs multiples pour `doryphore 4.4.5`
  - correction du bouton "connecter" dans le menu déroulant à partir de `doryphore 4.4.3`
  - ne pas activer les langues inconnues à partir de `doryphore 4.4.3`
  - ne pas afficher les paramètres SMTP à partir de `doryphore 4.4.5`
@@ -96,6 +97,7 @@ Ajout des champs:
 ||corrections la faille de sécurité du handler `lmsraw`|[`auj9-fix-lmsraw-handler`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-lmsraw-handler&type=code)|
 ||pour `doryphore 4.4.2`|[`auj9-fix-4-4-2`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-2&type=code)|
 ||pour `doryphore 4.4.3`|[`auj9-fix-4-4-3`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-3&type=code)|
+||pour `doryphore 4.4.5`|[`auj9-fix-4-4-5`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-4-4-5&type=code)|
 ||correction du bouton connecter à partir de `doryphore 4.4.3`|[`auj9-fix-navbar-login-btn-since-4-4-3`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-navbar-login-btn-since-4-4-3&type=code)|
 ||ne pas activer les langues inconnues à partir de `doryphore 4.4.3`|[`auj9-keep-only-wanted-langs`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-keep-only-wanted-langs&type=code)|
 ||ne pas montrer les paramètres SMTP à partir de `doryphore 4.4.5`|[`auj9-dont-show-stmp-params`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-dont-show-stmp-params&type=code)|

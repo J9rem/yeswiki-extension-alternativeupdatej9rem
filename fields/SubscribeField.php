@@ -62,11 +62,27 @@ class SubscribeField extends CheckboxEntryField
         $this->maxChars = '';
         $this->keywords = '';
         $this->queries = '';
-        $this->propertyName = $this->type . $this->name . $this->listLabel;
+        $this->propertyName = $this->extractRightPropertyName();
         $this->wiki = $this->getWiki();
 
         $this->options = null;
         $this->optionsNotSecured = null;
+    }
+
+    protected function extractRightPropertyName(): string
+    {
+        if (isset($this->listLabel)) {
+            return $this->listLabel;
+        }
+        $name = $this->name;
+        return preg_replace(
+            '/^'
+            . preg_quote($this->getType(), '/')
+            . preg_quote($this->getLinkedObjectName(), '/')
+            . '/',
+            '',
+            $name
+        );
     }
 
     public function getOptions()
@@ -170,7 +186,7 @@ class SubscribeField extends CheckboxEntryField
         if (!$this->isUserType) {
             $entry = $subscriptionManager->updateEntryWithLinkedValues($entry, $this);
         }
-        $output= '';
+        $output = '';
         if ($this->showList) {
             $savedOptions = $this->options;
             $this->options = $this->getFullOptionsNotSecured();
@@ -201,7 +217,7 @@ class SubscribeField extends CheckboxEntryField
     {
         $anchor = preg_quote('<span class="BAZ_texte">', '/');
         $anchorUl = preg_quote('<ul>', '/');
-        $randomStr = rand(1000, 100000).'-'.(new DateTimeImmutable())->getTimestamp();
+        $randomStr = rand(1000, 100000) . '-' . (new DateTimeImmutable())->getTimestamp();
         $seeListTxt = _t('AUJ9_SUBSCRIBE_SEE_LIST');
         $hideListTxt = _t('AUJ9_SUBSCRIBE_HIDE_LIST');
         $this->getService(AssetsManager::class)->AddCSSFile('tools/alternativeupdatej9rem/styles/subscribe-field.css');
@@ -243,10 +259,10 @@ class SubscribeField extends CheckboxEntryField
                     'hint' => _t('AUJ9_SUBSCRIBE_HINT_FOR_MAX'),
                     'label' => _t('AUJ9_SUBSCRIBE_LABEL_FOR_MAX'),
                     'subType' => 'number',
-                    'name' => $this->getPropertyName().'_data[max]',
+                    'name' => $this->getPropertyName() . '_data[max]',
                     'size' => -1
                 ],
-                'value' => intval($entry[$this->getPropertyName().'_data']['max'] ?? -1)
+                'value' => intval($entry[$this->getPropertyName() . '_data']['max'] ?? -1)
             ]
         );
         if ($this->isUserType) {
@@ -263,9 +279,9 @@ class SubscribeField extends CheckboxEntryField
                 );
             $output = parent::renderInput($entry);
             $this->options = $savedOptions;
-            return $askForLimit.$output;
+            return $askForLimit . $output;
         }
-        
+
         $subscriptionManager = $this->getService(SubscriptionManager::class);
         if (!$subscriptionManager->checkIfFormIsOnlyOneEntry($this->getLinkedObjectName())) {
             return $this->showErroMessageForForm();
@@ -275,10 +291,10 @@ class SubscribeField extends CheckboxEntryField
             return $this->showErroMessageForMissingEntryCreationPage();
         }
         $entry = $subscriptionManager->updateEntryWithLinkedValues($entry, $this);
-        return $askForLimit.parent::renderInput($entry);
+        return $askForLimit . parent::renderInput($entry);
     }
 
-    protected function showErroMessageForForm():string
+    protected function showErroMessageForForm(): string
     {
         return $this->render('@templates/alert-message.twig', [
             'type' => 'danger',
@@ -286,7 +302,7 @@ class SubscribeField extends CheckboxEntryField
         ]);
     }
 
-    protected function showErroMessageForMissingEntryCreationPage():string
+    protected function showErroMessageForMissingEntryCreationPage(): string
     {
         return $this->render('@templates/alert-message.twig', [
             'type' => 'danger',
@@ -308,22 +324,22 @@ class SubscribeField extends CheckboxEntryField
         return $output;
     }
 
-    public function getIsUserType():bool
+    public function getIsUserType(): bool
     {
         return $this->isUserType;
     }
 
-    public function getShowList():bool
+    public function getShowList(): bool
     {
         return $this->showList;
     }
 
-    public function getPageToCreateEntry():string
+    public function getPageToCreateEntry(): string
     {
         return $this->pageToCreateEntry;
     }
 
-    public function getCanEditList():string
+    public function getCanEditList(): string
     {
         return $this->canEditList;
     }
