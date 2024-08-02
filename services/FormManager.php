@@ -8,11 +8,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  * Feature UUID : auj9-fix-4-4-3
+ * Feature UUID : auj9-fix-4-4-5
  */
 
 namespace YesWiki\Alternativeupdatej9rem\Service;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use YesWiki\Bazar\Field\BazarField;
+use YesWiki\Bazar\Field\EnumField;
 use YesWiki\Bazar\Service\EntryManager;
 use YesWiki\Bazar\Service\FieldFactory;
 use YesWiki\Bazar\Service\FormManager as BazarFormManager;
@@ -77,5 +80,39 @@ class FormManager extends BazarFormManager
         // reset cache
         $this->cacheValidatedForAll = false;
         return parent::delete($id);
+    }
+
+    /**
+     * return field from field name or property name.
+     * Feature UUID : auj9-fix-4-4-5
+     */
+    public function findFieldFromNameOrPropertyName(?string $name, ?string $formId): ?BazarField
+    {
+        // check params
+        if (empty($name) || empty($formId) || strval(intval($formId)) != strval($formId)) {
+            return null;
+        }
+
+        $form = $this->getOne($formId);
+        if (empty($form) || !is_array($form['prepared'])) {
+            return null;
+        }
+
+        foreach ($form['prepared'] as $field) {
+            if (
+                in_array($name, [$field->getName(), $field->getPropertyName()])
+                || (
+                    // ensure backward compatibility for old custom templates and forms
+                    $field instanceof EnumField
+                        &&
+                            strtolower($field->getPropertyName())
+                            === strtolower($field->getType() . $field->getLinkedObjectName() . $name)
+                )
+            ) {
+                return $field;
+            }
+        }
+
+        return null;
     }
 }
