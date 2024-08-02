@@ -401,8 +401,8 @@ class AutoUpdateAreasAction extends YesWikiAction
 
     private function createEntriesForAssociation($formId)
     {
-        $areaField = $formManager->findFieldFromNameOrPropertyName('bf_region', $formId);
-        $deptField = $formManager->findFieldFromNameOrPropertyName('bf_departement', $formId);
+        $areaField = $this->formManager->findFieldFromNameOrPropertyName('bf_region', $formId);
+        $deptField = $this->formManager->findFieldFromNameOrPropertyName('bf_departement', $formId);
         if (empty($areaField)) {
             throw new \Exception("Field 'bf_region' was not found in form '$formId'");
         }
