@@ -50,11 +50,28 @@ class AssetsManager extends CoreAssetsManager
     public function AddJavascriptFile($file, $first = false, $module = false)
     {
         $file = $this->localMapFilePath($file); // Feature UUID : auj9-fix-4-4-5
+        $this->updateBazarIfNeeded($file);
+        $this->updateFormEditTemplateIfNeeded($file); // Feature UUID : auj9-fix-4-4-5
+        return parent::AddJavascriptFile($file, $first, $module);
+    }
+
+    protected function updateBazarIfNeeded(string &$file)
+    {
         $replaceBazar = false;
-        foreach ([self::BAZAR_JS_OLD_PATH, self::BAZAR_JS_NEW_PATH] as $path) {
-            if (!$replaceBazar && substr($file, -strlen($path)) === $path) {
-                $file = str_replace($path, self::BAZAR_JS_ALTERNATIVE_PATH, $file);
-                $replaceBazar = true;
+        if (substr($file, -strlen(self::BAZAR_JS_OLD_PATH)) === self::BAZAR_JS_OLD_PATH) {
+            $file = str_replace(self::BAZAR_JS_OLD_PATH, self::BAZAR_JS_ALTERNATIVE_PATH, $file);
+            $replaceBazar = true;
+        } elseif (substr($file, -strlen(self::BAZAR_JS_NEW_PATH)) === self::BAZAR_JS_NEW_PATH) {
+            $md5Calculated = md5_file($file);
+            switch ($md5Calculated) {
+                case 'cd3f8202163cbd1fe0e2bbfcb7aade70':
+                case '63f1a863e78c8115d62f307c4e39a4d1':
+                    $file = str_replace(self::BAZAR_JS_NEW_PATH, self::BAZAR_JS_ALTERNATIVE_PATH, $file);
+                    $replaceBazar = true;
+                    break;
+
+                default:
+                    break;
             }
         }
         if ($replaceBazar) {
@@ -82,6 +99,13 @@ class AssetsManager extends CoreAssetsManager
             var userIsAuthorizedToForceEntrySaving = $userIsAuthorizedToForceEntrySaving;
             JAVAS);
         }
+    }
+
+    /**
+     * Feature UUID : auj9-fix-4-4-5
+     */
+    protected function updateFormEditTemplateIfNeeded(string &$file)
+    {
         if ($file == 'tools/bazar/presentation/javascripts/form-edit-template/form-edit-template.js') {
             $md5Calculated = md5_file($file);
             switch ($md5Calculated) {
@@ -94,7 +118,6 @@ class AssetsManager extends CoreAssetsManager
                     break;
             }
         }
-        return parent::AddJavascriptFile($file, $first, $module);
     }
 
     /* =======  Feature UUID : auj9-fix-4-4-5 ======= */
