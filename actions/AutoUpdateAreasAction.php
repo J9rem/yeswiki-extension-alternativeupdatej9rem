@@ -401,6 +401,14 @@ class AutoUpdateAreasAction extends YesWikiAction
 
     private function createEntriesForAssociation($formId)
     {
+        $areaField = $formManager->findFieldFromNameOrPropertyName('bf_region', $formId);
+        $deptField = $formManager->findFieldFromNameOrPropertyName('bf_departement', $formId);
+        if (empty($areaField)) {
+            throw new \Exception("Field 'bf_region' was not found in form '$formId'");
+        }
+        if (empty($deptField)) {
+            throw new \Exception("Field 'bf_departement' was not found in form '$formId'");
+        }
         foreach ([
             'ARA' => "1,3,7,15,26,38,42,43,63,69,73,74",
             'BFC' => "21,25,39,58,70,71,89,90",
@@ -427,8 +435,8 @@ class AutoUpdateAreasAction extends YesWikiAction
                 [
                     'antispam' => 1,
                     'bf_titre' => "Départements de {{bf_region}}",
-                    'liste' . self::FRENCH_AREAS_LIST_NAME . 'bf_region' => $areaCode,
-                    'checkbox' . self::FRENCH_DEPARTMENTS_LIST_NAME . 'bf_departement' => $depts,
+                    $areaField->getPropertyName() => $areaCode,
+                    $deptField->getPropertyName() => $depts,
                 ],
             );
         }
