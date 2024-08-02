@@ -26,8 +26,10 @@ class AutoUpdateAreasAction extends YesWikiAction
 {
     public const FRENCH_DEPARTMENTS_TITLE = "Départements français";
     public const FRENCH_DEPARTMENTS_LIST_NAME = "ListeDepartementsFrancais";
+    public const FRENCH_DEPARTMENTS_LIST_NAME_NEW = "ListdepartementsFrancais";
     public const FRENCH_AREAS_TITLE = "Régions françaises";
     public const FRENCH_AREAS_LIST_NAME = "ListeRegionsFrancaises";
+    public const FRENCH_AREAS_LIST_NAME_NEW = "ListregionsFrancaises";
 
     protected const GET_KEY = 'appendObject';
     protected const ANTI_CSRF_TOKEN = 'autoupdateareas\\action\\{type}';
@@ -161,17 +163,54 @@ class AutoUpdateAreasAction extends YesWikiAction
     /**
      * @return array ['success' => bool, 'error' => string]
      */
-    protected function createDepartements(): array
-    {
+    protected function createList(
+        string $name,
+        string $newName,
+        string $nameInError,
+        string $title,
+        array $data
+    ): array {
         $success = false;
         $error = '';
 
-        $list = $this->listManager->getOne(self::FRENCH_DEPARTMENTS_LIST_NAME);
+        $list = $this->listManager->getOne($name);
         if (!empty($list)) {
-            $error = "not possible to create list of departments : '" . self::FRENCH_DEPARTMENTS_LIST_NAME . "' is alreadyExisting !";
+            $error = "not possible to create list of $nameInError : '$name' is alreadyExisting !";
             $success = false;
         } else {
-            $listData = $this->prepareListData(self::FRENCH_DEPARTMENTS_TITLE, [
+            $list = $this->listManager->getOne($newName);
+            if (!empty($list)) {
+                $error = "not possible to create list of $nameInError : '$newName' is alreadyExisting !";
+                $success = false;
+            } else {
+                $listData = $this->prepareListData($title, $data);
+                $id = $this->listManager->create($listData['title'], $listData['nodes']);
+                if (
+                    empty($id)
+                    || !in_array($id, [$name, $newName], true)
+                    || empty($this->listManager->getOne($id))
+                ) {
+                    $error = "not possible to create list of $nameInError : '$name' error during creation !";
+                } else {
+                    $success = true;
+                }
+            }
+        }
+        return compact(['success','error']);
+    }
+
+
+    /**
+     * @return array ['success' => bool, 'error' => string]
+     */
+    protected function createDepartements(): array
+    {
+        return $this->createList(
+            self::FRENCH_DEPARTMENTS_LIST_NAME,
+            self::FRENCH_DEPARTMENTS_LIST_NAME_NEW,
+            'departments',
+            self::FRENCH_DEPARTMENTS_TITLE,
+            [
                 "1" => "Ain",
                 "2" => "Aisne",
                 "3" => "Allier",
@@ -280,32 +319,20 @@ class AutoUpdateAreasAction extends YesWikiAction
                 "986" => "Wallis-et-Futuna",
                 "987" => "Polynésie-Francaise",
                 "988" => "Nouvelle-Calédonie"
-            ]);
-            $this->listManager->create($listData['title'], $listData['nodes']);
-            $list = $this->listManager->getOne(self::FRENCH_DEPARTMENTS_LIST_NAME);
-            $success = !empty($list);
-            if (!$success) {
-                $error = "not possible to create list of departments : '" . self::FRENCH_DEPARTMENTS_LIST_NAME . "' error during creation !";
-            }
-        }
-        return compact(['success','error']);
+            ]
+        );
     }
-
     /**
      * @return array ['success' => bool, 'error' => string]
      */
     protected function createAreas(): array
     {
-        $success = false;
-        $error = '';
-
-        $list = $this->listManager->getOne(self::FRENCH_AREAS_LIST_NAME);
-        if (!empty($list)) {
-            $error = "not possible to create list of areas : '" . self::FRENCH_AREAS_LIST_NAME . "' is alreadyExisting !";
-            $success = false;
-        } else {
-            // CODE ISO 3166-2
-            $listData = $this->prepareListData(self::FRENCH_AREAS_TITLE, [
+        return $this->createList(
+            self::FRENCH_AREAS_LIST_NAME,
+            self::FRENCH_AREAS_LIST_NAME_NEW,
+            'areas',
+            self::FRENCH_AREAS_TITLE,
+            [
                 "ARA" => "Auvergne-Rhône-Alpes",
                 "BFC" => "Bourgogne-Franche-Comté",
                 "BRE" => "Bretagne",
@@ -325,17 +352,9 @@ class AutoUpdateAreasAction extends YesWikiAction
                 "MTQ" => "Martinique",
                 "MAY" => "Mayotte",
                 "COM" => "Collectivités d'outre-mer",
-            ]);
-            $this->listManager->create($listData['title'], $listData['nodes']);
-            $list = $this->listManager->getOne(self::FRENCH_AREAS_LIST_NAME);
-            $success = !empty($list);
-            if (!$success) {
-                $error = "not possible to create list of areas : '" . self::FRENCH_AREAS_LIST_NAME . "' error during creation !";
-            }
-        }
-        return compact(['success','error']);
+            ]
+        );
     }
-
 
     /**
      * @return array ['success' => bool, 'error' => string]
@@ -355,20 +374,32 @@ class AutoUpdateAreasAction extends YesWikiAction
             }
         }
         if (empty($error)) {
-            $listDept = $this->listManager->getOne(self::FRENCH_DEPARTMENTS_LIST_NAME);
-            if (empty($listDept) && ($res = $this->createDepartements()) && !$res['success']) {
+            if (
+                empty($this->listManager->getOne(self::FRENCH_DEPARTMENTS_LIST_NAME))
+                && empty($this->listManager->getOne(self::FRENCH_DEPARTMENTS_LIST_NAME_NEW))
+                && ($res = $this->createDepartements())
+                && !$res['success']
+            ) {
                 $error = $res['error'];
             }
         }
         if (empty($error)) {
-            $listArea = $this->listManager->getOne(self::FRENCH_AREAS_LIST_NAME);
-            if (empty($listArea) && ($res = $this->createAreas()) && !$res['success']) {
+            if (
+                empty($this->listManager->getOne(self::FRENCH_AREAS_LIST_NAME))
+                && empty($this->listManager->getOne(self::FRENCH_AREAS_LIST_NAME_NEW))
+                && ($res = $this->createAreas())
+                && !$res['success']
+            ) {
                 $error = $res['error'];
             }
         }
         if (empty($error)) {
-            $deptListName = self::FRENCH_DEPARTMENTS_LIST_NAME;
-            $arealistName = self::FRENCH_AREAS_LIST_NAME;
+            $deptListName = empty($this->listManager->getOne(self::FRENCH_DEPARTMENTS_LIST_NAME))
+                ? self::FRENCH_DEPARTMENTS_LIST_NAME_NEW
+                : self::FRENCH_DEPARTMENTS_LIST_NAME;
+            $arealistName = empty($this->listManager->getOne(self::FRENCH_AREAS_LIST_NAME))
+                ? self::FRENCH_AREAS_LIST_NAME_NEW
+                : self::FRENCH_AREAS_LIST_NAME;
             if (empty($formId)) {
                 $formId = $this->formManager->findNewId();
             }
@@ -477,10 +508,14 @@ class AutoUpdateAreasAction extends YesWikiAction
         array $nodes
     ): array {
         if (method_exists($this->listManager, 'convertDataStructure')) {
-            return $this->listManager->convertDataStructure([
+            $converted = $this->listManager->convertDataStructure([
                 'titre_liste' => $title,
                 'label' => $nodes
             ]);
+            foreach ($converted['nodes'] as &$value) {
+                $value['children'] = [];
+            }
+            return $converted;
         } else {
             return compact(['title','nodes']);
         }
