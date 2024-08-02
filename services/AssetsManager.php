@@ -82,6 +82,18 @@ class AssetsManager extends CoreAssetsManager
             var userIsAuthorizedToForceEntrySaving = $userIsAuthorizedToForceEntrySaving;
             JAVAS);
         }
+        if ($file == 'tools/bazar/presentation/javascripts/form-edit-template/form-edit-template.js') {
+            $md5Calculated = md5_file($file);
+            switch ($md5Calculated) {
+                case '123cb41c19ba025caddf51619bbe5635':
+                case '2dd7ed18652603ba5477eb2bafd95bc9':
+                    $file = 'tools/alternativeupdatej9rem/javascripts/form-edit-template-1.js';
+                    break;
+
+                default:
+                    break;
+            }
+        }
         return parent::AddJavascriptFile($file, $first, $module);
     }
 
