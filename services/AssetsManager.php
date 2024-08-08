@@ -51,7 +51,6 @@ class AssetsManager extends CoreAssetsManager
     {
         $file = $this->localMapFilePath($file); // Feature UUID : auj9-fix-4-4-5
         $this->updateBazarIfNeeded($file);
-        $this->updateFormEditTemplateIfNeeded($file); // Feature UUID : auj9-fix-4-4-5
         return parent::AddJavascriptFile($file, $first, $module);
     }
 
@@ -98,25 +97,6 @@ class AssetsManager extends CoreAssetsManager
             $this->AddJavascript(<<<JAVAS
             var userIsAuthorizedToForceEntrySaving = $userIsAuthorizedToForceEntrySaving;
             JAVAS);
-        }
-    }
-
-    /**
-     * Feature UUID : auj9-fix-4-4-5
-     */
-    protected function updateFormEditTemplateIfNeeded(string &$file)
-    {
-        if ($file == 'tools/bazar/presentation/javascripts/form-edit-template/form-edit-template.js') {
-            $md5Calculated = md5_file($file);
-            switch ($md5Calculated) {
-                case '123cb41c19ba025caddf51619bbe5635':
-                case '2dd7ed18652603ba5477eb2bafd95bc9':
-                    $file = 'tools/alternativeupdatej9rem/javascripts/form-edit-template-1.js';
-                    break;
-
-                default:
-                    break;
-            }
         }
     }
 
