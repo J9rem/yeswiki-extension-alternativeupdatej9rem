@@ -23,6 +23,7 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
  - correction du bouton "connecter" dans le menu déroulant à partir de `doryphore 4.4.3`
  - ne pas activer les langues inconnues à partir de `doryphore 4.4.3`
  - ne pas afficher les paramètres SMTP à partir de `doryphore 4.4.5`
+ - réparation du lien dans l'action `{{yeswikiversion}}`
 
 ### Actions
 
@@ -101,6 +102,7 @@ Ajout des champs:
 ||correction du bouton connecter à partir de `doryphore 4.4.3`|[`auj9-fix-navbar-login-btn-since-4-4-3`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-fix-navbar-login-btn-since-4-4-3&type=code)|
 ||ne pas activer les langues inconnues à partir de `doryphore 4.4.3`|[`auj9-keep-only-wanted-langs`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-keep-only-wanted-langs&type=code)|
 ||ne pas montrer les paramètres SMTP à partir de `doryphore 4.4.5`|[`auj9-dont-show-stmp-params`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-dont-show-stmp-params&type=code)|
+||réparation du lien dans l'action `{{yeswikiversion}}`|[`auj9-repair-yw-official-url`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-repair-yw-official-url&type=code)|
 |Template Bazar|`video.twig`|[`auj9-bazar-list-video-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-video-dynamic&type=code)|
 ||`send-mail.twig`|[`auj9-bazar-list-send-mail-dynamic`](https://github.com/search?q=repo%3AJ9rem%2Fyeswiki-extension-alternativeupdatej9rem%20auj9-bazar-list-send-mail-dynamic&type=code)|
 
