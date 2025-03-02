@@ -28,8 +28,10 @@ if (!function_exists('send_mail')) {
 
 class UserManager extends CoreUserManager
 {
-    protected $tripleStore;
     public const KEY_VOCABULARY = 'http://outils-reseaux.org/_vocabulary/key';
+
+    protected $tripleStore;
+    protected $userlink;
 
     public function __construct(
         Wiki $wiki,
@@ -39,8 +41,9 @@ class UserManager extends CoreUserManager
         SecurityController $securityController,
         TripleStore $tripleStore
     ) {
-        parent::__construct($wiki, $dbService, $params, $passwordHasherFactory, $securityController);
         $this->tripleStore = $tripleStore;
+        $this->userlink  = '';
+        parent::__construct($wiki, $dbService, $params, $passwordHasherFactory, $securityController);
     }
 
     /*
@@ -61,10 +64,11 @@ class UserManager extends CoreUserManager
         $passwordHasher = $this->passwordHasherFactory->getPasswordHasher($user);
         $plainKey = $user['name'] . '_' . $user['email'] . random_int(0, 10000) . date('Y-m-d H:i:s');
         $hashedKey = $passwordHasher->hash($plainKey);
+        $doubleHashedKey = $passwordHasher->hash($hashedKey);
         // Erase the previous triples in the trible table
         $this->tripleStore->delete($user['name'], self::KEY_VOCABULARY, null, '', '');
         // Store the (name, vocabulary, key) triple in triples table
-        $this->tripleStore->create($user['name'], self::KEY_VOCABULARY, $hashedKey, '', '');
+        $this->tripleStore->create($user['name'], self::KEY_VOCABULARY, $doubleHashedKey, '', '');
 
         // Generate the recovery email
         $this->userlink = $this->wiki->Href('', 'MotDePassePerdu', [
@@ -130,5 +134,32 @@ class UserManager extends CoreUserManager
         }
 
         return $this->userlink;
+    }
+
+
+    /** Part of the Password recovery process: Checks the provided key against the value stored for the provided user in triples table
+     *
+     * @param string $hashedKey The key to check
+     * @param string $userName The user for whom we check the key
+     *
+     * @return boolean True if success and false otherwise.
+    */
+    public function checkEmailKey(string $hashedKey, string $userName): bool
+    {
+        $triples = $this->tripleStore->getAll($userName, self::KEY_VOCABULARY, '', '');
+        if (count($triples) > 1) {
+            // delete triples because it is an error
+            $this->tripleStore->delete($userName, self::KEY_VOCABULARY, null, '', '');
+        } elseif (count($triples) === 1) {
+            $doubleHashedKey = $triples[0]['value'] ?? '';
+            if (empty($doubleHashedKey)) {
+                // delete triples because it is an error
+                $this->tripleStore->delete($userName, self::KEY_VOCABULARY, null, '', '');
+                return false;
+            }
+            $passwordHasher = $this->passwordHasherFactory->getPasswordHasher(User::class);
+            return $passwordHasher->verify($doubleHashedKey, $hashedKey);
+        }
+        return false;
     }
 }
