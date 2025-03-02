@@ -62,7 +62,7 @@ class UserManager extends CoreUserManager
         }
         // Generate the password recovery key
         $passwordHasher = $this->passwordHasherFactory->getPasswordHasher($user);
-        $plainKey = $user['name'] . '_' . $user['email'] . random_int(0, 10000) . date('Y-m-d H:i:s');
+        $plainKey = $user['name'] . '_' . $user['email'] . random_bytes(16) . date('Y-m-d H:i:s');
         $hashedKey = $passwordHasher->hash($plainKey);
         $doubleHashedKey = $passwordHasher->hash($hashedKey);
         // Erase the previous triples in the trible table
@@ -71,11 +71,22 @@ class UserManager extends CoreUserManager
         $this->tripleStore->create($user['name'], self::KEY_VOCABULARY, $doubleHashedKey, '', '');
 
         // Generate the recovery email
+        $this->saveLink($hashedKey, $user['name']);
+    }
+
+    /**
+     * save userLink
+     * @param string $hashedKey
+     * @param string $userName
+     */
+    protected function saveLink(string $hashedKey, string $userName)
+    {
         $this->userlink = $this->wiki->Href('', 'MotDePassePerdu', [
             'a' => 'recover',
             'email' => $hashedKey,
-            'u' => base64_encode($user['name']),
+            'u' => base64_encode($userName),
         ], false);
+
     }
 
     /**
@@ -119,19 +130,8 @@ class UserManager extends CoreUserManager
      */
     public function getLastUserLink(User $user): string
     {
-        $passwordHasher = $this->passwordHasherFactory->getPasswordHasher($user);
-        $plainKey = $user['name'] . '_' . $user['email'] . random_int(0, 10000) . date('Y-m-d H:i:s');
-        $hashedKey = $passwordHasher->hash($plainKey);
-        $key = $this->tripleStore->getOne($user['name'], self::KEY_VOCABULARY, '', '');
-        if ($key != null) {
-            $this->userlink = $this->wiki->Href('', 'MotDePassePerdu', [
-                'a' => 'recover',
-                'email' => $key,
-                'u' => base64_encode($user['name']),
-            ], false);
-        } else {
-            $this->generateUserLink($user);
-        }
+        // regenerate because not possible to know the hashedKey
+        $this->generateUserLink($user);
 
         return $this->userlink;
     }
