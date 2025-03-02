@@ -90,6 +90,9 @@ services:
   YesWiki\Alternativeupdatej9rem\Service\FormManager:
     decorates: YesWiki\Bazar\Service\FormManager
     decoration_on_invalid: null
+  YesWiki\Alternativeupdatej9rem\Service\UserManager:
+    decorates: YesWiki\Core\Service\UserManager
+    decoration_on_invalid: null
   # Feature UUID : auj9-perf-sql
   YesWiki\Alternativeupdatej9rem\Service\DbService:
     decorates: YesWiki\Core\Service\DbService
