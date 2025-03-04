@@ -19,6 +19,7 @@ Cette extension permet de mettre à disposition un système de mise à jour des 
    - correction d'un souci de détection des inclusions récursives des groupes ACL
    - correction d'un souci concernant les onglets
    - correction de l'affichage du `throbber` pour le lecteur intégré de pdf
+   - sécurisation du `UserManager` en vue de `doryphore 4.4.5`
  - l'extension propose des correctifs multiples pour `doryphore 4.4.5`
  - correction du bouton "connecter" dans le menu déroulant à partir de `doryphore 4.4.3`
  - ne pas activer les langues inconnues à partir de `doryphore 4.4.3`
