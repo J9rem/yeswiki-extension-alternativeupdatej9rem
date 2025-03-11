@@ -64,11 +64,10 @@ class UserManager extends CoreUserManager
         $passwordHasher = $this->passwordHasherFactory->getPasswordHasher($user);
         $plainKey = $user['name'] . '_' . $user['email'] . random_bytes(16) . date('Y-m-d H:i:s');
         $hashedKey = $passwordHasher->hash($plainKey);
-        $doubleHashedKey = $passwordHasher->hash($hashedKey);
         // Erase the previous triples in the trible table
         $this->tripleStore->delete($user['name'], self::KEY_VOCABULARY, null, '', '');
         // Store the (name, vocabulary, key) triple in triples table
-        $this->tripleStore->create($user['name'], self::KEY_VOCABULARY, $doubleHashedKey, '', '');
+        $this->tripleStore->create($user['name'], self::KEY_VOCABULARY, $hashedKey, '', '');
 
         // Generate the recovery email
         $this->saveLink($hashedKey, $user['name']);
@@ -151,14 +150,13 @@ class UserManager extends CoreUserManager
             // delete triples because it is an error
             $this->tripleStore->delete($userName, self::KEY_VOCABULARY, null, '', '');
         } elseif (count($triples) === 1) {
-            $doubleHashedKey = $triples[0]['value'] ?? '';
-            if (empty($doubleHashedKey)) {
+            $storedHashedKey = $triples[0]['value'] ?? '';
+            if (empty($storedHashedKey)) {
                 // delete triples because it is an error
                 $this->tripleStore->delete($userName, self::KEY_VOCABULARY, null, '', '');
                 return false;
             }
-            $passwordHasher = $this->passwordHasherFactory->getPasswordHasher(User::class);
-            return $passwordHasher->verify($doubleHashedKey, $hashedKey);
+            return strval($storedHashedKey) == $hashedKey;
         }
         return false;
     }
